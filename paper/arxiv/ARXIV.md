@@ -1,6 +1,6 @@
 # arXiv Metadata
 
-Status: submitted to arXiv on 30 October 2026 (temporary number submit/8305865; categories cs.HC, cs.CY; license CC BY 4.0). Awaiting moderation and announcement; the arXiv identifier will be recorded here, in the paper README and in the repository README once assigned. Both authors approved the manuscript and the disclosure of the personal material; the repository is public.
+Status: announced as [arXiv:2610.41776](https://arxiv.org/abs/2610.41776) (submitted 30 October 2026 as submit/8305865; categories cs.HC, cs.CY; license CC BY 4.0). The identifier is recorded here, in the paper README and in the repository README. Both authors approved the manuscript and the disclosure of the personal material; the repository is public.
 
 ## Title
 
