@@ -4,7 +4,7 @@
 import './clinic.css';
 import { t, getLang, pick, type Key } from '../../core/i18n';
 import { config } from '../../core/config';
-import { dayNumberSince } from '../../core/dates';
+import { clockIn, dayNumberSince } from '../../core/dates';
 import { getPlayer, type PlayerId } from '../../core/quest';
 import { avatarHtml, playerName, toast } from '../../core/quest-ui';
 import { prefersReducedMotion } from '../../core/motion';
@@ -12,6 +12,7 @@ import { escapeAttr } from '../../core/html';
 import { go as navigate } from '../../core/router';
 import { HURTS, cabinetFor, drawNote, fill, prescriptionFor, voiceSrc, type CabinetNote, type HurtId } from './prescriptions';
 import { chart, checkIn, eraseChart, visits, writeChart } from './visits';
+import { doctorNowKey, minutesSince } from './now';
 
 // Three breaths: in for four seconds, hold four, out for six.
 const BREATHS = 3;
@@ -31,6 +32,7 @@ const when = (iso: string): string => {
 export function renderClinic(root: HTMLElement): () => void {
   const p = getPlayer()!;
   const doctor: PlayerId = p === 'jingyi' ? 'yifan' : 'jingyi';
+  const doctorZone = doctor === 'jingyi' ? config.her.zone : config.him.zone;
   const days = dayNumberSince(config.metOn, new Date(), p === 'jingyi' ? config.her.zone : config.him.zone);
   const seen = visits(p);
   const notes = cabinetFor(p);
@@ -100,13 +102,18 @@ export function renderClinic(root: HTMLElement): () => void {
 
   // The prescription for one hurt, after the breathing (or at once, under reduced motion).
   let hurt: HurtId | null = null;
+  let checkedInAt = Date.now();
   function showRx(): void {
     breath.hidden = true; audio.pause(); audio.removeAttribute('src');
     const h = hurt!;
     const title = t(`clinic.hurt.${h}` as Key);
     const rxp = prescriptionFor(p, h);
+    // The letter was written in advance; the first line says what the one who wrote it is doing now.
+    const clock = clockIn(doctorZone, new Date(), getLang());
+    const nowLine = t(doctorNowKey(clock.hour + Number(clock.time.slice(3)) / 60), { name: playerName(doctor), time: clock.time });
     rx.innerHTML = `
       <p class="eyebrow">${t('clinic.rx.eyebrow', { hurt: title })}</p>
+      <p class="rx-now">${nowLine}</p>
       ${rxp
         ? `${rxp.paragraphs[getLang()].map((s) => `<p>${fill(s, days)}</p>`).join('')}
            <p class="signature">— ${pick(rxp.signature)}</p>
@@ -114,12 +121,21 @@ export function renderClinic(root: HTMLElement): () => void {
         : `<p class="rx-empty">${t('clinic.rx.empty', { name: playerName(doctor) })}</p>`}
       <div class="rx-actions">
         <button type="button" class="btn" id="rx-better">${t('clinic.rx.better')}</button>
+        <button type="button" class="link" id="rx-tell">${t('clinic.rx.tell')}</button>
         <button type="button" class="link" id="rx-another">${t('clinic.rx.another')}</button>
       </div>`;
     rx.hidden = false;
     rx.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
     $('#rx-another').addEventListener('click', () => { rx.hidden = true; desk.hidden = false; audio.pause(); desk.scrollIntoView({ block: 'start' }); });
     $('#rx-better').addEventListener('click', () => { toast(t('clinic.better.toast')); navigate('/town'); });
+    // Nothing here reaches the other one by itself (no server). This hands the phone's share sheet
+    // one line to send, or copies it when there is no share sheet; sending it stays the patient's call.
+    $('#rx-tell').addEventListener('click', () => {
+      const text = t('clinic.rx.tell.msg', { m: minutesSince(checkedInAt) });
+      const copy = () => navigator.clipboard?.writeText(text).then(() => toast(t('clinic.rx.tell.copied'))).catch(() => toast(text));
+      if (navigator.share) navigator.share({ text }).catch((e: unknown) => { if (!(e instanceof DOMException && e.name === 'AbortError')) void copy(); });
+      else void copy();
+    });
     // A recording of the letter read aloud, if the doctor has left one (see public/media/clinic/).
     if (rxp) {
       const btn = $<HTMLButtonElement>('#rx-voice');
@@ -147,6 +163,7 @@ export function renderClinic(root: HTMLElement): () => void {
   $('#breath-skip').addEventListener('click', () => { timers.forEach((id) => clearTimeout(id)); timers.clear(); showRx(); });
   root.querySelectorAll<HTMLButtonElement>('.hurt').forEach((b) => b.addEventListener('click', () => {
     hurt = b.dataset.hurt as HurtId;
+    checkedInAt = Date.now();
     const n = checkIn(p);
     $('#visits').textContent = n === 1 ? t('clinic.visits.first') : t('clinic.visits', { n });
     if (prefersReducedMotion()) { desk.hidden = true; showRx(); } else breathe();

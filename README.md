@@ -5,7 +5,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/for-two%20players-d3a557?style=flat-square&labelColor=0b2036" alt="for two players" />
   <img src="https://img.shields.io/badge/levels-9%20%2B%20an%20epilogue-d3a557?style=flat-square&labelColor=0b2036" alt="9 levels and an epilogue" />
-  <img src="https://img.shields.io/badge/tests-165%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="165 tests passing" />
+  <img src="https://img.shields.io/badge/tests-167%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="167 tests passing" />
   <img src="https://img.shields.io/badge/TypeScript-strict-d3a557?style=flat-square&labelColor=0b2036" alt="TypeScript strict" />
   <img src="https://img.shields.io/badge/backend-none-d3a557?style=flat-square&labelColor=0b2036" alt="no backend" />
   <img src="https://img.shields.io/badge/art-drawn%20in%20code-d3a557?style=flat-square&labelColor=0b2036" alt="all art drawn in code" />
@@ -98,7 +98,7 @@ Rayford never mentions the ring, or what comes after it, before they happen; `sr
 ```bash
 npm install
 npm run dev       # http://localhost:5173
-npm test          # 165 unit tests (Vitest)
+npm test          # 167 unit tests (Vitest)
 npm run build     # strict type-check + production build
 npm run banner    # redraw docs/banner.svg from the sprite data
 npm run icon      # redraw favicon.svg and the PNG icons from the sprites

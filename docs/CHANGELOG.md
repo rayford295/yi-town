@@ -2,6 +2,20 @@
 
 Versions are tags of feeling more than of code; the site deploys on every push.
 
+## 1.20.0 (2026-11-04)
+
+- The infirmary's letter opens with what the one who wrote it is doing right now, from the clock
+  in their city ("it is 03:12 where Yifan is, and he is asleep"), and "tell them I am out" hands
+  the phone's share sheet one line with how long the visit was. Nothing is sent by itself.
+- `python3 scripts/record-rx.py fight yifan` records a prescription read aloud straight into
+  `public/media/clinic/`; the "hear it" button appears by itself.
+- Rayford knows where the infirmary is and walks you to its door.
+- A new version of the site is offered on a bar at the bottom of the page and taken with one tap,
+  instead of reloading underneath someone half-way through a level; the check runs when the tab
+  comes back into view and hourly (`src/core/update.ts`, service worker in `prompt` mode).
+- The deploy job waits out a stuck GitHub Pages deployment and retries twice before failing.
+- 167 unit tests.
+
 ## 1.19.0 (2026-11-04)
 
 - The infirmary (`/clinic`, `src/features/clinic/`): the second product on the dashboard and a

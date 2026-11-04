@@ -3,9 +3,9 @@
 // server); the town page turns his choices into talk-box buttons. Pure, so it can be tested.
 import { t, type Key } from '../../core/i18n';
 import { LEVELS, levelNumber, type PlayerId } from '../../core/quest';
-import { BUILDINGS, PORTAL_SPOT, type Point } from '../world/town';
+import { BUILDINGS, CLINIC, PORTAL_SPOT, type Point } from '../world/town';
 
-export type Topic = 'hello' | 'about' | 'next' | 'levels' | 'town' | 'me';
+export type Topic = 'hello' | 'about' | 'next' | 'levels' | 'town' | 'clinic' | 'me';
 
 /** What a button does: open another topic, walk the player somewhere, or close the talk box. */
 export type Choice =
@@ -42,6 +42,7 @@ export function rayfordSays(topic: Topic, s: GuideState): Line {
           { label: t('guide.ask.about'), to: 'about' },
           { label: t('guide.ask.levels'), to: 'levels' },
           { label: t('guide.ask.town'), to: 'town' },
+          { label: t('guide.ask.clinic'), to: 'clinic' },
           { label: t('guide.ask.me'), to: 'me' },
           { label: t('guide.ask.birthday'), go: '/birthday' },
           bye(),
@@ -53,6 +54,9 @@ export function rayfordSays(topic: Topic, s: GuideState): Line {
       return { text: t(s.player === 'yifan' ? 'guide.me.yifan' : 'guide.me'), choices: [back()] };
     case 'town':
       return { text: t('guide.town', { other: them }), choices: [back()] };
+    case 'clinic':
+      // Not a level, so no lock to explain: he says where it is and walks you onto its door.
+      return { text: t('guide.clinic', { other: them }), choices: [{ label: t('guide.take'), walkTo: CLINIC.door }, back()] };
     case 'levels': {
       const list = LEVELS.map((l) => `<li${s.cleared(l.id, s.player) ? ' class="done"' : ''}>${levelNumber(l.id)} · ${t(l.title)}</li>`).join('');
       const done = LEVELS.filter((l) => s.cleared(l.id, s.player)).length;

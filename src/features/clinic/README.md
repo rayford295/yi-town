@@ -10,8 +10,11 @@ shown.
 - **Check-in** asks what hurts: a fight, a hurt, missing them without wanting to go first, or
   just tired. Each check-in is counted on this device (`visits.ts`).
 - **Three breaths** (4 s in, 4 s hold, 6 s out), skippable, and skipped under reduced motion.
-- **The prescription** is the doctor's letter for that hurt (`prescriptions.ts`), with a "hear
-  it" button when `public/media/clinic/<hurt>-<doctor>.m4a` exists.
+- **The prescription** is the doctor's letter for that hurt (`prescriptions.ts`). It opens with
+  what the doctor is doing right now, from the clock in their city (`now.ts`), and has a "hear
+  it" button when `public/media/clinic/<hurt>-<doctor>.m4a` exists (`scripts/record-rx.py`).
+- **Tell them I am out** hands the phone's share sheet one line with the length of the visit
+  (copied to the clipboard where there is no share sheet). Nothing leaves the phone by itself.
 - **The cabinet** draws one-line notes at random, never the same one twice in a row.
 - **The chart** is a private notebook: lines written here are kept in localStorage on this
   device and never sent anywhere.

@@ -39,7 +39,21 @@ jobs:
       cancel-in-progress: false
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.retry1.outputs.page_url || steps.retry2.outputs.page_url }}
     steps:
       - id: deployment
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+      # GitHub Pages sometimes leaves a deployment stuck "in progress" for up to half an hour and
+      # refuses every new one meanwhile (2026-11-04). Wait it out and try twice more before failing.
+      - if: steps.deployment.outcome == 'failure'
+        run: sleep 600
+      - id: retry1
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+      - if: steps.deployment.outcome == 'failure' && steps.retry1.outcome == 'failure'
+        run: sleep 600
+      - id: retry2
+        if: steps.deployment.outcome == 'failure' && steps.retry1.outcome == 'failure'
         uses: actions/deploy-pages@v4

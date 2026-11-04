@@ -173,3 +173,12 @@ button.link { min-height: 32px; padding: 4px 6px !important; }
 
 /* The narrowest phones: titles one size down so a four-character name does not break in two. */
 @media (max-width: 360px) { #view h1 { font-size: clamp(26px, 9.5vw, 36px); } }
+
+/* The 'new version' bar: offered at the bottom, taken with one tap (src/core/update.ts). */
+.update-bar {
+  position: fixed; left: 50%; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); z-index: 2002; transform: translate(-50%, 20px);
+  display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 16px; border-radius: 999px; max-width: calc(100vw - 32px);
+  background: #102e49; color: #f1e4c8; border: 2px solid #d3a557; font-size: 14px; text-shadow: none; opacity: 0; transition: opacity 220ms ease, transform 220ms ease;
+}
+.update-bar.in { opacity: 1; transform: translate(-50%, 0); }
+.update-bar .btn { background: #d3a557; color: #102e49; padding: 6px 14px; font-size: 14px; }

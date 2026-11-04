@@ -40,6 +40,7 @@ html[lang='en'] .breath-ring span { font-family: var(--serif-en); font-style: it
 .clinic-rx .signature { font-family: var(--hand); font-size: 26px; color: var(--rose-deep); margin-top: 20px; }
 html[lang='en'] .clinic-rx .signature { font-family: var(--serif-en); font-style: italic; }
 .rx-empty { color: var(--muted); }
+.clinic-rx .rx-now { font-size: 14px; color: var(--muted); border-bottom: 1px dashed var(--line); padding-bottom: 10px; margin-bottom: 16px; line-height: 1.7; }
 .rx-voice { justify-self: start; background: none; border: 1px solid var(--gold); color: var(--rose-deep); font: inherit; font-size: 14px; padding: 6px 16px; border-radius: 999px; cursor: pointer; }
 .rx-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 18px; }
 

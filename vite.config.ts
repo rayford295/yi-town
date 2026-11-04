@@ -9,7 +9,7 @@ export default defineConfig({
     // of the app shell there lets /cs or /sync?c=J7A open the app directly (see src/core/router.ts).
     { name: 'spa-404', closeBundle() { copyFileSync('dist/index.html', 'dist/404.html'); } },
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',   // src/core/update.ts offers the new version on a bar; see main.ts
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Yi Town · 仪见钟情',

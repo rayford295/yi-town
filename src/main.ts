@@ -1,5 +1,5 @@
 import './styles/base.css';
-import { registerSW } from 'virtual:pwa-register';
+import { watchForUpdates } from './core/update';
 import { t, getLang, setLang, onLangChange } from './core/i18n';
 import { renderStart } from './features/start/start';
 import { renderJourney } from './features/journey/journey';
@@ -125,8 +125,8 @@ async function render(): Promise<void> {
   cleanup = page(app.querySelector<HTMLElement>('#view')!);
 }
 
-// Offline shell + 'add to home screen'. Updates install quietly on the next visit.
-registerSW({ immediate: true });
+// Offline shell + 'add to home screen'. A new version is offered on a bar, never forced mid-level.
+watchForUpdates();
 
 onLangChange(() => { void render(); });
 interceptLinks();

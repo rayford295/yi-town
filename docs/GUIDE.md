@@ -68,7 +68,7 @@ the test fails unless the mover has exactly one winning point.
 **Write a prescription for the infirmary.** The letters and the cabinet notes are in
 `src/features/clinic/prescriptions.ts`, one entry per `from` and `hurt`, Chinese and English in
 step (the test fails when the paragraph counts differ). A recording of a letter read aloud goes
-in `public/media/clinic/<hurt>-<reader>.m4a` and the "hear it" button appears by itself.
+in `public/media/clinic/<hurt>-<reader>.m4a` (on the Mac: `python3 scripts/record-rx.py fight yifan`) and the "hear it" button appears by itself.
 
 **Change a key date.** Everything is in `src/core/config.ts`.
 
@@ -118,6 +118,7 @@ if a product should not.
 - [x] Birthday prologue (`/birthday`) and the wedding (`/wedding`) as pixel cutscenes; the ring is a secret until it is reached (`secret.test.ts`); a hole in time by house 9 leads to the wedding (v1.15–1.16, 2026-10-28)
 - [x] Whole-site review pass: gate placeholder, ISO 7064 check character for codes, non-blocking fonts, phone layouts, cutscene edge cases (v1.16.0, 2026-10-28)
 - [x] The birthday letter is the handwritten card, with its text in both languages; LICENSE added for going public (v1.18.0, 2026-10-30)
+- [x] Infirmary round two: the letter knows the doctor's local time, a share line on leaving, Rayford leads there, recorder script; 'new version' bar instead of silent reloads; deploy retries (v1.20.0, 2026-11-04)
 - [x] The infirmary (`/clinic`): a pink house with a red cross in the town and the second card on the dashboard; check-in, three breaths, the other one's letter for that hurt, sticky notes from the cabinet, a private chart (v1.19.0, 2026-11-04)
 - [x] The ring level is cleared by the try-on photo; jukebox on YouTube; in-level progress survives a language toggle or reload; quizzes re-deal on a wrong pick; first voice note in the mailbox (v1.17.0, 2026-10-28)
 
@@ -127,7 +128,7 @@ Owner's own work (text in his words; both languages in each file):
 - [x] The epilogue letter (`src/features/letter/text.ts`) ends on purpose with “to be continued”; `{d}` days and `{h}` hours fill in live (2026-10-30).
 - [x] The birthday letter on the Love Map is the handwritten card (`src/features/birthday-map/letter.ts`, 2026-10-30).
 - [ ] Yifan checks the hours and stories of his day (`src/features/days/cs.ts`, `cs.story.*` in `i18n.ts`); Jingyi's day is a guess (`src/features/days/sz.ts`, `sz.story.*`).
-- [ ] The infirmary's letters and notes (`src/features/clinic/prescriptions.ts`) are drafts in each one's voice: Yifan rewrites his, Jingyi hers. Optional recordings: `public/media/clinic/README.md`.
+- [ ] The infirmary's letters and notes (`src/features/clinic/prescriptions.ts`) are drafts in each one's voice: Yifan rewrites his, Jingyi hers. Recordings: `python3 scripts/record-rx.py <hurt> <reader>` (see `public/media/clinic/README.md`).
 - [ ] More voice notes: drop `<date>-<sender>.m4a` into `public/media/voice/notes/` and run `npm run notes`, or record on the Mac with `python3 scripts/record-note.py yifan`. Optional per-level lines for the cleared cards: `public/media/voice/README.md`.
 - [ ] Test on real phones what headless browsers cannot: the try-on camera and photo (clears level 9), blowing the candles out into the mic, saying "I do", the wedding certificate's share sheet, YouTube in the jukebox.
 
