@@ -13,9 +13,9 @@ export const TOWN = [
   'T..WDW....WDW....WDW...T',
   'T,..#......#......#...,T',
   'T...################...T',
-  'T...#.........~~~..#...T',
-  'TRRR#........~~~~..#RRRT',
-  'TWDW#....#####.....#WDWT',
+  'T...#.RRR.....~~~..#...T',
+  'TRRR#.RRR....~~~~..#RRRT',
+  'TWDW#.WDW#####.....#WDWT',
   'T.###....##O##.....###.T',
   'T...#....#####.....#...T',
   'T...#.T....#....T..#...T',
@@ -37,6 +37,7 @@ export interface Building {
   roof: string;           // roof colour, so the eight houses read differently at a glance
   trim: string;           // wall accent (window frames, door)
   number?: number;        // the sign on the roof; the town derives it from LEVELS when absent
+  sign?: 'cross';         // a red cross on the roof instead of a number: the infirmary, not a level
 }
 
 /** A walkable map: the grid, its buildings and its size. Yi Town is one; College Station another. */
@@ -55,6 +56,9 @@ export const BUILDINGS: Building[] = [
   { level: 'poems',   door: { x: 21, y: 15 }, roof: '#b0413e', trim: '#5e1f1d' },
   { level: 'ring',    door: { x: 16, y: 15 }, roof: '#e9c46a', trim: '#9a7a2a' },
 ];
+
+/** The infirmary, by the square's north-west corner: not a level, always open, no cat guards it. */
+export const CLINIC: Building = { level: 'clinic', door: { x: 7, y: 8 }, roof: '#ef8fa0', trim: '#a8324f', sign: 'cross' };
 
 /** Where a new player appears: the square below the fountain. */
 export const SPAWN: Point = { x: 11, y: 10 };
@@ -75,7 +79,7 @@ export const CAT_HOMES: Record<'coffee' | 'duoduo', Point> = { coffee: { x: 13, 
 
 export const WIDTH = TOWN[0].length;
 export const HEIGHT = TOWN.length;
-export const YI_TOWN: TownMap = makeMap(TOWN, BUILDINGS);
+export const YI_TOWN: TownMap = makeMap(TOWN, [...BUILDINGS, CLINIC]);
 
 export const tileAt = (x: number, y: number, map: TownMap = YI_TOWN): Tile =>
   x < 0 || y < 0 || x >= map.width || y >= map.height ? 'T' : (map.grid[y][x] as Tile);
@@ -85,11 +89,11 @@ export const buildingAt = (x: number, y: number, map: TownMap = YI_TOWN): Buildi
 /** The tile in front of a door, where the guard of a locked building stands. */
 export const guardSpot = (b: Building): Point => ({ x: b.door.x, y: b.door.y + 1 });
 
-/** Ground that can be walked on: grass, flowers, path, road, a court, and a door when its building is open. */
+/** Ground that can be walked on: grass, flowers, path, road, a court, and a door when its building is open. The infirmary's door is never locked. */
 export function walkable(x: number, y: number, doorOpen: (level: string) => boolean = () => true, map: TownMap = YI_TOWN): boolean {
   const t = tileAt(x, y, map);
   if (t === '.' || t === ',' || t === '#' || t === '=' || t === 'C') return true;
-  if (t === 'D') { const b = buildingAt(x, y, map); return !!b && doorOpen(b.level); }
+  if (t === 'D') { const b = buildingAt(x, y, map); return !!b && (b.level === CLINIC.level || doorOpen(b.level)); }
   return false;
 }
 

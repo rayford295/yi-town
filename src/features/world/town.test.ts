@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BUILDINGS, CAT_HOMES, HEIGHT, MAILBOX, PARTNER, RAYFORD_SPOT, SIGNPOST, SIGNPOST_WEST, SPAWN, TOWN, WIDTH, guardSpot, levelIds, reachable, tileAt, walkable } from './town';
+import { BUILDINGS, CAT_HOMES, CLINIC, HEIGHT, MAILBOX, PARTNER, RAYFORD_SPOT, SIGNPOST, SIGNPOST_WEST, SPAWN, TOWN, WIDTH, guardSpot, levelIds, reachable, tileAt, walkable } from './town';
 
 describe('town', () => {
   it('is a rectangle of known tiles', () => {
@@ -54,6 +54,16 @@ describe('town', () => {
       }
     }
     for (const b of BUILDINGS) expect(seen.has(`${b.door.x},${b.door.y}`), b.level).toBe(true);
+  });
+
+  it('gives the infirmary a door on the grid that is always open, reachable, and not a level', () => {
+    expect(tileAt(CLINIC.door.x, CLINIC.door.y)).toBe('D');
+    expect(BUILDINGS.some((b) => b.level === CLINIC.level)).toBe(false);
+    expect(levelIds()).not.toContain(CLINIC.level);
+    expect(walkable(CLINIC.door.x, CLINIC.door.y, () => false)).toBe(true);   // no lock, whoever is playing
+    expect(reachable(SPAWN, () => false).has(`${CLINIC.door.x},${CLINIC.door.y}`)).toBe(true);
+    expect(walkable(CLINIC.door.x, CLINIC.door.y + 1)).toBe(true);
+    expect(CLINIC.sign).toBe('cross');
   });
 
   it('keeps a locked door shut', () => {

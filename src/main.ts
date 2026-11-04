@@ -37,8 +37,9 @@ const routes: Record<string, () => Promise<Page>> = {
   '/sync': () => import('./features/sync/sync').then((m) => m.renderSync),
   '/cs': () => import('./features/days/render').then((m) => m.renderCS),
   '/sz': () => import('./features/days/render').then((m) => m.renderSZ),
+  '/clinic': () => import('./features/clinic/clinic').then((m) => m.renderClinic),
 };
-const viewClass: Record<string, string> = { '/': 'dashboard', '/town': 'world', '/journey': 'journey', '/start': 'start', '/met': 'home', '/map': 'map', '/moments': 'moments', '/tattoo': 'tattoo', '/gomoku': 'gomoku', '/songs': 'songs', '/stars': 'stars', '/poems': 'poems', '/ring': 'ring', '/letter': 'letter', '/birthday': 'theatre', '/wedding': 'theatre', '/sync': 'sync', '/cs': 'day', '/sz': 'day' };
+const viewClass: Record<string, string> = { '/': 'dashboard', '/town': 'world', '/journey': 'journey', '/start': 'start', '/met': 'home', '/map': 'map', '/moments': 'moments', '/tattoo': 'tattoo', '/gomoku': 'gomoku', '/songs': 'songs', '/stars': 'stars', '/poems': 'poems', '/ring': 'ring', '/letter': 'letter', '/birthday': 'theatre', '/wedding': 'theatre', '/sync': 'sync', '/cs': 'day', '/sz': 'day', '/clinic': 'clinic' };
 const app = document.querySelector<HTMLElement>('#app')!;
 let cleanup: (() => void) | undefined;
 let renderSeq = 0;   // a navigation that starts while a page is still loading wins

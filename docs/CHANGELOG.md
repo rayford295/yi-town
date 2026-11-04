@@ -2,6 +2,18 @@
 
 Versions are tags of feeling more than of code; the site deploys on every push.
 
+## 1.19.0 (2026-11-04)
+
+- The infirmary (`/clinic`, `src/features/clinic/`): the second product on the dashboard and a
+  pink house with a red cross by the square's north-west corner of the town. Jingyi, 2026-11-03:
+  "以后我受伤了我就不跟你说话了，我就躲进去." Check in with what hurts (a fight, a hurt, missing
+  them, just tired), breathe three times, read the letter the other one wrote in advance for that
+  hurt, draw a one-line note from the cabinet, and write on a private chart that never leaves the
+  phone. A "hear it" button appears when `public/media/clinic/<hurt>-<doctor>.m4a` exists. Yifan's
+  four letters and eighteen notes are drafts in his words; Jingyi's side waits for her.
+- Not a level: no lock, no cat guards it, nothing to clear; the door is always open.
+- 165 unit tests.
+
 ## 1.18.0 (2026-10-30)
 
 - The birthday letter is now the real one: Yifan's handwritten card (dated 10.31.2026) is shown at

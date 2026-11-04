@@ -177,6 +177,17 @@ function numberSign(ctx: CanvasRenderingContext2D, x: number, y: number, n: numb
   [...text].forEach((ch, k) => paint(ctx, DIGITS[ch] ?? DIGITS['0'], { '#': C.navy }, x + 2 + k * 4, y + 1));
 }
 
+/** A red cross on a cream sign, for the infirmary's roof. Same footprint as a one-digit number. */
+function crossSign(ctx: CanvasRenderingContext2D, x: number, y: number): void {
+  ctx.fillStyle = C.navy;
+  ctx.fillRect(x - 1, y - 1, 9, 9);
+  ctx.fillStyle = C.wall;
+  ctx.fillRect(x, y, 7, 7);
+  ctx.fillStyle = '#c7343f';
+  ctx.fillRect(x + 1, y + 3, 5, 1);
+  ctx.fillRect(x + 3, y + 1, 1, 5);
+}
+
 /** A 3×3-tile house: two rows of roof, one of wall with the door in the middle. */
 function house(ctx: CanvasRenderingContext2D, b: Building): void {
   const x = (b.door.x - 1) * TILE, y = (b.door.y - 2) * TILE;
@@ -190,9 +201,12 @@ function house(ctx: CanvasRenderingContext2D, b: Building): void {
   for (let r = y + 7; r < y + roofH; r += 5) ctx.fillRect(x, r, w, 1);
   ctx.fillStyle = shade(b.roof, 1.18);
   ctx.fillRect(x + 2, y + 3, w - 4, 2);
-  // The level number, centred low on the roof.
-  const n = b.number ?? levelNumber(b.level), sw = String(n).length * 4 + 3;
-  numberSign(ctx, x + Math.floor((w - sw) / 2), y + roofH - 10, n);
+  // The level number (or the infirmary's cross), centred low on the roof.
+  if (b.sign === 'cross') crossSign(ctx, x + Math.floor((w - 7) / 2), y + roofH - 10);
+  else {
+    const n = b.number ?? levelNumber(b.level), sw = String(n).length * 4 + 3;
+    numberSign(ctx, x + Math.floor((w - sw) / 2), y + roofH - 10, n);
+  }
   // Wall.
   ctx.fillStyle = C.wall;
   ctx.fillRect(x, y + roofH + 2, w, TILE + 2);

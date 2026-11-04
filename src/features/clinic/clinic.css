@@ -1,0 +1,69 @@
+.clinic { max-width: 640px; margin: 0 auto; padding: 28px 16px 72px; display: grid; gap: 18px; }
+.clinic-head { text-align: center; display: grid; justify-items: center; gap: 6px; animation: rise 0.7s ease both; }
+.clinic-head h1 { margin: 0; font-family: var(--hand); font-weight: 400; font-size: 46px; color: var(--rose-deep); line-height: 1.2; }
+html[lang='en'] .clinic-head h1 { font-family: var(--serif-en); font-style: italic; font-weight: 600; }
+.clinic-sub { margin: 0; color: var(--muted); font-size: 15px; max-width: 34em; }
+.clinic .card { display: grid; gap: 10px; animation: rise 0.8s 0.15s ease both; }
+.clinic [hidden] { display: none !important; }
+.clinic .card h2 { margin: 0; font-size: 22px; color: #102e49; }
+.clinic-fine { margin: 0; font-size: 13px; color: var(--muted); }
+
+/* Check-in: four plain choices, big enough for a thumb. */
+.clinic-hurts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 4px 0; }
+.hurt {
+  font: inherit; font-size: 15px; cursor: pointer; text-align: left; padding: 12px 14px; border-radius: 12px;
+  background: #fffaf3; color: var(--ink); border: 2px solid #102e49; box-shadow: 0 3px 0 rgba(11, 32, 54, 0.25);
+  transition: transform .12s ease, background .12s ease;
+}
+.hurt:hover, .hurt:focus-visible { background: var(--blush); transform: translateY(-2px); outline: none; }
+@media (max-width: 420px) { .clinic-hurts { grid-template-columns: 1fr; } }
+
+/* Breathing: a rose circle that grows on the in-breath, waits, and settles on the out-breath. */
+.clinic-breath { justify-items: center; text-align: center; }
+.breath-ring {
+  --dur: 4000ms;
+  width: 150px; height: 150px; margin: 18px 0 6px; border-radius: 50%; display: grid; place-items: center;
+  background: radial-gradient(circle at 40% 35%, #f8d0d8, var(--rose) 70%, var(--rose-deep));
+  box-shadow: 0 0 0 10px rgba(212, 80, 109, 0.18), 0 18px 40px -18px var(--rose-deep);
+  transform: scale(0.8); transition: transform var(--dur) ease-in-out, box-shadow var(--dur) ease-in-out;
+}
+.breath-ring.in { transform: scale(1.15); box-shadow: 0 0 0 22px rgba(212, 80, 109, 0.12), 0 18px 40px -18px var(--rose-deep); }
+.breath-ring.hold { transform: scale(1.15); transition-duration: 0ms; }
+.breath-ring.out { transform: scale(0.8); }
+.breath-ring span { color: #fff; font-family: var(--hand); font-size: 28px; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2); }
+html[lang='en'] .breath-ring span { font-family: var(--serif-en); font-style: italic; font-size: 22px; }
+
+/* The prescription reads like the letters elsewhere on the site. */
+.clinic .clinic-rx { animation: rise 0.9s 0.1s ease both; }
+.clinic-rx .eyebrow { margin-bottom: 12px; }
+.clinic-rx p { margin: 0 0 14px; line-height: 2; }
+.clinic-rx .signature { font-family: var(--hand); font-size: 26px; color: var(--rose-deep); margin-top: 20px; }
+html[lang='en'] .clinic-rx .signature { font-family: var(--serif-en); font-style: italic; }
+.rx-empty { color: var(--muted); }
+.rx-voice { justify-self: start; background: none; border: 1px solid var(--gold); color: var(--rose-deep); font: inherit; font-size: 14px; padding: 6px 16px; border-radius: 999px; cursor: pointer; }
+.rx-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 18px; }
+
+/* A sticky note from the cabinet, slightly askew; it flips when a new one is drawn. */
+.sticky {
+  margin: 4px 0; padding: 22px 24px; min-height: 96px; display: grid; align-items: center;
+  background: #fff3b0; color: #3b2a12; border: 2px solid #102e49; border-radius: 4px; transform: rotate(-1.2deg);
+  box-shadow: 4px 6px 0 rgba(11, 32, 54, 0.22); font-family: var(--hand); font-size: 24px; line-height: 1.5;
+}
+html[lang='en'] .sticky { font-family: var(--serif-en); font-style: italic; font-size: 21px; }
+.sticky.flip { animation: flip 420ms ease both; }
+@keyframes flip { from { transform: rotate(-1.2deg) rotateX(90deg); opacity: 0; } to { transform: rotate(-1.2deg) rotateX(0); opacity: 1; } }
+.clinic-cabinet .btn, .clinic-chart .btn { justify-self: start; }
+
+/* The chart: a text box and the lines already written, each with a way to tear it out. */
+.clinic-chart textarea {
+  font: inherit; font-size: 15px; line-height: 1.6; width: 100%; resize: vertical; padding: 10px 12px; border-radius: 10px;
+  border: 2px solid #102e49; background: #fffaf3; color: var(--ink);
+}
+.clinic-chart textarea:focus { outline: none; box-shadow: 0 0 0 3px rgba(211, 165, 87, 0.5); }
+.chart-lines { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 8px; }
+.chart-lines li { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; padding: 10px 12px; border-radius: 10px; background: #fffaf3; border: 1px solid var(--line); }
+.chart-lines time { grid-column: 1; font-size: 12px; color: var(--muted); }
+.chart-lines span { grid-column: 1; white-space: pre-wrap; line-height: 1.6; }
+.chart-lines button { grid-column: 2; grid-row: 1 / 3; align-self: center; font: inherit; font-size: 13px; color: var(--muted); background: none; border: 0; cursor: pointer; text-decoration: underline; }
+.chart-empty { color: var(--muted); font-size: 14px; border-style: dashed !important; }
+.clinic button.link { font: inherit; font-size: 14px; color: var(--muted); background: none; border: 0; cursor: pointer; text-decoration: underline; }

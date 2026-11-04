@@ -32,4 +32,13 @@ export const PRODUCTS: Product[] = [
       return n ? `${playerName(p)} ${n}/${LEVELS.length}` : null;
     },
   },
+  {
+    // The infirmary: where one of us hides after a fight and reads what the other wrote in
+    // advance. No status line on purpose: how often someone has hidden is theirs alone.
+    id: 'clinic',
+    route: '/clinic',
+    title: 'dash.clinic.title',
+    blurb: 'dash.clinic.blurb',
+    image: 'media/dashboard/clinic.png',
+  },
 ];

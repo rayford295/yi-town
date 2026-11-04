@@ -5,7 +5,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/for-two%20players-d3a557?style=flat-square&labelColor=0b2036" alt="for two players" />
   <img src="https://img.shields.io/badge/levels-9%20%2B%20an%20epilogue-d3a557?style=flat-square&labelColor=0b2036" alt="9 levels and an epilogue" />
-  <img src="https://img.shields.io/badge/tests-155%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="155 tests passing" />
+  <img src="https://img.shields.io/badge/tests-165%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="165 tests passing" />
   <img src="https://img.shields.io/badge/TypeScript-strict-d3a557?style=flat-square&labelColor=0b2036" alt="TypeScript strict" />
   <img src="https://img.shields.io/badge/backend-none-d3a557?style=flat-square&labelColor=0b2036" alt="no backend" />
   <img src="https://img.shields.io/badge/art-drawn%20in%20code-d3a557?style=flat-square&labelColor=0b2036" alt="all art drawn in code" />
@@ -57,6 +57,10 @@
   each tells you, in its own way, which level to clear first. When a door opens they get up and
   walk to the next one, and with nothing left to guard they go and sunbathe by the pond or sit in
   the middle of the square.
+- **The infirmary** is the pink house with a red cross by the square, and the second card on the
+  dashboard (`/clinic`). It is for the bad days: say what hurts, breathe three times, and read the
+  letter the other one wrote in advance for exactly that. A cabinet of one-line notes, and a
+  private chart that never leaves the phone. Not a level; the door is always open.
 - **Two signposts** lead out of the square: east to a day of Yifan's in College Station, west to a
   day of Jingyi's in Shenzhen. Each is a map of that person's stops with their hours, and their
   sprite stands wherever the clock in that city puts them. A red mailbox by the fountain holds
@@ -94,7 +98,7 @@ Rayford never mentions the ring, or what comes after it, before they happen; `sr
 ```bash
 npm install
 npm run dev       # http://localhost:5173
-npm test          # 155 unit tests (Vitest)
+npm test          # 165 unit tests (Vitest)
 npm run build     # strict type-check + production build
 npm run banner    # redraw docs/banner.svg from the sprite data
 npm run icon      # redraw favicon.svg and the PNG icons from the sprites

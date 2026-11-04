@@ -9,7 +9,7 @@ import { go as navigate } from '../../core/router';
 import { openDoor } from '../../core/door';
 import { notesFor } from '../voice/notes';
 import { rayfordSays, type Topic } from '../guide/rayford';
-import { BUILDINGS, CAT_HOMES, MAILBOX, PARTNER, PORTAL_SPOT, RAYFORD_SPOT, SIGNPOST, SIGNPOST_WEST, SPAWN, buildingAt, guardSpot, walkable, type Building, type Point } from './town';
+import { BUILDINGS, CAT_HOMES, CLINIC, MAILBOX, PARTNER, PORTAL_SPOT, RAYFORD_SPOT, SIGNPOST, SIGNPOST_WEST, SPAWN, buildingAt, guardSpot, walkable, type Building, type Point } from './town';
 import { WorldEngine, type Npc } from './engine';
 import { bindControls, padHtml } from './controls';
 import { JINGYI, JINGYI_BRIDE, RAYFORD, YIFAN, YIFAN_GROOM, buildCat, buildPortal, portraitUrl, buildMailbox, buildSheet, buildSign, type CatId, type Dir } from './sprites';
@@ -99,6 +99,8 @@ function mountWorld(root: HTMLElement): () => void {
         <a href="/cs">${t('world.cs')}</a>
         <span aria-hidden="true"> · </span>
         <a href="/sz">${t('world.sz')}</a>
+        <span aria-hidden="true"> · </span>
+        <a href="/clinic">${t('world.clinic')}</a>
         <span aria-hidden="true"> · </span>
         <a href="/birthday">${t('world.birthday')}</a>${wed ? `
         <span aria-hidden="true"> · </span>
@@ -204,6 +206,14 @@ function mountWorld(root: HTMLElement): () => void {
   };
   function onDoor(b: Building): void {
     savePos(p, b.door);
+    // The infirmary is not a level: no lock, no flag, just the door and what is behind it.
+    if (b.level === CLINIC.level) {
+      openDialog(t('clinic.title'), t('clinic.door', { name: playerName(other) }), [
+        { label: t('world.enter'), run: () => go('/clinic') },
+        { label: t('world.later'), run: closeDialog },
+      ]);
+      return;
+    }
     const level = LEVELS[levelIndex(b.level)];
     const cleared = isCleared(b.level, p);
     openDialog(t(level.title), `${t(level.story)}${cleared ? `<span class="tag">${t('world.cleared.tag')}</span>` : ''}`, [
@@ -291,7 +301,7 @@ function mountWorld(root: HTMLElement): () => void {
       if (now - tintAt > 60_000) { tintAt = now; tint = tintFor(phaseAt(clockIn(zone, new Date(now), getLang()).hour)); }
       return tint;
     },
-    label: (b) => `${levelNumber(b.level)} · ${t(LEVELS[levelIndex(b.level)].title)}`,
+    label: (b) => (b.level === CLINIC.level ? t('clinic.title') : `${levelNumber(b.level)} · ${t(LEVELS[levelIndex(b.level)].title)}`),
   });
 
   // Coming back from a level the iris opens; cats whose posts changed get up and walk.
