@@ -127,7 +127,7 @@ Owner's own work (text in his words; both languages in each file):
 - [x] The epilogue letter (`src/features/letter/text.ts`) ends on purpose with “to be continued”; `{d}` days and `{h}` hours fill in live (2026-10-30).
 - [x] The birthday letter on the Love Map is the handwritten card (`src/features/birthday-map/letter.ts`, 2026-10-30).
 - [ ] Yifan checks the hours and stories of his day (`src/features/days/cs.ts`, `cs.story.*` in `i18n.ts`); Jingyi's day is a guess (`src/features/days/sz.ts`, `sz.story.*`).
-- [ ] Jingyi's side of the infirmary: her letters and notes (`from: 'jingyi'` in `src/features/clinic/prescriptions.ts`); Yifan's are drafts to re-read. Optional recordings: `public/media/clinic/README.md`.
+- [ ] The infirmary's letters and notes (`src/features/clinic/prescriptions.ts`) are drafts in each one's voice: Yifan rewrites his, Jingyi hers. Optional recordings: `public/media/clinic/README.md`.
 - [ ] More voice notes: drop `<date>-<sender>.m4a` into `public/media/voice/notes/` and run `npm run notes`, or record on the Mac with `python3 scripts/record-note.py yifan`. Optional per-level lines for the cleared cards: `public/media/voice/README.md`.
 - [ ] Test on real phones what headless browsers cannot: the try-on camera and photo (clears level 9), blowing the candles out into the mic, saying "I do", the wedding certificate's share sheet, YouTube in the jukebox.
 

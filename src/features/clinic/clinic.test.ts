@@ -6,11 +6,11 @@ import type { StoreLike } from '../../core/storage';
 const memory = (): StoreLike => { const m = new Map<string, string>(); return { getItem: (k) => m.get(k) ?? null, setItem: (k, v) => { m.set(k, v); } }; };
 
 describe('prescriptions', () => {
-  it('has one letter from Yifan for every hurt, in both languages, paragraph for paragraph', () => {
-    for (const h of HURTS) {
-      const rx = prescriptionFor('jingyi', h);
-      expect(rx, h).toBeDefined();
-      expect(rx!.from).toBe('yifan');
+  it('has one letter for every hurt from each of us, in both languages, paragraph for paragraph', () => {
+    for (const patient of ['jingyi', 'yifan'] as const) for (const h of HURTS) {
+      const rx = prescriptionFor(patient, h);
+      expect(rx, `${patient} ${h}`).toBeDefined();
+      expect(rx!.from).not.toBe(patient);
       expect(rx!.paragraphs.zh.length).toBe(rx!.paragraphs.en.length);
       for (const lang of ['zh', 'en'] as const) for (const s of rx!.paragraphs[lang]) expect(s.trim().length, `${h} ${lang}`).toBeGreaterThan(0);
       expect(rx!.signature.zh.length).toBeGreaterThan(0);
@@ -28,7 +28,9 @@ describe('prescriptions', () => {
   it('keeps every cabinet note in both languages and addressed to the other one', () => {
     for (const n of CABINET) { expect(n.zh.trim().length).toBeGreaterThan(0); expect(n.en.trim().length).toBeGreaterThan(0); }
     expect(cabinetFor('jingyi').every((n) => n.from === 'yifan')).toBe(true);
+    expect(cabinetFor('yifan').every((n) => n.from === 'jingyi')).toBe(true);
     expect(cabinetFor('jingyi').length).toBeGreaterThanOrEqual(10);
+    expect(cabinetFor('yifan').length).toBeGreaterThanOrEqual(10);
   });
 
   it('draws a different note than the last one, and nothing from an empty cabinet', () => {

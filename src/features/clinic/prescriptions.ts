@@ -1,8 +1,8 @@
 // The infirmary's medicine: what each of us wrote in advance for the other one's bad days. A
 // prescription is a letter for one kind of hurt; the cabinet is a stack of one-line notes drawn
 // at random. Everything is addressed from one player to the other, so the patient only ever
-// reads what the other one wrote. `{d}` becomes the day count since we met. (Drafts in Yifan's
-// words, 2026-11-04; Jingyi's side is empty until she writes it, see README.md.)
+// reads what the other one wrote. `{d}` becomes the day count since we met. (Both sides are
+// drafts written 2026-11-04 in each one's voice, for each of us to rewrite; see README.md.)
 import type { L10n } from '../../core/i18n';
 import type { PlayerId } from '../../core/quest';
 
@@ -14,6 +14,7 @@ export interface Prescription { from: PlayerId; hurt: HurtId; paragraphs: { zh: 
 export interface CabinetNote { from: PlayerId; zh: string; en: string }
 
 const yifan: L10n = { zh: '一帆', en: 'Yifan' };
+const jingyi: L10n = { zh: '静仪', en: 'Jingyi' };
 
 export const PRESCRIPTIONS: Prescription[] = [
   {
@@ -100,6 +101,90 @@ export const PRESCRIPTIONS: Prescription[] = [
       ],
     },
   },
+  {
+    from: 'jingyi', hurt: 'fight', signature: jingyi,
+    paragraphs: {
+      zh: [
+        '一帆，',
+        '吵架了对吧。我知道你这会儿大概坐在屏幕前面来回刷消息，看我回了没有。先别刷了，看这封信。',
+        '我生气的时候会不说话。那不是不要你，是我需要一点时间把话想清楚。你等得住，我就会回来。',
+        '我们中间隔着一个太平洋，连吵架都要算时差，所以不要把一次吵架拖成两天。我这边天亮了，就当重新开始。',
+        '你不用急着道歉，也不用急着讲道理。先告诉我，你吃饭了没有。',
+        '这一剂是：我们可以生气，但不许走远。',
+      ],
+      en: [
+        'Yifan,',
+        'We fought, didn\u2019t we. I know you are probably sitting in front of the screen refreshing, checking whether I have replied. Stop refreshing. Read this instead.',
+        'When I am angry I go quiet. That is not me leaving; it is me needing a little time to think the words through. If you can wait, I will come back.',
+        'There is an ocean between us, and even our fights have a time difference, so let us not stretch one fight into two days. When the sun comes up on my side, we start again.',
+        'You do not have to rush to apologise, or to explain. First tell me whether you have eaten.',
+        'This dose: we are allowed to be angry, but not to go far.',
+      ],
+    },
+  },
+  {
+    from: 'jingyi', hurt: 'hurt', signature: jingyi,
+    paragraphs: {
+      zh: [
+        '一帆，',
+        '如果是我说了什么让你难受，我现在就说对不起。我嘴快，有时候话比心先出来。',
+        '你是那个什么都愿意为我做的人：做蛋糕、画机票、建一整座小镇。这样的人受了委屈，我比谁都心疼。',
+        '你可以不用那么坚强。在我面前，你可以说「我也会难过」。',
+        '等你愿意的时候，把这件事讲给我听。我会认真听完，不打断。',
+        '这一剂是：你也是可以被哄的那一个。',
+      ],
+      en: [
+        'Yifan,',
+        'If I said something that hurt you, I am saying sorry right now. I speak fast, and sometimes the words get out before the heart does.',
+        'You are the one who would do anything for me: bake the cake, draw the ticket, build a whole town. When someone like that is hurt, it hurts me more than anyone.',
+        'You do not have to be that strong. In front of me you are allowed to say \u201cI get sad too.\u201d',
+        'When you are ready, tell me what happened. I will listen to the end without interrupting.',
+        'This dose: you are the one who gets comforted, too.',
+      ],
+    },
+  },
+  {
+    from: 'jingyi', hurt: 'miss', signature: jingyi,
+    paragraphs: {
+      zh: [
+        '一帆，',
+        '想我了？我也想你。你看，我先说了，这次算我赢。',
+        '你那边半夜的时候，我在开会；你起床的时候，我在回家的路上。我们的一天永远对不上，但我每天都会在你醒来之前留一句话，你去找。',
+        '想我就打过来，不用挑时间。我在会上也会按一下「稍后回拨」，那是我在说「等我」。',
+        '距离是暂时的。你画的那张机票上，写着日期。',
+        '这一剂是：想了就说，说了我就在。',
+      ],
+      en: [
+        'Yifan,',
+        'Missing me? I miss you too. See, I said it first; this one I win.',
+        'When it is the middle of the night for you, I am in a meeting; when you get up, I am on my way home. Our days never line up, but every day I leave you a line before you wake. Go and find it.',
+        'If you miss me, call. Do not wait for a good time. Even in a meeting I will tap \u201ccall back later,\u201d and that means \u201cwait for me.\u201d',
+        'The distance is temporary. The ticket you drew has a date on it.',
+        'This dose: when you miss me, say so; when you say so, I am there.',
+      ],
+    },
+  },
+  {
+    from: 'jingyi', hurt: 'tired', signature: jingyi,
+    paragraphs: {
+      zh: [
+        '一帆，',
+        '论文改到几点了？健身房、游泳馆、Dr. Zou 的办公室、超市，你一天跑这么多地方，累是应该的。',
+        '你总说「没事」，可我知道那两个字后面藏着多少事。今天不用撑着，躺下就好。',
+        '我替咖啡和哆哆问你好。它们趴在我腿上，听我念你的名字。',
+        '等你睡醒，我这边刚好下班，我们视频。你不用说话，我说，你听。',
+        '这一剂是：累了不是不够好，是做得太多了。',
+      ],
+      en: [
+        'Yifan,',
+        'How late did the paper keep you? The gym, the pool, Dr. Zou\u2019s office, the store; you run around so many places in a day, of course you are tired.',
+        'You always say \u201cit\u2019s fine,\u201d and I know how much hides behind those words. Tonight you do not have to hold anything up. Just lie down.',
+        'Coffee and Duoduo say hello. They are on my lap, listening to me say your name.',
+        'When you wake up I will just be getting off work, and we will call. You do not have to talk; I will, and you listen.',
+        'This dose: being tired does not mean you are not enough. It means you did too much.',
+      ],
+    },
+  },
 ];
 
 // One line per note, drawn at random from the cabinet. Short enough to read in one breath.
@@ -122,6 +207,24 @@ export const CABINET: CabinetNote[] = [
   { from: 'yifan', zh: '戒指叫子午线，因为不管在哪条经线上，都是同一个你。', en: 'The ring is called Meridian: on whichever meridian, it is the same you.' },
   { from: 'yifan', zh: '今天是我们的第 {d} 天。还早，后面都是你。', en: 'Day {d} of us. Still early; the rest is all you.' },
   { from: 'yifan', zh: '「对不起」和「我爱你」，我都会先说。', en: '"Sorry" and "I love you": I will always say both first.' },
+  { from: 'jingyi', zh: '我说「不跟你说话了」，意思是「过一会儿再说」。', en: 'When I say \u201cI\u2019m not talking to you,\u201d I mean \u201ctalk to me in a bit.\u201d' },
+  { from: 'jingyi', zh: '深圳湾的房子可以晚一点，你不可以。', en: 'The house by Shenzhen Bay can wait. You cannot.' },
+  { from: 'jingyi', zh: '你画的机票，我存在手机的第一页。', en: 'The ticket you drew is on the first page of my phone.' },
+  { from: 'jingyi', zh: '开会的时候看到你的消息，我会偷偷笑。', en: 'When your message comes in during a meeting, I smile without anyone noticing.' },
+  { from: 'jingyi', zh: '你那边天黑了，就当我在替你守着白天。', en: 'When it is dark on your side, think of me holding the daytime for you.' },
+  { from: 'jingyi', zh: '我不是生你的气，我是舍不得你这么远。', en: 'I am not angry at you. I am sad that you are so far.' },
+  { from: 'jingyi', zh: '蛋糕要你亲手做，我等得起。', en: 'The cake has to be baked by you. I can wait.' },
+  { from: 'jingyi', zh: '你认真写论文的样子，我在视频里看过很多次了。', en: 'I have watched you write, through the screen, many times.' },
+  { from: 'jingyi', zh: '咖啡今天又占了你的位置，我把它赶走了。', en: 'Coffee took your seat again today. I moved her.' },
+  { from: 'jingyi', zh: '第一次视频我就知道，这个人会把我的名字记很久。', en: 'On our first call I knew: this one will remember my name for a long time.' },
+  { from: 'jingyi', zh: '不要半夜回我消息。睡觉。', en: 'Do not reply at midnight. Sleep.' },
+  { from: 'jingyi', zh: '你说「记下了」，我信。', en: 'You said \u201cnoted.\u201d I believe you.' },
+  { from: 'jingyi', zh: '我们的时差是十三个小时，不是十三年。', en: 'Our time difference is thirteen hours, not thirteen years.' },
+  { from: 'jingyi', zh: '下次吵架，先抱一下，再吵。', en: 'Next fight: hug first, then fight.' },
+  { from: 'jingyi', zh: '你是我在深圳湾往那边看的时候，看着的那一边。', en: 'You are the far side of the bay I look toward.' },
+  { from: 'jingyi', zh: '纽约见。穿厚一点。', en: 'See you in New York. Dress warm.' },
+  { from: 'jingyi', zh: '第 {d} 天了，一天也没少想你。', en: 'Day {d}, and not one day without missing you.' },
+  { from: 'jingyi', zh: '我也爱你。这句我不先说，但我一定会说。', en: 'I love you too. I may not say it first, but I will always say it.' },
 ];
 
 /** The letter the other one wrote for `patient` about `hurt`, if they have written it. */

@@ -9,8 +9,8 @@ Versions are tags of feeling more than of code; the site deploys on every push.
   "以后我受伤了我就不跟你说话了，我就躲进去." Check in with what hurts (a fight, a hurt, missing
   them, just tired), breathe three times, read the letter the other one wrote in advance for that
   hurt, draw a one-line note from the cabinet, and write on a private chart that never leaves the
-  phone. A "hear it" button appears when `public/media/clinic/<hurt>-<doctor>.m4a` exists. Yifan's
-  four letters and eighteen notes are drafts in his words; Jingyi's side waits for her.
+  phone. A "hear it" button appears when `public/media/clinic/<hurt>-<doctor>.m4a` exists. Four
+  letters and eighteen notes from each of us, drafted in each one's voice for each to rewrite.
 - Not a level: no lock, no cat guards it, nothing to clear; the door is always open.
 - 165 unit tests.
 

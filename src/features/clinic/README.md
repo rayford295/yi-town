@@ -16,7 +16,7 @@ shown.
 - **The chart** is a private notebook: lines written here are kept in localStorage on this
   device and never sent anywhere.
 
-The texts are drafts in Yifan's words (2026-11-04). Jingyi's prescriptions and notes are empty
-until she writes them: add entries with `from: 'jingyi'` to `PRESCRIPTIONS` and `CABINET`. The
-test fails if a prescription has a different number of paragraphs in the two languages, or if any
-line is empty in either.
+Both sides are written: four letters and eighteen notes from each of us, as drafts in each one's
+voice (2026-11-04), for each of us to rewrite in our own words in `prescriptions.ts`. The test
+fails if either patient lacks a letter for any hurt, if a prescription has a different number of
+paragraphs in the two languages, or if any line is empty in either.
