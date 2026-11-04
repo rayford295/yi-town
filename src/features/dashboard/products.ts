@@ -1,6 +1,6 @@
 // Everything we build under jingyifan.love, newest last. The dashboard shows one card per entry;
 // adding a product means a folder in src/features/, its routes in main.ts, and a line here.
-import type { Key } from '../../core/i18n';
+import { t, type Key } from '../../core/i18n';
 import { LEVELS, getPlayer, getProgress } from '../../core/quest';
 import { playerName } from '../../core/quest-ui';
 
@@ -40,5 +40,7 @@ export const PRODUCTS: Product[] = [
     title: 'dash.clinic.title',
     blurb: 'dash.clinic.blurb',
     image: 'media/dashboard/clinic.png',
+    // Always open, straight from here: no level to clear, no door to find first.
+    status: () => t('dash.clinic.open'),
   },
 ];
