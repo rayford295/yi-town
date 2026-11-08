@@ -20,7 +20,7 @@ yi-town/
 │   │   ├── gate.ts             #   entry question (SHA-256 of accepted answers)
 │   │   ├── celebrate.ts        #   confetti, chime, voice-line URL
 │   │   ├── dates.ts geo.ts     #   time-zone aware day counter and clocks; great-circle arcs
-│   │   └── config.ts           #   names, time zones, key dates, next meeting
+│   │   └── config.ts           #   names, time zones, key dates, her flights (config.trip), next meeting
 │   └── features/               # one folder per feature: code, styles, data, tests, README
 │       ├── gate/ start/ sync/  #   the front door, the player picker, progress codes
 │       ├── world/              #   the town: town.ts (maps), tiles.ts, sprites.ts, engine.ts, controls.ts, world.ts
@@ -32,6 +32,7 @@ yi-town/
 │       ├── stars/              #   constellations.ts (Libra + Scorpius stars and lines), stars.ts (page)
 │       ├── guide/              #   Rayford's lines (rayford.ts), with the secrecy test (secret.test.ts)
 │       ├── dashboard/          #   the front page at /: products.ts lists what is on it
+│       ├── trip/               #   New York, Feb 2027: plan.ts (phases), itinerary.ts (one entry a day, photos), trip.ts (page)
 │       ├── theatre/            #   the pixel cutscene engine: stage.ts, music.ts (synth), blow.ts (breath by mic)
 │       ├── birthday/           #   the prologue: Yifan bakes the cake (kitchen.ts paints it; CANDLES = 9)
 │       ├── wedding/            #   the finale after the letter: garden.ts paints it; the certificate PNG
@@ -56,6 +57,12 @@ sprites (`scripts/icon.ts`, `scripts/icon-png.py`), like `npm run banner` does f
 **Add a memory.** Drop the photo into `public/media/moments/` (JPEG, at most 1600 px on the
 long side) and append an entry to `src/features/moments/memories.ts`. It appears on the map,
 the timeline (the puzzle uses `src/features/puzzle/portraits.ts` instead). The tests fail if the file is missing or either language is empty.
+
+**Write a day of the trip.** In `src/features/trip/itinerary.ts`, give that day a `title` and a
+`note` in both languages; drop its photos into `public/media/trip/` (`<date>-<n>.jpg`, at most
+1600 px) and list them under the day. A day without a title shows "still growing". The test
+fails on a missing photo, a skipped day, or a line in one language only. The flights themselves
+are in `src/core/config.ts` (`config.trip`).
 
 **Edit the letter.** Change the paragraphs in `src/features/birthday-map/letter.ts`, keeping
 Chinese and English in step. `{h}` is replaced with the live hour difference.
@@ -118,6 +125,7 @@ if a product should not.
 - [x] Birthday prologue (`/birthday`) and the wedding (`/wedding`) as pixel cutscenes; the ring is a secret until it is reached (`secret.test.ts`); a hole in time by house 9 leads to the wedding (v1.15–1.16, 2026-10-28)
 - [x] Whole-site review pass: gate placeholder, ISO 7064 check character for codes, non-blocking fonts, phone layouts, cutscene edge cases (v1.16.0, 2026-10-28)
 - [x] The birthday letter is the handwritten card, with its text in both languages; LICENSE added for going public (v1.18.0, 2026-10-30)
+- [x] See You in New York (`/trip`): her real ticket (CX830 / CX831) in `config.trip`, a third dashboard card with a live line, boarding passes, the day-by-day itinerary to fill with words and photos; the countdown and the Love Map follow the real flight (v1.21.0, 2026-11-08)
 - [x] Infirmary round two: the letter knows the doctor's local time, a share line on leaving, Rayford leads there, recorder script; 'new version' bar instead of silent reloads; deploy retries (v1.20.0, 2026-11-04)
 - [x] The infirmary (`/clinic`): a pink house with a red cross in the town and the second card on the dashboard; check-in, three breaths, the other one's letter for that hurt, sticky notes from the cabinet, a private chart (v1.19.0, 2026-11-04)
 - [x] The ring level is cleared by the try-on photo; jukebox on YouTube; in-level progress survives a language toggle or reload; quizzes re-deal on a wrong pick; first voice note in the mailbox (v1.17.0, 2026-10-28)
@@ -127,6 +135,7 @@ if a product should not.
 Owner's own work (text in his words; both languages in each file):
 - [x] The epilogue letter (`src/features/letter/text.ts`) ends on purpose with “to be continued”; `{d}` days and `{h}` hours fill in live (2026-10-30).
 - [x] The birthday letter on the Love Map is the handwritten card (`src/features/birthday-map/letter.ts`, 2026-10-30).
+- [ ] The itinerary (`src/features/trip/itinerary.ts`): write each day of New York and add its photos to `public/media/trip/` as the trip happens; rewrite the resting line `trip.now.after` in `i18n.ts`.
 - [ ] Yifan checks the hours and stories of his day (`src/features/days/cs.ts`, `cs.story.*` in `i18n.ts`); Jingyi's day is a guess (`src/features/days/sz.ts`, `sz.story.*`).
 - [ ] The infirmary's letters and notes (`src/features/clinic/prescriptions.ts`) are drafts in each one's voice: Yifan rewrites his, Jingyi hers. Recordings: `python3 scripts/record-rx.py <hurt> <reader>` (see `public/media/clinic/README.md`).
 - [ ] More voice notes: drop `<date>-<sender>.m4a` into `public/media/voice/notes/` and run `npm run notes`, or record on the Mac with `python3 scripts/record-note.py yifan`. Optional per-level lines for the cleared cards: `public/media/voice/README.md`.
@@ -141,8 +150,10 @@ Ideas not started:
 | 2026-09-20 | We met (day 1) |
 | 2026-09-25 | Yifan's birthday |
 | 2026-10-31 | Jingyi's birthday, first release |
-| 2027-02-05 | Flight CYF925, Shenzhen → New York (the ticket Yifan drew on our first Zoom) |
+| 2027-02-04 | CX830, Hong Kong 09:30 → New York JFK 12:00: Jingyi lands (day 1 of 11 together) |
+| 2027-02-05 | The date on the ticket Yifan drew on our first Zoom (CYF925, Shenzhen → New York); kept as a memory |
 | 2027-02-08 to 02-12 | AAG Annual Meeting, New York |
+| 2027-02-14 | Valentine's Day; CX831, New York 13:40 → Hong Kong 18:55 the next day |
 
 ## The Levels in Pictures
 

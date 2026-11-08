@@ -61,6 +61,9 @@
   dashboard (`/clinic`). It is for the bad days: say what hurts, breathe three times, and read the
   letter the other one wrote in advance for exactly that. A cabinet of one-line notes, and a
   private chart that never leaves the phone. Not a level; the door is always open.
+- **See You in New York** is the third card (`/trip`): Jingyi's ticket for February 2027, both legs
+  as boarding passes, a clock that counts down to boarding and then counts the days together, and
+  the itinerary, one row a day, written and photographed as we go. No player needed.
 - **Two signposts** lead out of the square: east to a day of Yifan's in College Station, west to a
   day of Jingyi's in Shenzhen. Each is a map of that person's stops with their hours, and their
   sprite stands wherever the clock in that city puts them. A red mailbox by the fountain holds
@@ -98,7 +101,7 @@ Rayford never mentions the ring, or what comes after it, before they happen; `sr
 ```bash
 npm install
 npm run dev       # http://localhost:5173
-npm test          # 167 unit tests (Vitest)
+npm test          # 189 unit tests (Vitest)
 npm run build     # strict type-check + production build
 npm run banner    # redraw docs/banner.svg from the sprite data
 npm run icon      # redraw favicon.svg and the PNG icons from the sprites

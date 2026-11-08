@@ -66,10 +66,11 @@ export function renderMap(root: HTMLElement): () => void {
   L.polyline(arc, { color: '#d4506d', weight: 2.5, dashArray: '6 9', opacity: 0.9 }).addTo(map);
   const traveler = L.marker(arc[0], { icon: heartIcon('traveler'), interactive: false, keyboard: false }).addTo(map);
 
-  // Flight CYF925 from the ticket drawn on our first Zoom: Shenzhen → New York.
-  L.polyline(greatCircle(sz, at(nm.lat, nm.lng), 120), { color: '#c39a5c', weight: 2, dashArray: '2 7', opacity: 0.95 })
+  // Her flight to New York (config.trip.out): Hong Kong → JFK, in gold.
+  const hk = at(config.trip.out.from.lat, config.trip.out.from.lng);
+  L.polyline(greatCircle(hk, at(nm.lat, nm.lng), 120), { color: '#c39a5c', weight: 2, dashArray: '2 7', opacity: 0.95 })
     .addTo(map)
-    .bindTooltip(t('map.flight', { flight: nm.flight, date: formatDate(nm.date, getLang()) }), { sticky: true });
+    .bindTooltip(t('map.flight', { flight: nm.flight, from: pick(nm.from), date: formatDate(nm.date, getLang()) }), { sticky: true });
 
   const still = prefersReducedMotion();
   const t0 = performance.now();

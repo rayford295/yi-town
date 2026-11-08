@@ -4,7 +4,7 @@ Route: `/met` (level 1 of the journey; the old home page)
 
 The first page Jingyi sees: the birthday greeting, a "day N since we met" counter, twin
 clocks for Shenzhen and College Station (each turns to night colours after 18:00 local
-time), the hours between us and a countdown to flight CYF925. (The letter lives on the map's finale
+time), the hours between us and a countdown to her flight (`config.nextMeeting`: CX830 from Hong Kong, 2027-02-04). (The letter lives on the map's finale
 card and at `/letter`.)
 
 | File | Role |

@@ -3,6 +3,7 @@
 import { t, type Key } from '../../core/i18n';
 import { LEVELS, getPlayer, getProgress } from '../../core/quest';
 import { playerName } from '../../core/quest-ui';
+import { tripStatus } from '../trip/plan';
 
 export type Product = {
   id: string;
@@ -42,5 +43,15 @@ export const PRODUCTS: Product[] = [
     image: 'media/dashboard/clinic.png',
     // Always open, straight from here: no level to clear, no door to find first.
     status: () => t('dash.clinic.open'),
+  },
+  {
+    // Her ticket to New York: both legs and a clock that knows where in the trip we are. The
+    // status line counts down to boarding, then counts the days together.
+    id: 'trip',
+    route: '/trip',
+    title: 'dash.trip.title',
+    blurb: 'dash.trip.blurb',
+    image: 'media/dashboard/trip.png',
+    status: () => tripStatus(new Date()),
   },
 ];

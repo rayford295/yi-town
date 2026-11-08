@@ -2,6 +2,23 @@
 
 Versions are tags of feeling more than of code; the site deploys on every push.
 
+## 1.21.0 (2026-11-08)
+
+- Jingyi's ticket is booked, and the site knows it: Cathay Pacific CX830, Hong Kong T1 → New
+  York JFK T8 on 2027-02-04 (09:30 → 12:00 local), and CX831 home on 2027-02-14, Valentine's
+  Day (13:40 → 18:55 the next day). Both legs live in `config.trip`; `config.nextMeeting` now
+  reads the outbound leg, so the home page's countdown and the Love Map's gold line follow it
+  (the gold line now leaves from Hong Kong). The hand-drawn CYF925 stays in the Moments, the
+  level 1 quiz and one infirmary note as the memory it is.
+- See You in New York (`/trip`, `src/features/trip/`): the third card on the dashboard, with a
+  live line ("88 days to go", then "day 3 of 11", then "on the way home"). The page has a clock
+  that knows where in the trip we are, both legs as boarding passes with local times, and the
+  itinerary: one row a day from her landing to her landing back home, written as we go
+  (`itinerary.ts`), with photos under each day from `public/media/trip/`. No player needed.
+- `scripts/trip-card.py` draws the card's pixel picture: Hong Kong, New York, a dotted route and
+  a small plane.
+- 189 unit tests.
+
 ## 1.20.0 (2026-11-04)
 
 - The infirmary's letter opens with what the one who wrote it is doing right now, from the clock
