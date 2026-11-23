@@ -7,13 +7,13 @@ import { PRODUCTS, type Product } from './products';
 const card = (p: Product): string => {
   const status = p.status?.();
   return `
-    <a class="dash-card sign" href="${p.route}" data-product="${p.id}">
+    <a class="dash-card sign" href="${p.route}"${p.external ? ' target="_blank" rel="noopener"' : ''} data-product="${p.id}">
       ${p.image ? `<img src="${import.meta.env.BASE_URL}${p.image}" alt="" loading="lazy" />` : ''}
       <div class="dash-body">
         <h2>${t(p.title)}</h2>
         <p>${t(p.blurb, { total: LEVELS.length })}</p>
         ${status ? `<p class="dash-status">${status}</p>` : ''}
-        <span class="dash-go">${t('dash.enter')} →</span>
+        <span class="dash-go">${t('dash.enter')} ${p.external ? '↗' : '→'}</span>
       </div>
     </a>`;
 };

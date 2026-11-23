@@ -15,6 +15,8 @@ export type Product = {
   image?: string;
   /** A short line of live state for the card, if the product has any. */
   status?: () => string | null;
+  /** Leads off-site; opens in a new tab. */
+  external?: boolean;
 };
 
 export const PRODUCTS: Product[] = [
@@ -53,5 +55,16 @@ export const PRODUCTS: Product[] = [
     blurb: 'dash.trip.blurb',
     image: 'media/dashboard/trip.png',
     status: () => tripStatus(new Date()),
+  },
+  {
+    // MotionMirror: the pose-analysis project, with Rayford's jump shot and Jingyi's badminton as
+    // its two flagship demos. Lives on GitHub Pages, so the card leaves the site.
+    id: 'motionmirror',
+    route: 'https://rayford295.github.io/motionmirror/',
+    title: 'dash.mm.title',
+    blurb: 'dash.mm.blurb',
+    image: 'media/dashboard/motionmirror.png',
+    external: true,
+    status: () => t('dash.mm.status'),
   },
 ];
