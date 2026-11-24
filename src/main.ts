@@ -39,8 +39,9 @@ const routes: Record<string, () => Promise<Page>> = {
   '/sz': () => import('./features/days/render').then((m) => m.renderSZ),
   '/clinic': () => import('./features/clinic/clinic').then((m) => m.renderClinic),
   '/trip': () => import('./features/trip/trip').then((m) => m.renderTrip),
+  '/ask': () => import('./features/ask/ask').then((m) => m.renderAsk),
 };
-const viewClass: Record<string, string> = { '/': 'dashboard', '/town': 'world', '/journey': 'journey', '/start': 'start', '/met': 'home', '/map': 'map', '/moments': 'moments', '/tattoo': 'tattoo', '/gomoku': 'gomoku', '/songs': 'songs', '/stars': 'stars', '/poems': 'poems', '/ring': 'ring', '/letter': 'letter', '/birthday': 'theatre', '/wedding': 'theatre', '/sync': 'sync', '/cs': 'day', '/sz': 'day', '/clinic': 'clinic', '/trip': 'trip' };
+const viewClass: Record<string, string> = { '/': 'dashboard', '/town': 'world', '/journey': 'journey', '/start': 'start', '/met': 'home', '/map': 'map', '/moments': 'moments', '/tattoo': 'tattoo', '/gomoku': 'gomoku', '/songs': 'songs', '/stars': 'stars', '/poems': 'poems', '/ring': 'ring', '/letter': 'letter', '/birthday': 'theatre', '/wedding': 'theatre', '/sync': 'sync', '/cs': 'day', '/sz': 'day', '/clinic': 'clinic', '/trip': 'trip', '/ask': 'ask' };
 const app = document.querySelector<HTMLElement>('#app')!;
 let cleanup: (() => void) | undefined;
 let renderSeq = 0;   // a navigation that starts while a page is still loading wins
@@ -67,9 +68,9 @@ async function render(): Promise<void> {
     cleanup = renderGate(app.querySelector<HTMLElement>('#view')!, () => { void render(); });
     return;
   }
-  // The dashboard and the trip page need only the gate. The town's rules: pick a player first; a
-  // locked level sends you back to the town.
-  if (path === '/' || path === '/trip') { /* no player needed */ }
+  // The dashboard, the trip page and Ask Yifan need only the gate. The town's rules: pick a player
+  // first; a locked level sends you back to the town.
+  if (path === '/' || path === '/trip' || path === '/ask') { /* no player needed */ }
   else if (!getPlayer()) path = '/start';
   else if (path === '/start') path = '/town';
   else {

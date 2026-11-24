@@ -57,6 +57,15 @@ export const PRODUCTS: Product[] = [
     status: () => tripStatus(new Date()),
   },
   {
+    // Ask Yifan: she writes what she needs and attaches files; it reaches his inbox and he helps
+    // from there. No status line: nothing about it changes between visits.
+    id: 'ask',
+    route: '/ask',
+    title: 'dash.ask.title',
+    blurb: 'dash.ask.blurb',
+    image: 'media/dashboard/ask.png',
+  },
+  {
     // MotionMirror: the pose-analysis project, with Rayford's jump shot and Jingyi's badminton as
     // its two flagship demos. Lives on GitHub Pages, so the card leaves the site.
     id: 'motionmirror',
