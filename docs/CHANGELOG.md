@@ -23,7 +23,8 @@ Ask Yifan, the findings of the review of 1.22.0, each with a test that failed fi
   strips C1 controls and U+2028/2029 from file names, and a `player` of `constructor` no longer
   reaches the subject line.
 - The card and the page are now called 找小杨 in Chinese (owner); the English stays Ask Yifan.
-- 260 unit tests.
+- The email's subject names 静仪 when no player is picked (owner): the page is hers.
+- 261 unit tests.
 
 ## 1.22.0 (2026-11-24)
 

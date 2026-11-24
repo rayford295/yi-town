@@ -33,7 +33,8 @@ export function cleanName(name: string): string {
 
 /** One line: who, then the first 30 characters of what she wrote (or the first file's name). */
 export function subjectFor(player: string | null, text: string, firstFile?: string): string {
-  const who = player && Object.hasOwn(NAMES, player) ? `${NAMES[player]}：` : '';
+  // The page is Jingyi's and needs no player picked, so a send with no name is hers (Yifan, 2026-11-24).
+  const who = `${player && Object.hasOwn(NAMES, player) ? NAMES[player] : NAMES.jingyi}：`;
   const chars = [...text.replace(/\s+/g, ' ').trim()];
   const gist = chars.length > 30 ? `${chars.slice(0, 30).join('')}…` : chars.join('');
   return `${TAG} ${who}${gist || firstFile || ''}`.trim();

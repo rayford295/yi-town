@@ -48,12 +48,16 @@ describe('subjectFor', () => {
     expect(subjectFor('jingyi', 'a'.repeat(40))).toBe(`[仪见小镇] 静仪：${'a'.repeat(30)}…`);
   });
   it('no text falls back to the first file name', () => {
-    expect(subjectFor(null, '', '报税表.pdf')).toBe('[仪见小镇] 报税表.pdf');
+    expect(subjectFor(null, '', '报税表.pdf')).toBe('[仪见小镇] 静仪：报税表.pdf');
   });
-  it('an unknown player is not named', () => {
-    expect(subjectFor('mallory', 'hi')).toBe('[仪见小镇] hi');
-    expect(subjectFor('constructor', 'hi')).toBe('[仪见小镇] hi');   // not a name off Object.prototype (M3)
-    expect(subjectFor('toString', 'hi')).toBe('[仪见小镇] hi');
+  it('nobody picked, or a name it does not know, reads as Jingyi: the page is hers (M7)', () => {
+    expect(subjectFor(null, 'hi')).toBe('[仪见小镇] 静仪：hi');
+    expect(subjectFor('mallory', 'hi')).toBe('[仪见小镇] 静仪：hi');
+    expect(subjectFor('constructor', 'hi')).toBe('[仪见小镇] 静仪：hi');   // not a name off Object.prototype (M3)
+    expect(subjectFor('toString', 'hi')).toBe('[仪见小镇] 静仪：hi');
+  });
+  it('Yifan trying it out is named as himself', () => {
+    expect(subjectFor('yifan', 'hi')).toBe('[仪见小镇] 一帆：hi');
   });
 });
 
@@ -154,6 +158,6 @@ describe('handle', () => {
     const { env, sent } = fakeEnv();
     const res = await handle(request({ files: [file('报税表.pdf')] }), env, NOW);
     expect(res.status).toBe(200);
-    expect(sent[0].subject).toBe('[仪见小镇] 报税表.pdf');
+    expect(sent[0].subject).toBe('[仪见小镇] 静仪：报税表.pdf');
   });
 });
