@@ -1,0 +1,18 @@
+# Ask Yifan: the Worker behind https://jingyifan.love/ask. See worker/README.md.
+# Deploy with `npm run ask:deploy`. The inbox is the secret ASK_TO, set once with
+# `npx wrangler secret put ASK_TO -c worker/wrangler.toml`; it is never written here.
+name = "yi-ask"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+workers_dev = false
+
+# A workers.dev address is unreliable from mainland China, so the Worker has its own subdomain.
+[[routes]]
+pattern = "ask.jingyifan.love"
+custom_domain = true
+
+[[send_email]]
+name = "EMAIL"
+
+[vars]
+ASK_FROM = "ask@jingyifan.love"

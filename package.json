@@ -3,7 +3,7 @@
   "version": "1.21.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && tsc --noEmit -p worker && vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "ring:pack": "for r in hers hers_v1 his; do npx -y @gltf-transform/cli@4 optimize public/media/ring/meridian_$r.glb public/media/ring/meridian_$r.glb --compress meshopt --texture-compress false; done",
@@ -11,7 +11,8 @@
     "notes": "node scripts/notes.mjs",
     "ring:thumbs": "python3 scripts/ring-thumbs.py",
     "banner": "node scripts/banner.ts",
-    "icon": "node scripts/icon.ts && python3 scripts/icon-png.py"
+    "icon": "node scripts/icon.ts && python3 scripts/icon-png.py",
+    "ask:deploy": "npx wrangler deploy -c worker/wrangler.toml"
   },
   "repository": {
     "type": "git",
