@@ -69,6 +69,34 @@ Add `jingyifan.love` under the Pages project's **Custom domains**; Cloudflare wr
 records itself when the domain is on Cloudflare, otherwise it shows the CNAME to add. Add the
 same domain to the Access application so the login covers it.
 
+## The Ask Worker (ask.jingyifan.love)
+
+`/ask` posts to a Cloudflare Worker, the one piece of this site that is not static. Its code is
+in `worker/` (see `worker/README.md`). A push to `main` does **not** deploy it; it changes
+rarely and is deployed by hand:
+
+```bash
+npx wrangler login          # once per machine; opens the browser
+npm run ask:deploy
+```
+
+One-time setup in the Cloudflare dashboard, on the account that holds `jingyifan.love`:
+
+1. **Compute → Email Service → Email Routing**: enable it for `jingyifan.love` (Cloudflare adds
+   the MX and TXT records itself; the GitHub Pages `A`, `AAAA` and `www` records stay as they
+   are). Under **Destination Addresses**, add Yifan's inbox and click the link in the
+   verification email. On the free plan a Worker may send only to verified destinations.
+2. `npx wrangler secret put ASK_TO -c worker/wrangler.toml` and type the same inbox address.
+   It is a secret because this repository is public.
+3. `npm run ask:deploy`. The first deploy creates the `ask` subdomain (a proxied record that
+   Wrangler adds for the custom domain).
+
+Check it: send a line from <https://jingyifan.love/ask> and look in the inbox (and in spam the
+first time). `npx wrangler tail -c worker/wrangler.toml` shows a failing send with Cloudflare's
+error code. If the university's mail filter keeps rejecting the mail, the fallback is to send
+through Resend from the same Worker (the design's approach 2,
+`docs/superpowers/specs/2026-11-23-ask-design.md`).
+
 ## How It Was Published: GitHub Pages (Public, Free)
 
 *Historical: these are the steps that were used for the public rehearsal; see Status above for the current state.*

@@ -33,6 +33,7 @@ yi-town/
 │       ├── guide/              #   Rayford's lines (rayford.ts), with the secrecy test (secret.test.ts)
 │       ├── dashboard/          #   the front page at /: products.ts lists what is on it
 │       ├── trip/               #   New York, Feb 2027: plan.ts (phases), itinerary.ts (one entry a day, photos), trip.ts (page)
+│       ├── ask/                #   Ask Yifan: core.ts (caps, history, the request), shrink.ts (photos), ask.ts (page); the email is sent by worker/
 │       ├── theatre/            #   the pixel cutscene engine: stage.ts, music.ts (synth), blow.ts (breath by mic)
 │       ├── birthday/           #   the prologue: Yifan bakes the cake (kitchen.ts paints it; CANDLES = 9)
 │       ├── wedding/            #   the finale after the letter: garden.ts paints it; the certificate PNG
@@ -125,6 +126,7 @@ if a product should not.
 - [x] Birthday prologue (`/birthday`) and the wedding (`/wedding`) as pixel cutscenes; the ring is a secret until it is reached (`secret.test.ts`); a hole in time by house 9 leads to the wedding (v1.15–1.16, 2026-10-28)
 - [x] Whole-site review pass: gate placeholder, ISO 7064 check character for codes, non-blocking fonts, phone layouts, cutscene edge cases (v1.16.0, 2026-10-28)
 - [x] The birthday letter is the handwritten card, with its text in both languages; LICENSE added for going public (v1.18.0, 2026-10-30)
+- [x] Ask Yifan (`/ask`): a chat-style box for Jingyi's requests with file attachments, sent to Yifan's inbox by a Cloudflare Worker (`worker/`); the fourth dashboard card (v1.22.0, 2026-11-24)
 - [x] See You in New York (`/trip`): her real ticket (CX830 / CX831) in `config.trip`, a third dashboard card with a live line, boarding passes, the day-by-day itinerary to fill with words and photos; the countdown and the Love Map follow the real flight (v1.21.0, 2026-11-08)
 - [x] Infirmary round two: the letter knows the doctor's local time, a share line on leaving, Rayford leads there, recorder script; 'new version' bar instead of silent reloads; deploy retries (v1.20.0, 2026-11-04)
 - [x] The infirmary (`/clinic`): a pink house with a red cross in the town and the second card on the dashboard; check-in, three breaths, the other one's letter for that hurt, sticky notes from the cabinet, a private chart (v1.19.0, 2026-11-04)

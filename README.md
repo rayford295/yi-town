@@ -64,6 +64,9 @@
 - **See You in New York** is the third card (`/trip`): Jingyi's ticket for February 2027, both legs
   as boarding passes, a clock that counts down to boarding and then counts the days together, and
   the itinerary, one row a day, written and photographed as we go. No player needed.
+- **Ask Yifan** is the fourth card (`/ask`): Jingyi writes what she needs, attaches files, and
+  sends; it lands in Yifan's inbox with the files, and he helps from the other side of the world.
+  A small Cloudflare Worker (`worker/`) sends the email. No player needed.
 - **Two signposts** lead out of the square: east to a day of Yifan's in College Station, west to a
   day of Jingyi's in Shenzhen. Each is a map of that person's stops with their hours, and their
   sprite stands wherever the clock in that city puts them. A red mailbox by the fountain holds

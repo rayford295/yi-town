@@ -2,6 +2,21 @@
 
 Versions are tags of feeling more than of code; the site deploys on every push.
 
+## 1.22.0 (2026-11-24)
+
+- Ask Yifan (`/ask`, `src/features/ask/`): the fourth card on the dashboard. Jingyi writes what
+  she needs, attaches files (the paperclip, drag and drop, or a pasted screenshot) and sends;
+  one email with the files reaches Yifan's inbox and he helps from there. What she sent stays on
+  her phone as bubbles; a send that fails keeps its text and files and offers "send again". One
+  send carries at most 10 files and 18 MB, and large photos are scaled down first.
+- The site's first server-side piece: a Cloudflare Worker at `ask.jingyifan.love` (`worker/`)
+  that turns the request into the email through Cloudflare's `send_email` binding. It stores
+  nothing, and the inbox address is a Worker secret, not in this repository. Deployed by hand
+  with `npm run ask:deploy`; see `docs/DEPLOY.md`.
+- `scripts/ask-card.py` draws the card's pixel picture: an envelope sealed with a heart and a
+  paper plane leaving it.
+- 231 unit tests.
+
 ## 1.21.0 (2026-11-08)
 
 - Jingyi's ticket is booked, and the site knows it: Cathay Pacific CX830, Hong Kong T1 → New
