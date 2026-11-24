@@ -137,7 +137,7 @@ if a product should not.
 Owner's own work (text in his words; both languages in each file):
 - [x] The epilogue letter (`src/features/letter/text.ts`) ends on purpose with “to be continued”; `{d}` days and `{h}` hours fill in live (2026-10-30).
 - [x] The birthday letter on the Love Map is the handwritten card (`src/features/birthday-map/letter.ts`, 2026-10-30).
-- [ ] Ask Yifan is live as a page but cannot send yet: set up Cloudflare Email Routing, deploy the Worker and send a real test (the review findings are fixed, 1.22.1). The list is at the end of `docs/superpowers/plans/2026-11-23-ask.md`; the Cloudflare steps are in `docs/DEPLOY.md`.
+- [ ] Ask Yifan (找小杨) sends: the Worker is deployed and accepted real sends up to the cap (2026-11-24). Left: Yifan confirms the test mails reached his inbox, then tells Jingyi. The list is at the end of `docs/superpowers/plans/2026-11-23-ask.md`; the Cloudflare steps are in `docs/DEPLOY.md`.
 - [ ] The itinerary (`src/features/trip/itinerary.ts`): write each day of New York and add its photos to `public/media/trip/` as the trip happens; rewrite the resting line `trip.now.after` in `i18n.ts`.
 - [ ] Yifan checks the hours and stories of his day (`src/features/days/cs.ts`, `cs.story.*` in `i18n.ts`); Jingyi's day is a guess (`src/features/days/sz.ts`, `sz.story.*`).
 - [ ] The infirmary's letters and notes (`src/features/clinic/prescriptions.ts`) are drafts in each one's voice: Yifan rewrites his, Jingyi hers. Recordings: `python3 scripts/record-rx.py <hurt> <reader>` (see `public/media/clinic/README.md`).

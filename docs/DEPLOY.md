@@ -93,7 +93,7 @@ One-time setup in the Cloudflare dashboard, on the account that holds `jingyifan
 
 Check it: send a line from <https://jingyifan.love/ask> and look in the inbox (and in spam the
 first time). `npx wrangler tail -c worker/wrangler.toml` shows a failing send with Cloudflare's
-error code. If the university's mail filter keeps rejecting the mail, the fallback is to send
+error code; `E_VALIDATION_ERROR` "Missing domain or user" means `ASK_TO` is empty. If the university's mail filter keeps rejecting the mail, the fallback is to send
 through Resend from the same Worker (the design's approach 2,
 `docs/superpowers/specs/2026-11-23-ask-design.md`).
 
