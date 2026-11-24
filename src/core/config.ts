@@ -22,6 +22,9 @@ export const config = {
     /** The AAG 2027 Annual Meeting, New York: the days Yifan is in sessions. */
     aag: { from: '2027-02-08', to: '2027-02-12' },
   },
+  // Ask Yifan (/ask): the Worker in worker/ that turns a request into an email. VITE_ASK_URL
+  // points a dev server at a local stub.
+  ask: { url: (import.meta.env?.VITE_ASK_URL as string | undefined) ?? 'https://ask.jingyifan.love/send' },
   // The next time we meet: the outbound leg above, as the countdown and the map read it.
   // We meet in New York around the AAG 2027 Annual Meeting (8–12 Feb 2027).
   nextMeeting: {
