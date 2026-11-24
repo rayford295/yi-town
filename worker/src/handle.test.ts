@@ -37,6 +37,9 @@ describe('cleanName', () => {
     expect(cleanName('C:\\Users\\her\\税表.xlsx')).toBe('税表.xlsx');
     expect(cleanName('')).toBe('file');
   });
+  it('drops C1 controls and the Unicode line and paragraph separators (M1)', () => {
+    expect(cleanName('a\u0085b\u009fc\u2028d\u2029.pdf')).toBe('abcd.pdf');
+  });
 });
 
 describe('subjectFor', () => {
@@ -49,6 +52,8 @@ describe('subjectFor', () => {
   });
   it('an unknown player is not named', () => {
     expect(subjectFor('mallory', 'hi')).toBe('[仪见小镇] hi');
+    expect(subjectFor('constructor', 'hi')).toBe('[仪见小镇] hi');   // not a name off Object.prototype (M3)
+    expect(subjectFor('toString', 'hi')).toBe('[仪见小镇] hi');
   });
 });
 

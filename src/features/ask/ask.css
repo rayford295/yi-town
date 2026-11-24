@@ -30,6 +30,7 @@ html[lang='en'] .ask-head h1 { font-family: var(--serif-en); font-style: italic;
 .ask-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
 .ask-chips:empty { display: none; }
 .ask-chip { display: flex; align-items: center; gap: 6px; max-width: 100%; padding: 2px 4px 2px 10px; font-size: 13px; background: #fffaf3; border: 2px solid #102e49; border-radius: 999px; }
+.ask-chip.adding { padding: 2px 10px; border-style: dashed; color: var(--muted); }
 .ask-chip-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 14em; }
 .ask-chip small { color: var(--muted); white-space: nowrap; }
 .ask-chip-x { width: 24px; height: 24px; line-height: 1; font-size: 16px; border: 0; border-radius: 50%; background: transparent; color: var(--rose-deep); cursor: pointer; }

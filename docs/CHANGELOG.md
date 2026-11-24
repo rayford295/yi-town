@@ -2,6 +2,28 @@
 
 Versions are tags of feeling more than of code; the site deploys on every push.
 
+## 1.22.1 (2026-11-24)
+
+Ask Yifan, the findings of the review of 1.22.0, each with a test that failed first:
+
+- The page's state moved out of the page into `src/features/ask/session.ts`. A send now finishes
+  and is written down whatever happens to the page meanwhile: pressing the language button or
+  leaving mid-send used to leave the redrawn page on "sending", lose the bubble and invite a
+  second send. What she types or attaches while a send is out stays in the composer.
+- Photos still being scaled down show as one chip ("Getting 2 ready…") and the send button waits
+  for them; sending in that moment used to leave them behind without a word.
+- A request that stalls is given up after three minutes and says so, in place of "sending" for
+  ever.
+- "Send again" after a reload now sends: the first click brings the text back and asks for the
+  files, the second sends. A new send no longer removes other failed bubbles; only the one it
+  retries gives way.
+- In Safari on macOS, the Enter that confirms a pinyin candidate no longer sends.
+- Smaller: a damaged history entry no longer breaks the page; a paste from Word or Excel pastes
+  its text, not a picture of it; a portrait photo keeps its rotation when scaled; the Worker
+  strips C1 controls and U+2028/2029 from file names, and a `player` of `constructor` no longer
+  reaches the subject line.
+- 260 unit tests.
+
 ## 1.22.0 (2026-11-24)
 
 - Ask Yifan (`/ask`, `src/features/ask/`): the fourth card on the dashboard. Jingyi writes what

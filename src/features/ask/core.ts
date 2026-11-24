@@ -8,6 +8,8 @@ import type { StoreLike } from '../../core/storage';
 export const MAX_BYTES = 18 * 1024 * 1024;
 export const MAX_FILES = 10;
 export const HISTORY_CAP = 50;
+/** A stalled upload is given up after this long; 18 MB on a slow phone link fits well inside it. */
+export const SEND_TIMEOUT = 3 * 60 * 1000;
 
 export type Reason = 'empty' | 'too-big' | 'too-many' | 'network' | 'server';
 const REASONS: readonly Reason[] = ['empty', 'too-big', 'too-many', 'network', 'server'];
@@ -21,7 +23,7 @@ export type Entry = {
 export type Meta = { player: string | null; lang: 'zh' | 'en' };
 export type Outcome = { ok: true } | { ok: false; reason: Reason };
 
-export const totalBytes = (files: { size: number }[]): number => files.reduce((n, f) => n + f.size, 0);
+export const totalBytes = (files: readonly { size: number }[]): number => files.reduce((n, f) => n + f.size, 0);
 
 /** Why this draft cannot go, or null when it can. */
 export function check(text: string, files: { size: number }[]): Reason | null {
@@ -39,10 +41,21 @@ export function humanSize(bytes: number): string {
 
 const KEY = 'yi.ask.history';
 
+/** What the store holds was written by an older version or by hand: one bad entry must not break the page. */
+function isEntry(v: unknown): v is Entry {
+  if (typeof v !== 'object' || v === null) return false;
+  const e = v as Record<string, unknown>;
+  return typeof e.id === 'string' && typeof e.at === 'string' && typeof e.text === 'string'
+    && (e.state === 'sent' || e.state === 'failed')
+    && Array.isArray(e.files)
+    && e.files.every((f: unknown) => typeof f === 'object' && f !== null
+      && typeof (f as { name?: unknown }).name === 'string' && typeof (f as { size?: unknown }).size === 'number');
+}
+
 export function loadHistory(store: StoreLike): Entry[] {
   try {
     const list: unknown = JSON.parse(store.getItem(KEY) ?? '[]');
-    return Array.isArray(list) ? (list as Entry[]) : [];
+    return Array.isArray(list) ? list.filter(isEntry) : [];
   } catch { return []; }
 }
 
@@ -64,17 +77,22 @@ export function buildForm(text: string, files: File[], meta: Meta): FormData {
 /** Send one request. Never throws: every failure comes back as a reason the page can word. */
 export async function send(
   text: string, files: File[], meta: Meta,
-  fetchFn: typeof fetch = fetch, url: string = config.ask.url,
+  fetchFn: typeof fetch = fetch, url: string = config.ask.url, timeout: number = SEND_TIMEOUT,
 ): Promise<Outcome> {
   const bad = check(text, files);
   if (bad) return { ok: false, reason: bad };
-  let res: Response;
-  try { res = await fetchFn(url, { method: 'POST', body: buildForm(text, files, meta) }); }
-  catch { return { ok: false, reason: 'network' }; }
+  // fetch has no timeout of its own: without this a stalled upload would say "sending" for ever.
+  const stop = new AbortController();
+  const timer = setTimeout(() => stop.abort(), timeout);
   try {
-    const body = (await res.json()) as { ok?: boolean; reason?: string };
-    if (res.ok && body.ok === true) return { ok: true };
-    const reason = REASONS.find((r) => r === body.reason);
-    return { ok: false, reason: reason ?? 'server' };
-  } catch { return { ok: false, reason: 'server' }; }
+    let res: Response;
+    try { res = await fetchFn(url, { method: 'POST', body: buildForm(text, files, meta), signal: stop.signal }); }
+    catch { return { ok: false, reason: 'network' }; }
+    try {
+      const body = (await res.json()) as { ok?: boolean; reason?: string };
+      if (res.ok && body.ok === true) return { ok: true };
+      const reason = REASONS.find((r) => r === body.reason);
+      return { ok: false, reason: reason ?? 'server' };
+    } catch { return { ok: false, reason: stop.signal.aborted ? 'network' : 'server' }; }
+  } finally { clearTimeout(timer); }
 }

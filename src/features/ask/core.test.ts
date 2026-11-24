@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
-  HISTORY_CAP, MAX_BYTES, buildForm, check, humanSize, loadHistory, saveHistory, send,
+  HISTORY_CAP, MAX_BYTES, SEND_TIMEOUT, buildForm, check, humanSize, loadHistory, saveHistory, send,
   type Entry, type Meta,
 } from './core';
 
@@ -41,6 +41,11 @@ describe('history', () => {
   });
   it('a store that throws on write does not throw', () => {
     expect(() => saveHistory({ getItem: () => null, setItem: () => { throw new Error('full'); } }, [])).not.toThrow();
+  });
+  it('drops entries of the wrong shape and keeps the good ones (M2)', () => {
+    const bad = [null, 7, 'x', { id: 'a' }, { ...entry('b'), files: 'none' }, { ...entry('c'), state: 'flying' }, { ...entry('d'), files: [{ name: 1 }] }];
+    const store = { getItem: () => JSON.stringify([...bad, entry('ok')]), setItem: () => {} };
+    expect(loadHistory(store).map((e) => e.id)).toEqual(['ok']);
   });
   it('round-trips what was saved', () => {
     const store = memory();
@@ -103,5 +108,33 @@ describe('send', () => {
     const spy = (async () => { called = true; return new Response('{"ok":true}'); }) as unknown as typeof fetch;
     expect(await send('  ', [], meta, spy, 'https://x/send')).toEqual({ ok: false, reason: 'empty' });
     expect(called).toBe(false);
+  });
+  it('gives up on a stalled request after three minutes and resolves network (I3)', async () => {
+    vi.useFakeTimers();
+    try {
+      // Like the real fetch: it settles only when its signal aborts.
+      const stalled = ((_url: string, init?: RequestInit) => new Promise((_, reject) => {
+        init!.signal!.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')));
+      })) as unknown as typeof fetch;
+      let got: unknown;
+      void send('hi', [], meta, stalled, 'https://x/send').then((r) => { got = r; });
+      await vi.advanceTimersByTimeAsync(SEND_TIMEOUT - 1000);
+      expect(got).toBeUndefined();
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(got).toEqual({ ok: false, reason: 'network' });
+    } finally { vi.useRealTimers(); }
+  });
+  it('a reply that stalls mid-body also resolves network', async () => {
+    vi.useFakeTimers();
+    try {
+      const half = ((_url: string, init?: RequestInit) => Promise.resolve({
+        ok: true,
+        json: () => new Promise((_, reject) => { init!.signal!.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError'))); }),
+      })) as unknown as typeof fetch;
+      let got: unknown;
+      void send('hi', [], meta, half, 'https://x/send').then((r) => { got = r; });
+      await vi.advanceTimersByTimeAsync(SEND_TIMEOUT);
+      expect(got).toEqual({ ok: false, reason: 'network' });
+    } finally { vi.useRealTimers(); }
   });
 });

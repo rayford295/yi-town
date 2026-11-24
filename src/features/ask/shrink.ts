@@ -8,7 +8,8 @@ const WORTH_IT = 1.5 * 1024 * 1024;
 export async function shrink(file: File, maxEdge = 2400): Promise<File> {
   if (!SHRINKABLE.includes(file.type) || file.size <= WORTH_IT) return file;
   try {
-    const bitmap = await createImageBitmap(file);
+    // Older browsers ignore a JPEG's EXIF rotation here unless asked: a portrait photo would lie on its side.
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
     const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
     const canvas = document.createElement('canvas');
     canvas.width = Math.round(bitmap.width * scale);

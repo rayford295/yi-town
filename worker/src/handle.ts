@@ -23,16 +23,17 @@ const ORIGINS = ['https://jingyifan.love', 'http://localhost:5173'];
 const NAMES: Record<string, string> = { jingyi: '静仪', yifan: '一帆' };
 const TAG = '[仪见小镇]';
 
-/** A file name safe to put in a header: the last path part, no control characters or quotes. */
+/** A file name safe to put in a header: the last path part, no control characters (C0, C1, the
+ * Unicode line and paragraph separators) or quotes. */
 export function cleanName(name: string): string {
   const base = name.split(/[\\/]/).pop() ?? '';
   // eslint-disable-next-line no-control-regex
-  return base.replace(/[\u0000-\u001f\u007f"]/g, '').trim() || 'file';
+  return base.replace(/[\u0000-\u001f\u007f-\u009f\u2028\u2029"]/g, '').trim() || 'file';
 }
 
 /** One line: who, then the first 30 characters of what she wrote (or the first file's name). */
 export function subjectFor(player: string | null, text: string, firstFile?: string): string {
-  const who = player && NAMES[player] ? `${NAMES[player]}：` : '';
+  const who = player && Object.hasOwn(NAMES, player) ? `${NAMES[player]}：` : '';
   const chars = [...text.replace(/\s+/g, ' ').trim()];
   const gist = chars.length > 30 ? `${chars.slice(0, 30).join('')}…` : chars.join('');
   return `${TAG} ${who}${gist || firstFile || ''}`.trim();
