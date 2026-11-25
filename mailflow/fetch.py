@@ -11,6 +11,9 @@ import config as C
 from common import log, notify, password, load_state, save_state, write_status
 
 
+RESERVED_NAMES = {"claude.md", "claude.local.md", "agents.md", "gemini.md", "settings.json", "settings.local.json"}
+
+
 def dec(s):
     return str(make_header(decode_header(s or "")))
 
@@ -78,7 +81,7 @@ def split_results(header):
     从左到右扫一遍，同时记着是否在引号里、注释嵌套了几层：注释和引号里的内容全部丢掉，
     只有落在最外层的分号才算分隔符。结构不完整（引号或括号没闭合）时返回 None。
     """
-    parts, cur, depth, quoted, i = [], [], 0, False, 0
+    parts, cur, dropped, depth, quoted, i = [], [], [], 0, False, 0
     while i < len(header):
         ch = header[i]
         if ch == "\\" and (quoted or depth):
@@ -86,8 +89,10 @@ def split_results(header):
             continue
         if quoted:
             quoted = ch != '"'
+            dropped.append(ch)
         elif depth:
             depth += (ch == "(") - (ch == ")")
+            dropped.append(ch)
         elif ch == '"':
             quoted = True
             cur.append('""')
@@ -103,6 +108,11 @@ def split_results(header):
             cur.append(ch)
         i += 1
     if quoted or depth:
+        return None
+    # Gmail 自己写的注释和引号里只有说明文字和签名片段。里面出现分号、等号或 dkim 字样，
+    # 说明有人想让不同的解析器读出不同的结构：整条不认。
+    junk = "".join(dropped).lower()
+    if ";" in junk or "=" in junk or "dkim" in junk:
         return None
     parts.append("".join(cur))
     return [" ".join(p.split()).lower() for p in parts]
@@ -122,18 +132,24 @@ def authenticated(msg):
     if not parts or parts[0] != "mx.google.com":
         return False
     domain = C.SENDER_FILTER.split("@")[1].lower()
+    passed = False
     for part in parts[1:]:
         tokens = part.split()
-        if not tokens or tokens[0] != "dkim=pass":
+        if not tokens or not tokens[0].startswith("dkim="):
             continue
         props = {}
         for t in tokens[1:]:
             k, sep, v = t.partition("=")
-            if sep and k not in props:
-                props[k] = v
-        if props.get("header.i") == "@" + domain or props.get("header.d") == domain:
-            return True
-    return False
+            if not sep:
+                continue
+            if k in props:
+                return False                             # 同一个属性出现两次：不认
+            props[k] = v
+        ours = props.get("header.i") == "@" + domain or props.get("header.d") == domain
+        if ours and tokens[0] != "dkim=pass":
+            return False                                 # 我们域名的签名有一条没通过：不认
+        passed = passed or ours
+    return passed
 
 
 def save_message(M, uid):
@@ -163,6 +179,9 @@ def save_message(M, uid):
         fn = part.get_filename()
         if fn:
             fn = safe(dec(fn), 120)
+            # 不让附件冒充会被工具自动读取的配置或说明文件
+            if fn.startswith(".") or fn.lower() in RESERVED_NAMES:
+                fn = "附件_" + fn.lstrip(".")
             (att / fn).write_bytes(part.get_payload(decode=True) or b"")
             names.append(fn)
         elif part.get_content_type() == "text/plain" and not body:

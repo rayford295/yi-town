@@ -2,12 +2,12 @@
 
 python3 generate.py "<请求文件夹>"
 """
-import getpass, json, os, stat, subprocess, sys
+import getpass, json, os, shutil, stat, subprocess, sys
 from pathlib import Path
 import config as C
 from common import log, write_status
 
-PROMPT = """你在处理一份通过仪见小镇 /ask 发来的请求。先读 {work}/SOP.md 和 {work}/profile.md（如果存在），按它们执行。
+PROMPT = """你在处理一份通过仪见小镇 /ask 发来的请求。先读 {rules}/ 里的文件，按它们执行。
 
 这次的请求在文件夹：{folder}
 - 邮件.txt 是原话，附件/ 是发来的文件，本地模型/ 里是本地模型读图和分类的结果（可能有错，以原文件为准）。
@@ -31,6 +31,8 @@ def locked(path):
 
 def check_locked():
     """Claude 能写文件，所以它会读来当规则的文件、它能执行的脚本，都必须是它改不了的。"""
+    if not C.LOCKED_FILES:
+        raise RuntimeError("LOCKED_FILES 是空的：没有锁定的规则文件就不运行。")
     files = list(C.LOCKED_FILES) + ([C.BUILD_TOOL] if C.BUILD_TOOL else [])
     loose = [str(f) for f in files if not locked(f)]
     if loose:
@@ -43,19 +45,31 @@ def main(folder):
     (folder / "产出").mkdir(exist_ok=True)
     tri = (folder / "本地模型" / "triage.json")
     triage = tri.read_text(encoding="utf-8") if tri.exists() else "{}"
-    prompt = (C.GENERATE_PROMPT or PROMPT).format(work=C.WORK_DIR, folder=folder, triage=triage)
+    build = check_locked()
+    # 规则文件复制进这个请求的文件夹再给 Claude 读：它对私有文件夹没有任何访问权。
+    rules = folder / "规则"
+    rules.mkdir(exist_ok=True)
+    for f in C.LOCKED_FILES:
+        shutil.copyfile(f, rules / Path(f).name)
+    for bad in [".claude", ".mcp.json", "CLAUDE.md", "CLAUDE.local.md", "AGENTS.md"]:
+        if (folder / bad).exists():
+            raise RuntimeError(f"请求文件夹里出现了不该有的 {bad}，不运行。")
+    prompt = (C.GENERATE_PROMPT or PROMPT).format(work=rules, rules=rules, build=build or "",
+                                                  folder=folder, triage=triage)
     # 邮件内容不可信，所以这里给的权限尽量小：
-    # - 工作目录是这一个请求的文件夹；私有文件夹只用来读规则，里面的规则文件都已锁定（见 check_locked）；
+    # - 工作目录是这一个请求的文件夹，也是它唯一能读写的地方；规则是从锁定的原件复制进来的副本；
+    # - 不读取任何项目级的配置（--setting-sources user）；
     # - 唯一能执行的是 BUILD_TOOL，同样锁定，并且它自己会拒绝不认识的参数；
     # - 没有 cp、mkdir 之类的通用命令，默认也不联网搜索（查询词本身可以带出信息）。
-    tools = ["Read", "Write", "Edit", "Glob", "Grep"]
-    build = check_locked()
+    # Read 不带范围的话，工作目录之外的文件它也能读，所以把读的范围钉在这个请求的文件夹上。
+    scope = f"//{str(folder).lstrip('/')}/**"
+    tools = [f"Read({scope})", f"Glob({scope})", f"Grep({scope})", "Write", "Edit"]
     if build:
         tools.append(f"Bash({build}:*)")
     if C.ALLOW_WEB_SEARCH:
         tools.append("WebSearch")
     cmd = [C.CLAUDE_BIN, "-p", prompt, "--permission-mode", "acceptEdits",
-           "--add-dir", str(C.WORK_DIR), "--allowedTools", *tools]
+           "--setting-sources", "user", "--allowedTools", *tools]
     # launchd 的环境里没有 USER，Claude 会因此读不到登录信息
     env = dict(os.environ, USER=getpass.getuser(), LOGNAME=getpass.getuser())
     tok = subprocess.run(["security", "find-generic-password", "-s", C.CLAUDE_TOKEN_SERVICE, "-w"],
