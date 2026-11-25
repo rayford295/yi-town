@@ -2,6 +2,18 @@
 
 Versions are tags of feeling more than of code; the site deploys on every push.
 
+## 1.24.0 (2026-11-24)
+
+- The front door is a password now. It used to ask which day we met and took the date in several
+  spellings, the two short ones included. It now takes only the full eight digits, typed into a
+  password field, and every device is asked again once (`src/core/gate.ts`, key `yi.gate.2`).
+  This keeps a passer-by out; the site is static, so it is still not access control.
+- The mail flow gives the model less to work with. It can read and write files and run one
+  script, which must carry the system's immutable flag or the flow refuses to start; it has no
+  `cp` or `mkdir` and, unattended, no web search. The DKIM result is now parsed by method, with
+  comments and quoted strings removed, in place of a substring match.
+- 263 unit tests.
+
 ## 1.23.0 (2026-11-24)
 
 - The mail flow (`mailflow/`): what happens after an Ask Yifan email arrives. A job on Yifan's

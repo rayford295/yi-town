@@ -86,9 +86,9 @@ in `public/media/clinic/<hurt>-<reader>.m4a` (on the Mac: `python3 scripts/recor
 **Redraw the README banner.** `npm run banner` regenerates `docs/banner.svg` from the sprite strings in
 `src/features/world/sprites.ts`, so a new outfit or a new cat shows up there too.
 
-**Change the entry question.** Edit `gate.question` and `gate.placeholder` in
-`src/core/i18n.ts`, then run `npm run gate -- "answer" "another spelling"` and paste the hashes
-into `ANSWERS` in `src/core/gate.ts`. Answers are compared digits-only.
+**Change the entry password.** Run `npm run gate -- "<new password>"`, paste the hash it prints
+into `ANSWERS` in `src/core/gate.ts`, and raise the number in `KEY` there so every device is asked
+again. The text on the door is `gate.*` in `i18n.ts`. Passwords are compared digits-only.
 
 **Add a level.** Append it to `LEVELS` in `src/core/quest.ts`, add its title/story/task strings,
 register the route in `src/main.ts`, call `levelCleared('<id>')` when the task is done, and give

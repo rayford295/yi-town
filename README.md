@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/for-two%20players-d3a557?style=flat-square&labelColor=0b2036" alt="for two players" />
   <img src="https://img.shields.io/badge/products-5%20on%20the%20dashboard-d3a557?style=flat-square&labelColor=0b2036" alt="5 products on the dashboard" />
   <img src="https://img.shields.io/badge/levels-9%20%2B%20an%20epilogue-d3a557?style=flat-square&labelColor=0b2036" alt="9 levels and an epilogue" />
-  <img src="https://img.shields.io/badge/tests-261%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="261 tests passing" />
+  <img src="https://img.shields.io/badge/tests-263%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="263 tests passing" />
   <img src="https://img.shields.io/badge/TypeScript-strict-d3a557?style=flat-square&labelColor=0b2036" alt="TypeScript strict" />
   <img src="https://img.shields.io/badge/art-drawn%20in%20code-d3a557?style=flat-square&labelColor=0b2036" alt="all art drawn in code" />
 </p>
@@ -35,8 +35,8 @@
 
 ## ◆ What Lives Here
 
-`jingyifan.love` opens on a dashboard, one card per product. One question that only the two of us
-can answer stands in front of all of it.
+`jingyifan.love` opens on a dashboard, one card per product. One password, known to the two of us,
+stands in front of all of it.
 
 <table>
   <tr>
@@ -58,7 +58,7 @@ infirmary and the trip run in the browser and keep everything on the device.
 
 ```
   ┌──────────────────────────────────────────────────────────────┐
-  │  ONE QUESTION  →  DASHBOARD  →  WHO ARE YOU?  →  THE TOWN     │
+  │  ONE PASSWORD  →  DASHBOARD  →  WHO ARE YOU?  →  THE TOWN     │
   └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -142,7 +142,7 @@ Inbox addresses, local paths and her documents are kept out of this repository.
 ```bash
 npm install
 npm run dev       # http://localhost:5173
-npm test          # 261 unit tests (Vitest)
+npm test          # 263 unit tests (Vitest)
 npm run build     # strict type-check + production build
 ```
 

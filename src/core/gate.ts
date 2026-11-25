@@ -1,22 +1,21 @@
-// The front door: one question only the two of us can answer. The accepted answers are stored as
-// SHA-256 hashes, so the bundle does not spell them out; a pass is remembered on the device.
-// Owner: to change the question, edit the strings gate.question / gate.placeholder in i18n.ts and
-// regenerate ANSWERS with `npm run gate -- "answer one" "answer two"`.
+// The front door: one password, known to the two of us. It is stored as a SHA-256 hash, so the
+// bundle does not spell it out; a pass is remembered on the device.
+// Owner: to change the password, regenerate ANSWERS with `npm run gate -- "<the new password>"`
+// and change KEY's number, so that every device is asked again.
+// This keeps a passer-by out. It is not access control: the site is static and its files are public.
 import { sha256Hex } from './sha256';
 import { safeStorage } from './storage';
 
-const KEY = 'yi.gate';
+// "yi.gate" (no number) was the question the site asked until 1.23; a pass of that one no longer counts.
+const KEY = 'yi.gate.2';
 const store = safeStorage();
 
-/** Digits only: "9.20", "0920", "9 月 20 日" and "20260920" all reduce to something listed below. */
+/** Digits only, so separators typed out of habit ("-", ".", spaces) do not matter. */
 export const normalise = (s: string): string => s.replace(/\D+/g, '');
 
-// sha256 of: 920, 0920, 20260920, 260920
+// sha256 of the password's eight digits; exactly one.
 export const ANSWERS: readonly string[] = [
-  '728bf33aab1d32d4dca8fcc6a020d8baeb6b9910104541aa68c2d408154734fc',
-  '893e31ea586330e0d42f7700adce917622c9ae11d089d721e9729829a547ce2d',
   '48c2aea4aa532ace53a7d3cce44c843cccf31ff29f3d952a51634b551f3b293e',
-  '30c95397b2349ac10d32203afb0abc79e95a8e20781236ff7902cb7a287676e2',
 ];
 
 export async function hash(text: string): Promise<string> {

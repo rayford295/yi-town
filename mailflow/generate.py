@@ -23,18 +23,34 @@ PROMPT = """你在处理一份通过仪见小镇 /ask 发来的请求。先读 {
 
 
 
+def check_build_tool():
+    """允许执行的那个脚本不能被执行它的人改写：要求它带系统的“不可修改”标记。"""
+    tool = C.BUILD_TOOL
+    if not tool:
+        return None
+    flags = subprocess.run(["ls", "-lO", str(tool)], capture_output=True, text=True).stdout
+    if "uchg" not in flags:
+        raise RuntimeError(f"{tool} 没有锁定。运行：chflags uchg '{tool}'")
+    return str(tool)
+
+
 def main(folder):
     folder = Path(folder)
     (folder / "产出").mkdir(exist_ok=True)
     tri = (folder / "本地模型" / "triage.json")
     triage = tri.read_text(encoding="utf-8") if tri.exists() else "{}"
     prompt = (C.GENERATE_PROMPT or PROMPT).format(work=C.WORK_DIR, folder=folder, triage=triage)
-    cmd = [C.CLAUDE_BIN, "-p", prompt,
-           "--permission-mode", "acceptEdits",
-           "--add-dir", str(folder),
-           "--allowedTools", "Read", "Write", "Edit", "Glob", "Grep", "WebSearch",
-           f"Bash({C.WORK_DIR}/build.sh:*)", "Bash(./build.sh:*)",
-           "Bash(pdftoppm:*)", "Bash(pdftotext:*)", "Bash(pdfinfo:*)", "Bash(mkdir:*)", "Bash(cp:*)"]
+    # 邮件内容不可信，所以这里给的权限尽量小：
+    # - 能读写文件，但唯一能执行的是 BUILD_TOOL，它必须是只读且不可修改的（见 check_build_tool）；
+    # - 没有 cp、mkdir 之类的通用命令，默认也不联网搜索（查询词本身可以带出信息）。
+    tools = ["Read", "Write", "Edit", "Glob", "Grep"]
+    build = check_build_tool()
+    if build:
+        tools.append(f"Bash({build}:*)")
+    if C.ALLOW_WEB_SEARCH:
+        tools.append("WebSearch")
+    cmd = [C.CLAUDE_BIN, "-p", prompt, "--permission-mode", "acceptEdits",
+           "--add-dir", str(folder), "--allowedTools", *tools]
     # launchd 的环境里没有 USER，Claude 会因此读不到登录信息
     env = dict(os.environ, USER=getpass.getuser(), LOGNAME=getpass.getuser())
     tok = subprocess.run(["security", "find-generic-password", "-s", C.CLAUDE_TOKEN_SERVICE, "-w"],

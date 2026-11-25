@@ -1,4 +1,4 @@
-// The front door, shown before anything else until the question is answered once on this device.
+// The front door, shown before anything else until the password is entered once on this device.
 import './gate.css';
 import { t } from '../../core/i18n';
 import { tryGate } from '../../core/gate';
@@ -12,7 +12,7 @@ export function renderGate(root: HTMLElement, onPass: () => void): () => void {
       </header>
       <form class="gate-form card" id="gate-form" autocomplete="off">
         <label for="gate-answer">${t('gate.question')}</label>
-        <input id="gate-answer" name="answer" type="text" inputmode="numeric" placeholder="${t('gate.placeholder')}" required autofocus>
+        <input id="gate-answer" name="answer" type="password" inputmode="numeric" autocomplete="off" placeholder="${t('gate.placeholder')}" required autofocus>
         <button type="submit" class="cta">${t('gate.enter')}</button>
         <p class="gate-wrong" id="gate-wrong" hidden>${t('gate.wrong')}</p>
       </form>

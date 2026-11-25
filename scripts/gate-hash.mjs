@@ -1,4 +1,4 @@
-// Print the SHA-256 hashes to paste into src/core/gate.ts: npm run gate -- "0920" "20260920"
+// Print the SHA-256 hash to paste into src/core/gate.ts: npm run gate -- "<the password>"
 import { createHash } from 'node:crypto';
 const answers = process.argv.slice(2);
 if (!answers.length) { console.error('usage: npm run gate -- <answer> [more answers]'); process.exit(1); }

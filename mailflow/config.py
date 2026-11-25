@@ -29,6 +29,8 @@ TEXT_MODEL = "qwen3:14b"                 # 判断请求类型、提炼任务
 
 CLAUDE_BIN = str(Path.home() / ".local" / "bin" / "claude")
 CLAUDE_TIMEOUT = 60 * 45                 # 单次生成最长 45 分钟
+BUILD_TOOL = None                        # 允许 Claude 执行的唯一脚本（须先 chflags uchg 锁定）；None 表示不能执行任何命令
+ALLOW_WEB_SEARCH = False                 # 无人值守时默认不联网
 CLAUDE_TOKEN_SERVICE = "jingyi-mailflow-claude"  # 可选：钥匙串里的 Claude 长期令牌
 
 # 这条流程具体帮她做哪类事，写在 config_local.py 里，不进公开仓库。下面是通用的占位。
