@@ -1,6 +1,6 @@
 {
   "name": "yi-town",
-  "version": "1.24.0",
+  "version": "1.25.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && tsc --noEmit -p worker && vite build",
@@ -12,7 +12,8 @@
     "ring:thumbs": "python3 scripts/ring-thumbs.py",
     "banner": "node scripts/banner.ts",
     "icon": "node scripts/icon.ts && python3 scripts/icon-png.py",
-    "ask:deploy": "npx wrangler deploy -c worker/wrangler.toml"
+    "ask:deploy": "npx wrangler deploy -c worker/wrangler.toml",
+    "photos:deploy": "npx wrangler deploy -c worker/photos.toml"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^1.1.1",
+    "exifr": "^7.1.3",
     "leaflet": "^1.9.4",
     "three": "^0.186.1"
   },

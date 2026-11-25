@@ -40,8 +40,9 @@ const routes: Record<string, () => Promise<Page>> = {
   '/clinic': () => import('./features/clinic/clinic').then((m) => m.renderClinic),
   '/trip': () => import('./features/trip/trip').then((m) => m.renderTrip),
   '/ask': () => import('./features/ask/ask').then((m) => m.renderAsk),
+  '/photos': () => import('./features/photos/photos').then((m) => m.renderPhotos),
 };
-const viewClass: Record<string, string> = { '/': 'dashboard', '/town': 'world', '/journey': 'journey', '/start': 'start', '/met': 'home', '/map': 'map', '/moments': 'moments', '/tattoo': 'tattoo', '/gomoku': 'gomoku', '/songs': 'songs', '/stars': 'stars', '/poems': 'poems', '/ring': 'ring', '/letter': 'letter', '/birthday': 'theatre', '/wedding': 'theatre', '/sync': 'sync', '/cs': 'day', '/sz': 'day', '/clinic': 'clinic', '/trip': 'trip', '/ask': 'ask' };
+const viewClass: Record<string, string> = { '/': 'dashboard', '/town': 'world', '/journey': 'journey', '/start': 'start', '/met': 'home', '/map': 'map', '/moments': 'moments', '/tattoo': 'tattoo', '/gomoku': 'gomoku', '/songs': 'songs', '/stars': 'stars', '/poems': 'poems', '/ring': 'ring', '/letter': 'letter', '/birthday': 'theatre', '/wedding': 'theatre', '/sync': 'sync', '/cs': 'day', '/sz': 'day', '/clinic': 'clinic', '/trip': 'trip', '/ask': 'ask', '/photos': 'photos' };
 const app = document.querySelector<HTMLElement>('#app')!;
 let cleanup: (() => void) | undefined;
 let renderSeq = 0;   // a navigation that starts while a page is still loading wins
@@ -68,9 +69,9 @@ async function render(): Promise<void> {
     cleanup = renderGate(app.querySelector<HTMLElement>('#view')!, () => { void render(); });
     return;
   }
-  // The dashboard, the trip page and Ask Yifan need only the gate. The town's rules: pick a player
+  // The dashboard, the trip page, Ask Yifan and the album need only the gate. The town's rules: pick a player
   // first; a locked level sends you back to the town.
-  if (path === '/' || path === '/trip' || path === '/ask') { /* no player needed */ }
+  if (path === '/' || path === '/trip' || path === '/ask' || path === '/photos') { /* no player needed */ }
   else if (!getPlayer()) path = '/start';
   else if (path === '/start') path = '/town';
   else {
@@ -88,8 +89,10 @@ async function render(): Promise<void> {
   if (path === '/' || path === '/town') closeDoors();
   // While the picker stands in for another address (a /sync?c=… link on a fresh phone), that
   // address is kept so the picker can hand it back.
-  const want = path === asked().path ? path + asked().search : path;
-  if (path !== '/start' && (want !== location.pathname + location.search || location.hash)) history.replaceState(null, '', want);
+  // A hash that is a route (#/sync) is rewritten away; any other (the album's #key=…) is left for its page.
+  const keepHash = path === asked().path && location.hash && !location.hash.startsWith('#/') ? location.hash : '';
+  const want = (path === asked().path ? path + asked().search : path) + keepHash;
+  if (path !== '/start' && want !== location.pathname + location.search + location.hash) history.replaceState(null, '', want);
   const lang = getLang();
   document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
   document.title = `${t('site.title')} · ${lang === 'zh' ? 'Yi at First Sight' : '仪见钟情'}`;

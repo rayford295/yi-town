@@ -2,6 +2,18 @@
 
 Versions are tags of feeling more than of code; the site deploys on every push.
 
+## 1.25.0 (2026-11-25)
+
+- **Our Album** (`/photos`), the sixth card on the dashboard. Both of us add photos; a vision
+  model on Workers AI reads each one and writes a sentence in Chinese and in English and tags in
+  both. The page finds photos by those words, by a range of days and by who added them, as a grid
+  by month or on a travel map with one dotted line per trip. When and where come from the EXIF,
+  read in the browser before the photo is shrunk.
+- The photos are kept by a second Worker at `photos.jingyifan.love` (R2 for the pictures, D1 for
+  the rows). It is the first part of the site with real access control: a random album key,
+  given to each device once by a pairing link, since the gate's hash is in a public bundle.
+- 292 unit tests.
+
 ## 1.24.0 (2026-11-24)
 
 - The front door is a password now. It used to ask which day we met and took the date in several

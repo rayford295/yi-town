@@ -4,9 +4,9 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/for-two%20players-d3a557?style=flat-square&labelColor=0b2036" alt="for two players" />
-  <img src="https://img.shields.io/badge/products-5%20on%20the%20dashboard-d3a557?style=flat-square&labelColor=0b2036" alt="5 products on the dashboard" />
+  <img src="https://img.shields.io/badge/products-6%20on%20the%20dashboard-d3a557?style=flat-square&labelColor=0b2036" alt="6 products on the dashboard" />
   <img src="https://img.shields.io/badge/levels-9%20%2B%20an%20epilogue-d3a557?style=flat-square&labelColor=0b2036" alt="9 levels and an epilogue" />
-  <img src="https://img.shields.io/badge/tests-263%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="263 tests passing" />
+  <img src="https://img.shields.io/badge/tests-292%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="292 tests passing" />
   <img src="https://img.shields.io/badge/TypeScript-strict-d3a557?style=flat-square&labelColor=0b2036" alt="TypeScript strict" />
   <img src="https://img.shields.io/badge/art-drawn%20in%20code-d3a557?style=flat-square&labelColor=0b2036" alt="all art drawn in code" />
 </p>
@@ -47,12 +47,13 @@ stands in front of all of it.
   <tr>
     <td valign="top"><a href="src/features/ask/"><img src="public/media/dashboard/ask.png" alt="Ask Yifan card: an envelope sealed with a heart" /></a><br/><b>Ask Yifan</b> · <code>/ask</code><br/><sub>She writes what she needs and attaches files. It reaches his inbox, and the answer comes back by email.</sub></td>
     <td valign="top"><a href="https://rayford295.github.io/motionmirror/"><img src="public/media/dashboard/motionmirror.png" alt="MotionMirror card" /></a><br/><b>MotionMirror</b> · <sub>off-site</sub><br/><sub>One phone video, every movement made clear: Rayford's jump shot and Jingyi's badminton.</sub></td>
-    <td valign="top"><br/><br/><p align="center"><sub><i>The next one is still a seed.</i></sub></p></td>
+    <td valign="top"><a href="src/features/photos/"><img src="public/media/dashboard/photos.png" alt="Our Album card: three instant photos on a travel map" /></a><br/><b>Our Album</b> · <code>/photos</code><br/><sub>Both of us add photos; a model reads what is in each. Find them by words or days, or on a map of our trips.</sub></td>
   </tr>
 </table>
 
 The site exists in both languages and installs as an app that works offline. The town, the
-infirmary and the trip run in the browser and keep everything on the device.
+infirmary and the trip run in the browser and keep everything on the device; the album keeps
+its photos on a Worker behind a key of its own.
 
 ## ▶ How the Town Plays
 
@@ -105,8 +106,9 @@ written down here; the town tells you when you get there.
 
 ## ✉ From Her Message to His Answer
 
-Ask Yifan is the one part of the site with a back end, and the one part that keeps working while
-Yifan sleeps, thirteen hours behind her.
+Ask Yifan is one of the two parts of the site with a back end (the other is the album, whose
+Worker keeps the photos behind a key of its own: `worker/README.md`), and the one part that keeps
+working while Yifan sleeps, thirteen hours behind her.
 
 ```
   her phone            Cloudflare            his Mac, every ten minutes
@@ -130,7 +132,7 @@ Inbox addresses, local paths and her documents are kept out of this repository.
 |---|---|
 | [`src/`](src/) | The site. `core/` is shared; `features/` has one folder per feature, each with its own README |
 | [`public/`](public/) | Photos, music, models and the dashboard cards, one folder per feature |
-| [`worker/`](worker/) | The Ask Worker at `ask.jingyifan.love`: one endpoint that sends one email |
+| [`worker/`](worker/) | Two Workers: Ask at `ask.jingyifan.love` (one email per request) and the album at `photos.jingyifan.love` (R2, D1, Workers AI) |
 | [`mailflow/`](mailflow/) | The pipeline on Yifan's Mac that answers those emails (Python, Ollama, Claude) |
 | [`scripts/`](scripts/) | Drawing scripts for the banner, the icons and the dashboard cards; small tools |
 | [`ring/`](ring/) | The ring's Blender script and renders |
@@ -142,7 +144,7 @@ Inbox addresses, local paths and her documents are kept out of this repository.
 ```bash
 npm install
 npm run dev       # http://localhost:5173
-npm test          # 263 unit tests (Vitest)
+npm test          # 292 unit tests (Vitest)
 npm run build     # strict type-check + production build
 ```
 
@@ -158,6 +160,7 @@ Node 22. CI runs the tests and the build on every push.
 npm run banner       # redraw docs/banner.svg from the sprite data
 npm run icon         # redraw favicon.svg and the PNG icons from the sprites
 npm run ask:deploy   # deploy the Ask Worker (after npx wrangler login)
+npm run photos:deploy   # deploy the album Worker (set-up steps in worker/README.md)
 python3 mailflow/run.py   # one round of the mail flow; see mailflow/README.md for setup
 ```
 

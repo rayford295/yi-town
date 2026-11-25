@@ -4,6 +4,7 @@ import { t, type Key } from '../../core/i18n';
 import { LEVELS, getPlayer, getProgress } from '../../core/quest';
 import { playerName } from '../../core/quest-ui';
 import { tripStatus } from '../trip/plan';
+import { safeStorage } from '../../core/storage';
 
 export type Product = {
   id: string;
@@ -75,5 +76,18 @@ export const PRODUCTS: Product[] = [
     image: 'media/dashboard/motionmirror.png',
     external: true,
     status: () => t('dash.mm.status'),
+  },
+  {
+    // Our Album: both of us add photos; a vision model reads each one, and the page finds them by
+    // words, dates and place, as a grid or a travel map. The count is the last one this device saw.
+    id: 'photos',
+    route: '/photos',
+    title: 'dash.photos.title',
+    blurb: 'dash.photos.blurb',
+    image: 'media/dashboard/photos.png',
+    status: () => {
+      const n = Number(safeStorage().getItem('yi.photos.count') ?? 0);
+      return n > 0 ? t('dash.photos.count', { n }) : null;
+    },
   },
 ];

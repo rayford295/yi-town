@@ -17,3 +17,7 @@ mailflow/*.log
 mailflow/launchd.out
 mailflow/launchd.err
 mailflow/.lock
+
+# Local secrets for wrangler dev
+worker/.dev.vars
+worker/.wrangler/

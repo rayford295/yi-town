@@ -1,0 +1,27 @@
+# Our Album: the Worker behind https://jingyifan.love/photos. See worker/README.md.
+# Deploy with `npm run photos:deploy`. The album key is the secret PHOTOS_KEY, set once with
+# `npx wrangler secret put PHOTOS_KEY -c worker/photos.toml`; it is never written here.
+name = "yi-photos"
+main = "src/photos/index.ts"
+compatibility_date = "2026-11-01"
+workers_dev = false
+
+# Its own subdomain, like ask.jingyifan.love: a workers.dev address is unreliable from mainland China.
+[[routes]]
+pattern = "photos.jingyifan.love"
+custom_domain = true
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "yi-photos"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "yi-photos"
+database_id = "dca8c1e9-541b-49c4-b84b-7c3a8f995801"
+
+[ai]
+binding = "AI"
+
+[vars]
+VISION_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct"
