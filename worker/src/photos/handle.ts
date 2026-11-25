@@ -116,8 +116,9 @@ export const PROMPT = `You are labelling a private photo album kept by a couple,
 Look at the photo and answer with JSON only, no other text:
 {"zh": "一句简短自然的中文描述，不超过 30 个字", "en": "one short English sentence", "tags": ["..."]}
 For tags give 6 to 10 short lowercase words a person might search for: what is in it (food, cat,
-beach, skyline, snow), the kind of place, the mood or occasion. Give each tag in English and also in
-Chinese (for example "beach", "海边"). Do not guess who the people are or name them.`;
+beach, skyline, snow), the kind of place, the mood or occasion. Give each tag twice: once as an
+English word, once in Chinese characters (for example "beach", "海边"; "red carpet", "红毯").
+Never write pinyin or mix the two in one tag. Do not guess who the people are or name them.`;
 
 function base64(buf: ArrayBuffer | Uint8Array): string {
   const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
