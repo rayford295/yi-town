@@ -92,7 +92,7 @@ export async function isPassword(given: string, answers: readonly string[] = ANS
  * after the last one. A right key clears the count. */
 export const LOCK_AFTER = 10;
 export const LOCK_MS = 15 * 60 * 1000;
-type Attempt = { fails: number; last_at: string };
+
 
 /** Checks what the page sent about a photo; null when anything is off. */
 export function readUpload(raw: unknown): Upload | null {
@@ -185,17 +185,20 @@ export async function handle(
   const no = (status: number, reason: string) => json({ ok: false, reason }, status);
 
   if (req.method === 'OPTIONS') return new Response(null, { status: origin && ORIGINS.includes(origin) ? 204 : 403, headers: cors });
+  // Count the try first, in one statement, then check it: requests that arrive together each see
+  // their own count, so a burst cannot slip more than LOCK_AFTER guesses past the lock. The count
+  // starts again when the last try is older than LOCK_MS. CF-Connecting-IP is set by Cloudflare.
   const ip = req.headers.get('CF-Connecting-IP') ?? 'unknown';
-  const tries = await env.DB.prepare('SELECT fails, last_at FROM attempts WHERE ip = ?').bind(ip).first<Attempt>();
-  const recent = !!tries && now.getTime() - Date.parse(tries.last_at) < LOCK_MS;
-  if (recent && tries!.fails >= LOCK_AFTER) return no(429, 'locked');
+  const stale = new Date(now.getTime() - LOCK_MS).toISOString();
+  const tries = await env.DB.prepare(
+    `INSERT INTO attempts (ip, fails, last_at) VALUES (?, 1, ?)
+     ON CONFLICT(ip) DO UPDATE SET fails = CASE WHEN last_at < ? THEN 1 ELSE fails + 1 END, last_at = excluded.last_at
+     RETURNING fails`,
+  ).bind(ip, now.toISOString(), stale).first<{ fails: number }>();
+  if ((tries?.fails ?? 0) > LOCK_AFTER) return no(429, 'locked');
   const auth = req.headers.get('Authorization') ?? '';
-  if (!(await isPassword(auth.replace(/^Bearer\s+/i, ''), answers))) {
-    await env.DB.prepare('INSERT OR REPLACE INTO attempts (ip, fails, last_at) VALUES (?, ?, ?)')
-      .bind(ip, (recent ? tries!.fails : 0) + 1, now.toISOString()).run();
-    return no(401, 'key');
-  }
-  if (tries) await env.DB.prepare('DELETE FROM attempts WHERE ip = ?').bind(ip).run();
+  if (!(await isPassword(auth.replace(/^Bearer\s+/i, ''), answers))) return no(401, 'key');
+  await env.DB.prepare('DELETE FROM attempts WHERE ip = ?').bind(ip).run();
 
   const parts = new URL(req.url).pathname.split('/').filter(Boolean);   // photos[, id[, full|thumb|describe]]
   if (parts[0] !== 'photos') return no(404, 'missing');

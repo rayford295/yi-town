@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/for-two%20players-d3a557?style=flat-square&labelColor=0b2036" alt="for two players" />
   <img src="https://img.shields.io/badge/products-6%20on%20the%20dashboard-d3a557?style=flat-square&labelColor=0b2036" alt="6 products on the dashboard" />
   <img src="https://img.shields.io/badge/levels-9%20%2B%20an%20epilogue-d3a557?style=flat-square&labelColor=0b2036" alt="9 levels and an epilogue" />
-  <img src="https://img.shields.io/badge/tests-294%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="294 tests passing" />
+  <img src="https://img.shields.io/badge/tests-295%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="295 tests passing" />
   <img src="https://img.shields.io/badge/TypeScript-strict-d3a557?style=flat-square&labelColor=0b2036" alt="TypeScript strict" />
   <img src="https://img.shields.io/badge/art-drawn%20in%20code-d3a557?style=flat-square&labelColor=0b2036" alt="all art drawn in code" />
 </p>
@@ -144,7 +144,7 @@ Inbox addresses, local paths and her documents are kept out of this repository.
 ```bash
 npm install
 npm run dev       # http://localhost:5173
-npm test          # 294 unit tests (Vitest)
+npm test          # 295 unit tests (Vitest)
 npm run build     # strict type-check + production build
 ```
 

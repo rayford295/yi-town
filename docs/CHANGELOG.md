@@ -13,7 +13,7 @@ Versions are tags of feeling more than of code; the site deploys on every push.
   over five free databases, the pictures; no card on the account). Every request carries the site's password, checked
   against the gate's hash; ten wrong tries lock an address out for fifteen minutes. A device
   remembers the password from the gate, so the album opens without asking again.
-- 294 unit tests.
+- 295 unit tests.
 
 ## 1.24.0 (2026-11-24)
 

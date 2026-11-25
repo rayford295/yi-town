@@ -24,16 +24,20 @@ function fakeDb(preUsed = 0) {
       const stmt = {
         bind: (...v: unknown[]) => { args = v; return stmt; },
         first: async <T>() => {
-          if (sql.includes('FROM attempts')) return (attempts.get(String(args[0])) ?? null) as T | null;
+          if (sql.includes('INTO attempts')) {   // the upsert ... RETURNING fails
+            const [ip, at, stale] = args.map(String);
+            const old = attempts.get(ip);
+            const fails = old && old.last_at >= stale ? old.fails + 1 : 1;
+            attempts.set(ip, { fails, last_at: at });
+            return { fails } as T;
+          }
           if (sql.includes('SUM(bytes)')) return { used: preUsed + [...pics.values()].reduce((n, p) => n + p.bytes, 0) } as T;
           if (sql.includes('FROM pictures')) { const p = pics.get(`${args[0]}/${args[1]}`); return (p ? { data: p.data } : null) as T | null; }
           return (rows.get(String(args[0])) ?? null) as T | null;
         },
         all: async <T>() => ({ results: [...rows.values()].sort((a, b) => (a.taken_at < b.taken_at ? 1 : -1)) as T[] }),
         run: async () => {
-          if (sql.includes('INTO attempts')) {
-            attempts.set(String(args[0]), { fails: Number(args[1]), last_at: String(args[2]) });
-          } else if (sql.startsWith('DELETE FROM attempts')) {
+          if (sql.startsWith('DELETE FROM attempts')) {
             attempts.delete(String(args[0]));
           } else if (sql.includes('INTO pictures')) {
             const [id, size, bytes, data] = args as [string, string, number, ArrayBuffer];
@@ -112,8 +116,17 @@ describe('the album key', () => {
     for (let i = 0; i < LOCK_AFTER; i++) expect((await handle(from('1.1.1.1', `0000000${i}`), env, geo, at(i * 1000))).status).toBe(401);
     expect((await handle(from('1.1.1.1', KEY), env, geo, at(20_000))).status).toBe(429);      // even the right key
     expect((await handle(from('2.2.2.2', KEY), env, geo, at(20_000))).status).toBe(200);      // another address is fine
-    expect((await handle(from('1.1.1.1', KEY), env, geo, at(9_000 + LOCK_MS + 1))).status).toBe(200);   // lock over
-    expect((await handle(from('1.1.1.1', '00000000'), env, geo, at(9_000 + LOCK_MS + 2))).status).toBe(401);   // count started again
+    expect((await handle(from('1.1.1.1', KEY), env, geo, at(20_000 + LOCK_MS + 1))).status).toBe(200);   // lock over
+    expect((await handle(from('1.1.1.1', '00000000'), env, geo, at(20_000 + LOCK_MS + 2))).status).toBe(401);   // count started again
+  });
+  it('a burst of wrong tries at the same moment still gets only ten checks', async () => {
+    const { env } = fakeEnv();
+    const now = new Date('2027-02-05T10:00:00Z');
+    const burst = Array.from({ length: 30 }, (_, i) => handle(new Request('https://photos.jingyifan.love/photos', {
+      headers: { Origin: SITE, Authorization: `Bearer 0000${String(i).padStart(4, '0')}`, 'CF-Connecting-IP': '3.3.3.3' } }), env, geo, now));
+    const codes = (await Promise.all(burst)).map((r) => r.status);
+    expect(codes.filter((c) => c === 401)).toHaveLength(LOCK_AFTER);
+    expect(codes.filter((c) => c === 429)).toHaveLength(30 - LOCK_AFTER);
   });
   it('answers CORS only for the site', async () => {
     const { env } = fakeEnv();
