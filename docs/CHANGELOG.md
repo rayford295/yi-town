@@ -12,6 +12,12 @@ Versions are tags of feeling more than of code; the site deploys on every push.
   script, which must carry the system's immutable flag or the flow refuses to start; it has no
   `cp` or `mkdir` and, unattended, no web search. The DKIM result is now parsed by method, with
   comments and quoted strings removed, in place of a substring match.
+- The mail flow's model now works inside the one request's folder; the rule files it reads and
+  the script it may run must all be locked (`chflags uchg`), and the script checks its arguments.
+  The DKIM header is read in a single pass that tracks quotes and comments together.
+- The paper has a second version (`paper/`, 24 November): the infirmary, the trip page, the
+  request box and its answering pipeline, the corrected claim about a backend, 16 pages. One
+  reference of the first version was missing an author and is corrected. Not yet sent to arXiv.
 - 263 unit tests.
 
 ## 1.23.0 (2026-11-24)

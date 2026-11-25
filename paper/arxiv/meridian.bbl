@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{37}
+\begin{thebibliography}{41}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -74,6 +74,17 @@
 \newblock
 
 
+\bibitem[Crocker et~al\mbox{.}(2011)]%
+        {rfc6376}
+\bibfield{author}{\bibinfo{person}{D. Crocker}, \bibinfo{person}{T. Hansen}, {and} \bibinfo{person}{M. Kucherawy}.} \bibinfo{year}{2011}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{{DomainKeys Identified Mail (DKIM) Signatures}}}.
+\newblock \bibinfo{type}{RFC} 6376. \bibinfo{institution}{Internet Engineering Task Force}.
+\newblock
+\href{https://doi.org/10.17487/RFC6376}{doi:\nolinkurl{10.17487/RFC6376}}
+\newblock
+\shownote{The RFC names the three as editors}.
+
+
 \bibitem[Desjardins and Ball(2018)]%
         {desjardins2018tensions}
 \bibfield{author}{\bibinfo{person}{Audrey Desjardins} {and} \bibinfo{person}{Aubree Ball}.} \bibinfo{year}{2018}\natexlab{}.
@@ -115,6 +126,14 @@
 \href{https://doi.org/10.1145/985921.985947}{doi:\nolinkurl{10.1145/985921.985947}}
 
 
+\bibitem[Greshake et~al\mbox{.}(2023)]%
+        {greshake2023injection}
+\bibfield{author}{\bibinfo{person}{Kai Greshake}, \bibinfo{person}{Sahar Abdelnabi}, \bibinfo{person}{Shailesh Mishra}, \bibinfo{person}{Christoph Endres}, \bibinfo{person}{Thorsten Holz}, {and} \bibinfo{person}{Mario Fritz}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{Not What You've Signed Up For: Compromising Real-World {LLM}-Integrated Applications with Indirect Prompt Injection}. In \bibinfo{booktitle}{\emph{Proceedings of the 16th ACM Workshop on Artificial Intelligence and Security}} \emph{(\bibinfo{series}{AISec '23})}. \bibinfo{publisher}{ACM}, \bibinfo{address}{New York, NY, USA}, \bibinfo{pages}{79--90}.
+\newblock
+\href{https://doi.org/10.1145/3605764.3623985}{doi:\nolinkurl{10.1145/3605764.3623985}}
+
+
 \bibitem[Halln{\"a}s and Redstr{\"o}m(2001)]%
         {hallnas2001slow}
 \bibfield{author}{\bibinfo{person}{Lars Halln{\"a}s} {and} \bibinfo{person}{Johan Redstr{\"o}m}.} \bibinfo{year}{2001}\natexlab{}.
@@ -122,6 +141,15 @@
 \newblock \bibinfo{journal}{\emph{Personal and Ubiquitous Computing}} \bibinfo{volume}{5}, \bibinfo{number}{3} (\bibinfo{year}{2001}), \bibinfo{pages}{201--212}.
 \newblock
 \href{https://doi.org/10.1007/PL00000019}{doi:\nolinkurl{10.1007/PL00000019}}
+
+
+\bibitem[Hancock et~al\mbox{.}(2020)]%
+        {hancock2020aimc}
+\bibfield{author}{\bibinfo{person}{Jeffrey~T. Hancock}, \bibinfo{person}{Mor Naaman}, {and} \bibinfo{person}{Karen Levy}.} \bibinfo{year}{2020}\natexlab{}.
+\newblock \showarticletitle{{AI}-Mediated Communication: Definition, Research Agenda, and Ethical Considerations}.
+\newblock \bibinfo{journal}{\emph{Journal of Computer-Mediated Communication}} \bibinfo{volume}{25}, \bibinfo{number}{1} (\bibinfo{year}{2020}), \bibinfo{pages}{89--100}.
+\newblock
+\href{https://doi.org/10.1093/jcmc/zmz022}{doi:\nolinkurl{10.1093/jcmc/zmz022}}
 
 
 \bibitem[Hassenzahl et~al\mbox{.}(2012)]%
@@ -157,6 +185,14 @@
 \newblock \bibinfo{booktitle}{\emph{How Games Move Us: Emotion by Design}}.
 \newblock \bibinfo{publisher}{MIT Press}, \bibinfo{address}{Cambridge, MA}.
 \newblock
+
+
+\bibitem[Jakesch et~al\mbox{.}(2019)]%
+        {jakesch2019aimc}
+\bibfield{author}{\bibinfo{person}{Maurice Jakesch}, \bibinfo{person}{Megan French}, \bibinfo{person}{Xiao Ma}, \bibinfo{person}{Jeffrey~T. Hancock}, {and} \bibinfo{person}{Mor Naaman}.} \bibinfo{year}{2019}\natexlab{}.
+\newblock \showarticletitle{{AI}-Mediated Communication: How the Perception That Profile Text Was Written by {AI} Affects Trustworthiness}. In \bibinfo{booktitle}{\emph{Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems}} \emph{(\bibinfo{series}{CHI '19})}. \bibinfo{publisher}{ACM}, \bibinfo{address}{New York, NY, USA}, \bibinfo{pages}{1--13}.
+\newblock
+\href{https://doi.org/10.1145/3290605.3300469}{doi:\nolinkurl{10.1145/3290605.3300469}}
 
 
 \bibitem[Jiang and Hancock(2013)]%
@@ -218,7 +254,7 @@
 
 \bibitem[Lugaresi et~al\mbox{.}(2019)]%
         {lugaresi2019mediapipe}
-\bibfield{author}{\bibinfo{person}{Camillo Lugaresi}, \bibinfo{person}{Jiuqiang Tang}, \bibinfo{person}{Hadon Nash}, \bibinfo{person}{Chris McClanahan}, \bibinfo{person}{Esha Uboweja}, \bibinfo{person}{Michael Hays}, \bibinfo{person}{Fan Zhang}, \bibinfo{person}{Chuo-Ling Chang}, \bibinfo{person}{Ming~Guang Yong}, \bibinfo{person}{Juhyun Lee}, \bibinfo{person}{Wan-Teh Chang}, \bibinfo{person}{Manfred Georg}, {and} \bibinfo{person}{Matthias Grundmann}.} \bibinfo{year}{2019}\natexlab{}.
+\bibfield{author}{\bibinfo{person}{Camillo Lugaresi}, \bibinfo{person}{Jiuqiang Tang}, \bibinfo{person}{Hadon Nash}, \bibinfo{person}{Chris McClanahan}, \bibinfo{person}{Esha Uboweja}, \bibinfo{person}{Michael Hays}, \bibinfo{person}{Fan Zhang}, \bibinfo{person}{Chuo-Ling Chang}, \bibinfo{person}{Ming~Guang Yong}, \bibinfo{person}{Juhyun Lee}, \bibinfo{person}{Wan-Teh Chang}, \bibinfo{person}{Wei Hua}, \bibinfo{person}{Manfred Georg}, {and} \bibinfo{person}{Matthias Grundmann}.} \bibinfo{year}{2019}\natexlab{}.
 \newblock \bibinfo{title}{{MediaPipe}: A Framework for Building Perception Pipelines}.
 \newblock
 \showeprint[arxiv]{1906.08172}

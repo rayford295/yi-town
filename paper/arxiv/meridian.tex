@@ -70,24 +70,25 @@ in an \ini{I}nteractive, \ini{A}synchronous \ini{N}eighbourhood}
 
 
 \begin{abstract}
-How can shared memories become playable structures for partners who live in different time zones?
-We present MERIDIAN, a pre-deployment design case of Yi Town, a bilingual browser game developed
-by one member of a long-distance couple as a gift for the other. Nine levels translate personally
-meaningful events, places and cultural references into tasks within a navigable pixel town.
-A birthday prologue and a fictional wedding frame the intended experience. Drawing on research
-through design, we reconstruct four design changes from 109 development commits, 28 changelog
-versions and three design specifications. These records support six situated design commitments,
-including memory-derived mechanics, staged access, local progress storage and bilingual coverage.
-The implementation combines a union-based progress model with manually exchanged, checksummed
-codes and time-zone-dependent scenery. An implementation audit reproduced 153 passing unit tests
-and examined all 1,024 canonical progress codes, while identifying limits involving resets,
-unversioned level registries and residual transcription errors. The application has no
-author-operated backend for progress, but external media services and browser speech recognition
-limit its privacy and offline guarantees. No recipient evaluation or relationship outcomes are
-reported. The contribution is an inspectable account of design decisions and their trade-offs,
-including the tension between authoring a personal gift and preserving the recipient's freedom
-to interpret, decline or reshape it. The game is playable at \url{https://jingyifan.love} and its
-source is public at \url{https://github.com/rayford295/yi-town}.
+How can shared memories become playable structures for partners who live in different time zones,
+and what becomes of such a gift once it is in use? We present MERIDIAN, a design case of Yi Town,
+a bilingual browser game developed by one member of a long-distance couple as a gift for the
+other. Nine levels translate personally meaningful events, places and cultural references into
+tasks within a navigable pixel town, framed by a birthday prologue and a fictional wedding. This
+second version extends the record by four weeks. Drawing on research through design, we
+reconstruct seven design changes from 147 commits, 36 changelog versions and four design
+specifications. In those weeks the site gained three products that are not levels: an infirmary
+for the days after a quarrel, which began with a remark by the recipient; a page for her booked
+flight, which replaces a symbolic ticket with a real one; and a request box whose messages are
+answered, while the designer sleeps, by a pipeline of a local language model and a hosted one.
+The request box ends the first version's claim of no author-operated backend, and we trace where
+her files now travel. An audit reproduced 263 passing unit tests; the progress model is unchanged
+and keeps its exhaustive check of 1,024 codes. The answering pipeline was tested in parts; at the time of writing it had
+stopped one real request for the designer and completed none. No recipient evaluation or relationship outcome
+is reported. The contribution is an inspectable account of design decisions and their trade-offs:
+between authoring a gift and leaving the recipient free to decline or reshape it, and between
+being reachable across thirteen hours and answering in person. The site is at
+\url{https://jingyifan.love} and its source is public at \url{https://github.com/rayford295/yi-town}.
 
 \end{abstract}
 
@@ -109,7 +110,8 @@ source is public at \url{https://github.com/rayford295/yi-town}.
 \ccsdesc[300]{Applied computing~Computer games}
 
 \keywords{intimate computing, long-distance relationships, autobiographical design, research through design,
-games for two, local-first software, bilingual interfaces, pixel art, ceremony, surprise}
+games for two, local-first software, bilingual interfaces, pixel art, ceremony, surprise,
+AI-mediated communication}
 
 \begin{teaserfigure}
   \centering
@@ -174,21 +176,36 @@ and \emph{intimacy} names the intended qualities of recognition, affection and s
 The central design move is to make a memory shape an action or a rule, rather than only illustrate
 an interface.
 
-The paper reports an artefact and a retrospective reconstruction of its development before the
-recipient's planned first play on 31 October 2026. It draws on research through design and
-autobiographical design, without claiming the extensive lived use associated with mature
-first-person studies~\cite{zimmerman2007rtd,gaver2012expect,neustaedter2012autobiographical}.
-Its contributions are:
+The first version of this paper (30 October 2026) reported the artefact and a retrospective
+reconstruction of its development before the recipient's planned first play on 31 October 2026.
+This second version keeps that account and extends the record to 24 November 2026. In those four
+weeks the site stopped being one game. Its front page now lists five cards, and three of them
+are products of a different kind: a place to hide after a quarrel, a page for a booked flight,
+and a box for asking the designer for help. They matter to the first version's argument for two
+reasons. One of them began with something the recipient said, which is the first trace in the
+record of the recipient reshaping the gift. Another gave the site its first server and, a day
+later, an automated pipeline that answers her in the designer's place while he sleeps.
+
+The paper draws on research through design and autobiographical design, without claiming the
+extensive lived use associated with mature first-person
+studies~\cite{zimmerman2007rtd,gaver2012expect,neustaedter2012autobiographical}. It still reports
+no recipient evaluation. Its contributions are:
 \begin{enumerate}[leftmargin=*,itemsep=2pt,topsep=2pt]
   \item A documented design case that translates autobiographical material into nine game levels
   and staged ceremonies (Sections~\ref{sec:method} and~\ref{sec:experience}).
-  \item Six situated design commitments and four traceable development episodes, with explicit
+  \item Six situated design commitments and seven traceable development episodes, with explicit
   distinctions between recorded changes, interpretations and unevaluated intentions
   (Table~\ref{tab:commitments}; Section~\ref{sec:log}).
   \item An implementation account and verification audit of local progress, manual code exchange
   and selected interface properties, together with their privacy and reliability limits
   (Section~\ref{sec:system}).
+  \item New in this version: an account of what the gift became in its first four weeks of
+  existence beside its recipient (Section~\ref{sec:after}), including the path a request takes
+  through a server, a local model and a hosted model (Section~\ref{sec:askpath}), and what that
+  path does to the first version's privacy claims and to the meaning of an answer
+  (Sections~\ref{sec:privacy} and~\ref{sec:delegated}).
 \end{enumerate}
+Section~\ref{sec:v2} lists what changed between the versions.
 
 %% ===================================================================================
 
@@ -245,6 +262,16 @@ recognition remain part of its infrastructure.
 Keeping progress local also does not protect personal images that are distributed as static
 assets; visual content can expose location information~\cite{yang2024geolocator}.
 
+\subsection{Answers Written by Machines}
+Hancock et al.\ define AI-mediated communication as interpersonal communication in which an
+agent modifies, augments or generates messages on a communicator's
+behalf~\cite{hancock2020aimc}, and Jakesch et al.\ found that text believed to be written by AI
+was trusted less once readers suspected a mix of human and machine
+authorship~\cite{jakesch2019aimc}. Systems that let a language model act on text from outside
+also inherit a security problem: instructions hidden in the content can redirect the
+model~\cite{greshake2023injection}. The request box in Section~\ref{sec:askpath} raises both
+questions inside one couple.
+
 %% ===================================================================================
 
 \section{Design Context and Method}\label{sec:method}
@@ -269,24 +296,43 @@ phone-oriented interface.
     2026-10-17 & First video call; the hand-drawn ticket CYF925 \\
     2026-10-23 & First Gomoku game, on a Zoom whiteboard \\
     2026-10-24 & First commit of \yt{} \\
+    2026-10-30 & Repository made public; first version of this paper \\
     2026-10-31 & Jingyi's birthday (Scorpio); intended first recipient play \\
-    2027-02-05 & Planned meeting; symbolic ticket CYF925; countdown target \\
+    2026-11-04 & The infirmary, after Jingyi's remark of 3 November \\
+    2026-11-08 & Jingyi books her flights; the trip page \\
+    2026-11-24 & The request box, its server and the answering pipeline \\
+    2027-02-04 & Her flight lands in New York; countdown target since 8 November \\
+    2027-02-05 & First planned meeting date; symbolic ticket CYF925, kept as a memory \\
     \bottomrule
   \end{tabular}
 \end{table}
 
 
 \subsection{Scope, Corpus and Reconstruction}
-The design corpus comprises 109 commits dated 24--28 October 2026, 28 changelog entries from
-version 0.1.0 to 1.17.0, and three specifications for the site, quest and town. The development
-cut-off is commit \code{55440ae}.
+The first version's corpus comprised 109 commits dated 24--28 October 2026, 28 changelog entries
+from version 0.1.0 to 1.17.0, and three specifications for the site, quest and town, with a
+cut-off at commit \code{55440ae}. This version extends the cut-off to commit \code{c1303f4}
+(24 November 2026, version 1.24.0): 147 commits, 36 changelog entries and a fourth specification,
+for the request box. The count of commits is that of the public branch after the rewriting of
+24 November described in Section~\ref{sec:privacy}, which merged five commits into two. The 38
+added commits are unevenly spread: the infirmary and the trip page
+fall in the first eight days of November, and the request box, its server and the answering
+pipeline in two days at the end.
 Yifan directed the design, supplied the autobiographical material and tested both player roles,
 with substantial implementation assistance from an AI coding assistant. Jingyi is the intended
 recipient. This account reports no interview, diary, recipient play session or relationship measure.
 
-For the present reconstruction, we inspect the documented changes underlying four episodes:
-replacing Pictionary, changing the ring's completion condition, correcting represented routines,
-and revising the entry gate (Section~\ref{sec:log}). Each episode links a source change to an
+The added record holds three traces that originate with the recipient: a remark of hers quoted in
+the changelog, a flight she booked, and requests she sent through the request box. We report that
+these exist and what the designer built in response. We do not report the content of her
+requests, and we treat none of the three as an evaluation. Whether and how the first play of
+31 October went is not part of the corpus, and we make no claim about it.
+
+For the present reconstruction, we inspect the documented changes underlying seven episodes.
+Four are from the first version: replacing Pictionary, changing the ring's completion condition,
+correcting represented routines, and revising the entry gate. Three are new: building the
+infirmary from a remark, replacing the symbolic ticket, and reversing a stated non-goal of the
+request box (Section~\ref{sec:log}). Each episode links a source change to an
 interpretation of the design trade-off. The selection illustrates decisions discussed in this
 paper rather than an exhaustive coding of all commits. Version history establishes what changed
 and when, not the designer's unrecorded motivation or the recipient's response.
@@ -300,8 +346,9 @@ for the other partner's perspective. The six commitments below are situated desi
 reconstructed from the artefact and log, not validated principles.
 
 \subsection{Six Design Commitments}
-We articulate six commitments from this reconstruction of the five-day development period. Table~\ref{tab:commitments} maps each to
-the mechanisms that realise it.
+We articulate six commitments from the reconstruction of the first five days of development.
+Table~\ref{tab:commitments} maps each to the mechanisms that realise it. They were written for
+the town; Section~\ref{sec:after} asks which of them the later products keep.
 
 
 \begin{description}[leftmargin=0pt,labelwidth=0pt,labelsep=0pt,style=nextline,itemsep=2pt,topsep=2pt,font=\normalfont\scshape]
@@ -341,16 +388,20 @@ the mechanisms that realise it.
 \section{The Experience}\label{sec:experience}
 
 \subsection{The Front Door}
-The site opens on a single question. The answer, a date both players know, is accepted in
-several spellings: its digits are compared against SHA-256 hashes~\cite{fips1804}. Writing
+The site opens on a single prompt. At the first version it was a question, and the answer, a
+date both players know, was accepted in four spellings. Since version 1.24 it is a password
+field that accepts one spelling, the date's eight digits. In both forms the digits typed are
+compared against SHA-256 hashes~\cite{fips1804}. Writing
 $\delta(a)$ for the digits of an answer $a$ in order, $H$ for SHA-256 and $\mathcal{A}$ for the
-four stored digests,
+stored digests, four at first and now one,
 \begin{equation}\label{eq:gate}
   \mathrm{pass}(a) \iff H\big(\delta(a)\big) \in \mathcal{A} .
 \end{equation}
 Hashing changes how the answer is compared, but the date also appears in the game's own narrative;
-it is a recognition question, not a secret. Behind it is a dashboard that lists everything the couple
-build under the domain (Figure~\ref{fig:front}a), of which \yt{} is the first. Choosing the town
+it is a recognition question, not a secret, and calling it a password does not make it one. Behind it is a dashboard that lists everything the couple
+build under the domain (Figure~\ref{fig:front}a), of which \yt{} is the first; the figure shows
+it as it was at the first version, with one card, and Section~\ref{sec:after} describes the four
+added since. Choosing the town
 asks \emph{Who are you?} (Figure~\ref{fig:front}b). Progress is kept per player on each device,
 so both can play on one phone.
 
@@ -635,12 +686,107 @@ recognition where supported, Coffee carries the rings down the aisle on a red pi
 \end{figure}
 
 %% ===================================================================================
+\section{After the Town}\label{sec:after}
+The first version described a finished gift with a beginning and an end. In the four weeks that
+followed, the dashboard gained four cards (Figure~\ref{fig:cards}). Three are products kept in
+the same repository and described here; the fifth card links to a separate project of the
+couple's and is not discussed. None of the three is a level. None has a lock, none counts toward
+progress, and nothing in them waits to be revealed, so staged access (\dc{2}) and delayed
+disclosure (\dc{6}) do not apply to them. Table~\ref{tab:after} sets them against the
+commitments.
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[b]{0.325\columnwidth}\includegraphics[width=\linewidth]{figures/card-clinic.jpg}\caption{Infirmary}\end{subfigure}\hfill
+  \begin{subfigure}[b]{0.325\columnwidth}\includegraphics[width=\linewidth]{figures/card-trip.jpg}\caption{Trip}\end{subfigure}\hfill
+  \begin{subfigure}[b]{0.325\columnwidth}\includegraphics[width=\linewidth]{figures/card-ask.jpg}\caption{Request box}\end{subfigure}\\[3pt]
+  \includegraphics[width=0.9\columnwidth]{figures/clinic-town.jpg}
+  \caption{After the town. Top: the pictures on three of the dashboard's cards, each drawn by a
+  script in the repository. Bottom: the infirmary as a house in the town, north-west of the
+  fountain, with the talk box that opens at its door. It has no number on its roof and no cat at
+  its door.}
+  \Description{Three small pixel pictures: a pink house with a red cross, two cities joined by a
+  dotted route with a plane, and an envelope sealed with a heart. Below, a screenshot of the pixel
+  town with a pink-roofed house marked by a cross and a dialogue box in Chinese.}
+  \label{fig:cards}
+\end{figure}
+
+\begin{table}[t]
+  \caption{The three later products against the commitments written for the town.
+  \emph{kept}: the product follows it; \emph{n/a}: nothing in the product for it to govern;
+  \emph{broken}: the product departs from it by design.}
+  \label{tab:after}
+  \small
+  \begin{tabular}{@{}p{0.34\columnwidth}ccc@{}}
+    \toprule
+    Commitment & Infirmary & Trip & Request box \\
+    \midrule
+    \dc{1} Memory-derived mechanics & kept & n/a & n/a \\
+    \dc{2} Staged access & n/a & n/a & n/a \\
+    \dc{3} Local state, no backend & kept & kept & broken \\
+    \dc{4} Bilingual coverage & kept & kept & kept \\
+    \dc{5} Drawn in code & kept & kept & kept \\
+    \dc{6} Delayed disclosure & n/a & n/a & n/a \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{The Infirmary}
+On 3 November the recipient said, as the changelog records it,
+``\zh{以后我受伤了我就不跟你说话了，我就躲进去}'' (``from now on, when I am hurt I will not talk to
+you; I will hide in there''). The infirmary was added the next day (\code{397db28}) as a pink
+house by the square and as the second card. A visitor says what hurts, choosing among a quarrel,
+a hurt, missing the other without wanting to speak first, and plain tiredness. Three slow
+breaths follow, which can be skipped. Then the page shows a letter that the other partner wrote
+in advance for that hurt. A cabinet gives one-line notes at random, and a chart takes private
+lines that stay in the browser's local storage.
+
+Two details carry the design. The letter opens with what its writer is doing at that moment,
+computed from the clock in the writer's city and an authored schedule, for example that it is
+past three in the morning there and he is asleep. The same caveat applies as to the city days in
+Section~\ref{sec:days}: this is a schedule, not sensed presence. And leaving offers one button,
+``tell them I am out'', which hands the phone's share sheet a single line with the length of the
+visit. Nothing is sent without that tap, and the dashboard card shows no count of visits, because
+how often someone has hidden is theirs alone.
+
+The authorship of the letters needs stating exactly. There are four letters and eighteen notes
+for each partner. Both sets were first written on 4 November as drafts ``in each one's voice, for
+each to rewrite'' (\code{73e54bc}). By the cut-off the record shows one of Yifan's letters
+replaced with his own text (\code{dc62d23}) and no revision of the set attributed to Jingyi. The
+words the infirmary shows a visitor as hers are therefore, on the record, words written for her.
+
+\subsection{See You in New York}
+The first version's countdown pointed at a symbolic ticket, hand-drawn during a video call. On
+8 November Jingyi booked her flights, and the site followed (\code{d9de84b}): the countdown and
+the gold line on the Love Map now end at her landing on 4 February 2027, and the page for the
+trip shows both legs as boarding passes with local times. Its clock knows five phases: before
+departure, in the air, together, flying home, and home. During the stay it counts ``day $n$ of
+11''. Below it is an itinerary with one row for each day, to be written and photographed as the
+days happen; an unwritten day reads ``still growing''. The hand-drawn ticket stays in the game as
+a memory, in the Moments level and the first level's quiz. The page asks for no player, since it
+has no progress to keep.
+
+\subsection{Ask Yifan}
+The fourth card opens a composer like that of a chat application: a text box, a paperclip, drag
+and drop, and paste for screenshots (\code{ea2c088}, 24 November). Jingyi writes what she needs
+help with, attaches up to ten files and 18\,MB, and sends. Her request reaches Yifan's inbox as
+one email with the files attached. What she sent stays on her device as bubbles marked sending,
+sent or failed; a failed send keeps its text and files and offers to try again. The specification
+describes the page as one-way on purpose: the answer was to come over the couple's usual
+messaging, or as the thing done.
+
+A browser cannot send an email with attachments, so this product required the site's first
+server-side code, and within a day it acquired an automated answerer. Both are described in
+Section~\ref{sec:askpath}. We say nothing in this paper about what her requests ask for.
+
+%% ===================================================================================
 \section{System}\label{sec:system}
 
 \subsection{Architecture}
 \yt{} is a static single-page application in strict TypeScript, built with Vite and served from
 static hosting under the couple's domain (Figure~\ref{fig:arch}). The deployment configuration
-targets GitHub Pages. There is no author-operated backend for progress. Each feature
+targets GitHub Pages. There is no author-operated backend for progress; since version 1.22 there
+is one for requests (Section~\ref{sec:askpath}), which Figure~\ref{fig:arch} does not show. Each feature
 is a folder (\code{src/features/<name>/}) with its page module, styles, data, tests and a README,
 and each page is a function \code{render(root) $\Rightarrow$ cleanup} loaded lazily by a path
 router, so the main bundle carries only the shell and the town. Heavy modules (Leaflet for the map,
@@ -1024,38 +1170,129 @@ about a flat, not a ring. The test guards the dictionary only; assets, routes, s
 visual cues lie outside it.
 
 
+\subsection{From Her Message to His Answer}\label{sec:askpath}
+Figure~\ref{fig:askpath} shows the path of one request. It has two halves, built a day apart.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+      font=\scriptsize\sffamily,
+      box/.style={draw=navy, line width=0.6pt, fill=cream, rounded corners=1.5pt, align=center, inner sep=3pt, minimum height=7mm, minimum width=1.55cm},
+      ext/.style={box, dashed, fill=white},
+      loc/.style={box, fill=gold!25},
+      arr/.style={-{Stealth[length=1.6mm]}, navy, line width=0.5pt}]
+    \node[box] (page) {Request page\\\tiny her phone};
+    \node[ext, right=4mm of page] (worker) {Worker\\\tiny Cloudflare};
+    \node[ext, right=4mm of worker] (mail) {His mailbox\\\tiny Gmail};
+    \node[loc, below=7mm of mail] (fetch) {Fetch\\\tiny DKIM check};
+    \node[loc, left=4mm of fetch] (local) {Local model\\\tiny read, sort, refuse};
+    \node[ext, left=4mm of local] (hosted) {Hosted model\\\tiny does the work};
+    \node[loc, below=7mm of hosted] (send) {Send\\\tiny one fixed address};
+    \node[ext, right=4mm of send] (her) {Her mailbox};
+    \node[navy, font=\scriptsize\itshape, anchor=west] at ($(her.east)+(2mm,0)$) {gold: his laptop};
+    \draw[arr] (page) -- (worker); \draw[arr] (worker) -- (mail); \draw[arr] (mail) -- (fetch);
+    \draw[arr] (fetch) -- (local); \draw[arr] (local) -- (hosted); \draw[arr] (hosted) -- (send);
+    \draw[arr] (send) -- (her);
+  \end{tikzpicture}
+  \caption{The path of one request. Gold boxes run on the designer's laptop; dashed boxes are
+  services operated by others. Her text and files pass through four outside parties on the way
+  to an answer: the edge platform, his mail provider, the provider of the hosted model, and her
+  own mail provider.}
+  \Description{A flow of eight boxes in three rows: request page, worker, his mailbox; then fetch,
+  local model, hosted model; then send, her mailbox. Fetch, local model and send are shaded gold.}
+  \label{fig:askpath}
+\end{figure}
+
+\paragraph{The server.}
+A function on an edge platform accepts one kind of request, from the site's origin only, checks
+the same limits the page enforces, and sends one email through the platform's mail binding to an
+address held as a secret outside the repository. It stores nothing. By a decision recorded on
+23 November it has no key, rate limit or challenge: the endpoint can write only to the designer's
+inbox, so the worst case considered was junk mail to him.
+
+\paragraph{The answerer.}
+That reasoning held for a day. On 24 November a scheduled job was added on the designer's laptop
+(\code{fc593ec}) that acts on those emails, which makes the unauthenticated endpoint an input to
+automation. Every ten minutes the job runs four steps.
+\emph{Fetch}: it collects new requests over IMAP into one folder each. A message is accepted only
+if its sender and subject match and the receiving mail provider recorded a passing DKIM signature
+for the site's domain~\cite{rfc6376}; the first build checked the sender header alone, which
+anyone can write, and an automated review of that build flagged it. The signature shows that
+the message left through the site's own sender. It cannot show who wrote the request, because
+the server in front of it accepts requests from anyone.
+\emph{Sort}: a vision-language model and a text model, both run locally, transcribe attached
+images and classify the request. A request outside an agreed scope, or one that asks to send
+anything elsewhere, read or delete files, or run commands, stops there and waits for the designer.
+This step is a filter and not a security boundary, since its judge is itself a model reading
+the untrusted text; the boundaries are the tool list of the next step and the fixed recipient
+of the last.
+\emph{Work}: a hosted model receives the folder with a tool list limited to reading and writing
+files and running one script. It cannot send mail, search the web or run any other command, and
+the job refuses to start unless the one script is marked immutable by the operating system,
+because a model that may write files must not be able to rewrite what it may execute. A second
+automated review prompted that rule; the build before it also allowed copying files and web
+search. Its instructions state that the
+email is material to work from and not a source of instructions, which addresses but does not
+remove the risk of injected instructions~\cite{greshake2023injection}.
+\emph{Send}: the result goes by SMTP to one address fixed in a local file, with a copy to the
+designer, and at most six automatic sends a day.
+
+The first build of the job held each result for the designer to confirm. The same evening, at his
+request, sending became automatic, so that requests arriving between two and seven in the morning
+his time, which is her late afternoon and evening, are answered without him. The scope of the
+work, the addresses and the instructions to both models are kept in a file outside the
+repository; an early build had them in the public code and they were removed from it.
+
+\paragraph{What was verified.}
+On 24 November the parts were exercised separately: the mail login in both directions, the DKIM
+rule against the seven delivered emails and against forged headers, the local models on one real
+attachment and on one constructed hostile request, the hosted model's tool permissions under the
+scheduler's environment, and the outgoing message without sending it. One real request arrived that evening while the job was running. It was fetched, passed the
+signature check, and was stopped by the local model as outside the scope, which was the right
+outcome: it asked for the designer's own opinion. No real request had travelled the whole path,
+to the hosted model and back to her, when this was written, and the emails the job sends do
+not say that a machine prepared them.
+
 \subsection{Implementation and Verification}
-Table~\ref{tab:metrics} describes the version 1.17.0 implementation. An audit reran the
-existing suite: all 153 tests in 36 files passed, and the strict TypeScript check and production
-build succeeded. The main JavaScript chunk was 114.09\,kB (42.58\,kB gzip), and the service worker
-precached 44 entries totalling 302.12\,KiB; these are build sizes, not load times on phones. The
+Table~\ref{tab:metrics} describes the implementation at both versions. For version 1.17.0 an
+audit reran the suite: all 153 tests in 36 files passed, and the strict TypeScript check and
+production build succeeded. For version 1.24.0 we repeated those steps: all 263 tests in 45 files
+passed, and the check and the build succeeded. The main JavaScript chunk grew from 114.09\,kB to
+126.76\,kB (42.58 to 46.58\,kB gzip), and the service worker's precache from 44 entries and
+302.12\,KiB to 51 entries and 363.49\,KiB; these are build sizes, not load times on phones. The
 large ring, map and try-on chunks are lazy loaded.
 
-The audit also independently enumerated the progress-code cases reported above. Dictionary tests
-check matching non-empty keys; puzzle tests check properties such as unique winning moves.
+The first audit independently enumerated the progress-code cases reported above. The progress
+and code modules have not changed since that commit, so the enumeration was not repeated.
+Dictionary tests check matching non-empty keys; puzzle tests check properties such as unique
+winning moves. The server has its own unit tests, counted in the 263; the answering pipeline has
+none, and its verification is the manual exercise described in Section~\ref{sec:askpath}.
 
 The development records describe browser checks at desktop, 390-pixel and 320-pixel widths and a
 laptop-camera check of hand orientation; no per-release end-to-end report is archived. Systematic
 phone checks of speech, breath, camera completion and sharing remain outstanding.
 
 \begin{table}[t]
-  \caption{Implementation summary (version 1.17.0, 28 October 2026).}
+  \caption{Implementation summary at the two versions of this paper.}
   \label{tab:metrics}
   \small
-  \begin{tabular}{@{}p{0.56\columnwidth}p{0.36\columnwidth}@{}}
+  \begin{tabular}{@{}p{0.50\columnwidth}p{0.19\columnwidth}p{0.19\columnwidth}@{}}
     \toprule
-    Measure & Value \\
+    Measure & 1.17.0\newline 28 Oct. & 1.24.0\newline 24 Nov. \\
     \midrule
-    TypeScript source, excluding tests (lines) & 8{,}414 \\
-    CSS (lines) & 1{,}080 \\
-    Bilingual dictionary (lines) & 791 \\
-    Test files / unit tests & 36 / 153 \\
-    Commits / versions (24--28 Oct.\ 2026) & 109 / 28 \\
-    Main bundle (min.\ / gzip) & 114\,kB / 43\,kB \\
-    Precached shell (service worker) & 44 files, 302\,KiB \\
-    Feature folders & 24 \\
-    Runtime dependencies & 3 (Leaflet, three.js, MediaPipe) \\
-    Author-operated progress backend / app accounts & 0 / 0 \\
+    TypeScript source, excluding tests (lines) & 8{,}414 & 9{,}758 \\
+    CSS (lines) & 1{,}080 & 1{,}234 \\
+    Bilingual dictionary (lines) & 791 & 989 \\
+    Test files / unit tests & 36 / 153 & 45 / 263 \\
+    Commits / versions & 109 / 28 & 147 / 36 \\
+    Main bundle (min.\ / gzip, kB) & 114 / 43 & 127 / 47 \\
+    Precached shell (files / KiB) & 44 / 302 & 51 / 364 \\
+    Feature folders & 24 & 27 \\
+    Runtime dependencies & 3 & 3 \\
+    Author-operated progress backend & 0 & 0 \\
+    Server-side endpoints & 0 & 1 \\
+    Server source (TypeScript lines) & 0 & 94 \\
+    Answering pipeline (Python lines) & 0 & 556 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -1063,8 +1300,8 @@ phone checks of speech, breath, camera completion and sharing remain outstanding
 %% ===================================================================================
 
 \section{Reconstructing Design Decisions}\label{sec:log}
-Four documented episodes make the rationale inspectable. Commit identifiers mark the recorded
-changes; the interpretations are ours.
+Seven documented episodes make the rationale inspectable; the last three are new in this
+version. Commit identifiers mark the recorded changes; the interpretations are ours.
 
 \paragraph{Replacing Pictionary (\code{7d2c659}, 26 October).}
 The implementation removes a same-device drawing game and adds a song-identification level.
@@ -1087,10 +1324,34 @@ represented person to say.
 \paragraph{Revising the entry gate (\code{ccabd31}, 28 October).}
 This commit removes answer-revealing placeholder text and revises associated checks. The
 recognition question becomes less self-defeating; it remains a low-entropy, client-side date
-gate rather than access control.
+gate rather than access control. Version 1.24 (\code{c1303f4}, 24 November) narrows it again, to
+one accepted spelling behind a password field, at the designer's wish that the site need a
+password. The change removes the spellings that give only the month and day, which a visitor could have
+guessed in at most 366 tries; the remaining eight digits are still a date, and the files behind the
+gate are still served to anyone who asks for them by address.
+
+\paragraph{Building from a remark (\code{397db28}, 4 November).}
+The infirmary is the first feature in the record whose stated origin is something the recipient
+said. The remark described a refusal: when hurt, she would not talk. The response gave that
+refusal a place in the town and put the other partner's words inside it. One reading is that
+the gift was reshaped by its recipient. A less comfortable reading is that a wish to withdraw
+was answered with a room the other partner furnished.
+
+\paragraph{Replacing the symbolic ticket (\code{d9de84b}, 8 November).}
+The countdown's target changes from an invented date to a booked flight, and the invented ticket
+is kept as a memory. Here an event in the world overtook the fiction, and the code was changed
+to follow it, where in the town the fiction had set the terms.
+
+\paragraph{Reversing a non-goal (\code{fc593ec}, 24 November).}
+The request box's specification of 23 November lists, among its non-goals, ``an AI that answers
+her''. The answering pipeline was built the next day. The record shows the reason given for the
+change, which is the designer's sleep, and shows no discussion of the non-goal it overturns. The
+same commit range contains the two corrections described in Section~\ref{sec:askpath}: the
+sender check, and the removal of the pipeline's instructions from public code.
 
 Across these episodes, the recurring issue is how a technical rule expresses an assumption
-about the other person.
+about the other person. In the later ones the rule also begins to act for one person toward
+the other.
 
 %% ===================================================================================
 
@@ -1122,6 +1383,21 @@ A research release would ideally separate shareable code and synthetic examples 
 assets, since intimate images can also reveal location context~\cite{yang2024geolocator}; the
 current repository does not make that separation.
 
+The request box changes the picture more than any earlier feature. The first version could say
+that nothing a player did left the device through code the authors operate. A request now
+leaves her phone with its files and passes through an edge platform, a mail provider, the
+designer's laptop, the provider of a hosted model and a second mail provider
+(Figure~\ref{fig:askpath}). Running the first model locally keeps the sorting step on his
+machine; it does not keep the files there, because the step that does the work sends them on.
+The local chart of the infirmary and the email of the request box now sit one card apart on
+the same dashboard, with opposite properties and the same visual language.
+
+Publishing the code of such a pipeline carries its own exposure. Instructions to a model
+describe the work, and the work describes the person who asked for it. The repository's history
+for 24 November was rewritten to remove such a description. A public design case and a private
+partner pull against each other at exactly this point, and our rule in this paper is to describe
+the mechanism and withhold what passes through it.
+
 \subsection{Asynchrony, Temporal Representation and Staleness}
 Each player's sky uses the clock in their configured city, while the partner avatar represents
 locally stored progress. The design supports visiting at different times, but an avatar's state
@@ -1140,6 +1416,12 @@ of consent to a relationship commitment. The present sequence does not model ref
 successful outcome. A future revision should distinguish declining an action from failing a task
 and should offer an equivalent path that preserves narrative access.
 
+The later products move some way toward this without touching the town. None of them is
+required, ordered or revealed, and the infirmary treats leaving as an ordinary action with its
+own button. It also shows the limit of that movement: a place to decline conversation was built
+by the person being declined, and the letters inside it, on the record, were drafted for both
+partners by one side.
+
 The lexical test is useful as a writing regression check, but it cannot ensure surprise in a
 client-delivered game. Source, routes, media, screenshots and this paper disclose the finale.
 Any study of surprise must therefore record whether the recipient encountered these materials
@@ -1153,6 +1435,21 @@ Chinese character-restoration puzzles retain different language demands even whe
 have English versions. What the test establishes is coverage; semantic quality and accessibility
 need a separate review, including by the intended recipient.
 
+\subsection{Answering in Person and Answering in Time}\label{sec:delegated}
+The request box was specified as a way to reach one person, and within a day it could be answered
+by a pipeline acting for him. The motive is an ordinary one in a relationship across thirteen
+hours: her afternoon is his night. The pipeline trades one kind of care for another.
+An answer that arrives in twenty minutes meets the need; an answer he wrote would show that he
+attended to it. Research on AI-mediated communication suggests the trade is not neutral, since
+suspected machine authorship can lower trust in a message~\cite{hancock2020aimc,jakesch2019aimc}.
+
+Three properties of the present build bear on this. The answers carry no mark of how they were
+made. The specification's non-goal was reversed without a recorded conversation between the two
+people it concerns. And the name on the card still says the request goes to him. This paper,
+which both authors sign, is one disclosure; a line in each answer would be a more reliable one.
+We do not know how the recipient reads an answer prepared this way, and the question belongs to
+her.
+
 \subsection{AI Assistance and Authorial Responsibility}
 The source and log document an AI-assisted implementation process in which the designer supplied
 requirements and corrected defaults. Each recorded correction marks a place where the designer
@@ -1161,14 +1458,30 @@ lacks an unassisted comparison and a complete record of human and model effort, 
 productivity claim about five days of work. Personal representation, verification and publication
 decisions remain the authors' responsibility.
 
+Until 24 November the models worked on the software. Since then one also works in it: the same
+kind of assistant that wrote the pages now prepares answers that reach the recipient under the
+designer's address. Mistakes of the first kind are caught by tests and review before she sees
+anything. Mistakes of the second kind arrive in her inbox, and the only checks before that are
+the scope test of a small local model and a daily limit. On its first evening that test did the
+one thing a person would have wanted from it: it recognised a question meant for him and left it
+for him.
+
 \subsection{Limitations and Next Evidence}
 The principal limitation is evidential: developer playtesting is the only reported use, and no
-recipient experience, sustained practice or relationship outcome has been collected. The corpus
+recipient experience, sustained practice or relationship outcome has been collected. The second
+version adds four weeks of development record and three traces of the recipient's activity; it
+adds no account from her. The answering pipeline is described from its code and a manual exercise
+of its parts on the day it was built, before any real request had passed through it. The corpus
 is brief and selectively interpreted, with no independent analysis. Engineering checks are also
 bounded: tests do not establish deployment-wide privacy, all-browser compatibility or equivalent
 experience across languages; approximate hand scaling is not a fit measurement. Union merge
 depends on compatible registries and does not propagate resets. Remote media limits offline use
 and availability across regions.
+
+The pipeline also has specific open risks: the endpoint that feeds it remains unauthenticated,
+so a stranger can cause a run and an unwanted email to her, though not a command or a different
+recipient; the scope test is a single model's judgement; and an answer is sent without a person
+reading it.
 
 A next stage could begin with a voluntary recipient walkthrough, recording what was understood,
 skipped, refused or reinterpreted, followed by a diary of revisits and code exchanges over time.
@@ -1180,25 +1493,53 @@ sample alone would not repair missing accounts of situated meaning, authorial po
 
 
 \section{Conclusion}
-MERIDIAN documents the pre-deployment design of a two-person game that turns autobiographical
-material into tasks, places and staged ceremonies. Its development record makes four design
-revisions inspectable, and its implementation audit establishes selected software properties.
-These support a situated account of how memories can shape playable rules, not a claim that the
-game improves intimacy or that the recipient accepts its authored sequence. The central
-open question is how a personal gift can invite shared meaning while leaving the other person
-free to decline, reinterpret and reshape it.
+MERIDIAN documents the design of a two-person game that turns autobiographical material into
+tasks, places and staged ceremonies, and the first four weeks of what it became afterwards. Its
+development record makes seven design revisions inspectable, and its audits establish selected
+software properties at two versions. These support a situated account of how memories can shape
+playable rules, not a claim that the game improves intimacy or that the recipient accepts its
+authored sequence.
+
+The first version ended on the question of how a personal gift can invite shared meaning while
+leaving the other person free to decline, reinterpret and reshape it. The added record gives
+that question a first, partial answer and a new form. A remark by the recipient became a
+building, which is reshaping of a kind, though the designer did the building. And a channel
+meant to reach him now reaches a machine that answers for him, which asks what a partner is
+owed when the reply is prompt, useful and not written by the person addressed.
+
+\section{Changes in Version 2}\label{sec:v2}
+The first version was dated 30 October 2026 and inspected version 1.17.0 of the software; this
+one is dated 24 November 2026 and inspects version 1.24.0.
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+  \item New: Section~\ref{sec:after} on the infirmary, the trip page and the request box;
+  Section~\ref{sec:askpath} on the server and the answering pipeline; Section~\ref{sec:delegated};
+  three episodes in Section~\ref{sec:log}; Table~\ref{tab:after}; Figures~\ref{fig:cards}
+  and~\ref{fig:askpath}; three references.
+  \item Corrected: the first version's statement that the application has no author-operated
+  backend now holds for progress only. The privacy discussion is extended accordingly.
+  \item Updated: the corpus (147 commits, 36 versions, four specifications), the audit (263
+  tests), the description of the entry gate, which is now a password, Tables~\ref{tab:dates} and~\ref{tab:metrics}, the abstract and the conclusion.
+  \item Unchanged: the account of the town, its nine levels, the two cutscenes, the quest model
+  and the progress codes. ``Pre-deployment'' is dropped from the description of the case, since
+  the site has been in the recipient's hands since the first version; the absence of a recipient
+  evaluation is not changed.
+\end{itemize}
 
 \section*{Ethics and Publication Scope}
 This manuscript reports design and implementation; it includes no interviews and no relationship
 evaluation, so no institutional ethics review was sought. The two people whose names, dates,
 photographs, voices and daily routines appear in the game and in this paper are its two authors,
-and each has agreed to that disclosure. Any future study with participants would need an ethics
-determination before data collection.
+and each has agreed to that disclosure. The second version reports that the recipient made a
+remark, booked a flight and sent requests; it quotes the remark as the public changelog records
+it, and it reports nothing of what her requests contain. Any future study with participants
+would need an ethics determination before data collection.
 
 \section*{Code and Data Availability}
 The source is public at \url{https://github.com/rayford295/yi-town} (since 30 October 2026) and
-the game runs at \url{https://jingyifan.love}. The version inspected in this paper is 1.17.0,
-commit \code{55440ae}; development continues on the main branch. The code is released under the
+the game runs at \url{https://jingyifan.love}. The version inspected in this paper is 1.24.0,
+commit \code{c1303f4}; the first version of the paper inspected 1.17.0, commit \code{55440ae}.
+Development continues on the main branch. The answering pipeline's code is in the repository;
+its configuration, the scope of its work and everything it processes are not. The code is released under the
 MIT License. The photographs, voice notes, letters and other personal material in the repository
 remain the authors' own: they are published so that the game can be read and run, not as a
 research dataset, and may not be redistributed. A recorded walk through the whole game is at
@@ -1206,8 +1547,10 @@ research dataset, and may not be redistributed. A recorded walk through the whol
 
 \section*{Declaration of Generative AI Use}
 Claude (Anthropic), through Claude Code, wrote much of the software, drafted text and prepared
-figures; Codex (OpenAI) was used to inspect the source and check the text. The authors reviewed
-everything that appears here and are responsible for it.
+figures; Codex (OpenAI) was used to inspect the source and check the text. The second version's
+additions were drafted the same way. Language models are also part of the system described: the
+answering pipeline of Section~\ref{sec:askpath} runs two open models locally and calls Claude to
+prepare answers. The authors reviewed everything that appears here and are responsible for it.
 
 \begin{acks}
 To Coffee and Duoduo, who guard the doors. The street-view photographs on the Love Map are from

@@ -18,7 +18,7 @@ src = (PAPER / 'meridian.tex').read_text()
 if not src.startswith('\\pdfoutput=1\n'):
     raise SystemExit('Canonical source must select pdfLaTeX with \\pdfoutput=1.')
 src = src.replace(
-    '%% MERIDIAN: final manuscript, 2026-10-30; canonical source in paper/meridian.tex.',
+    '%% MERIDIAN: version 2, 2026-11-24 (version 1: 2026-10-30); canonical source in paper/meridian.tex.',
     '%% MERIDIAN: arXiv version, generated from paper/meridian.tex.',
 )
 assets = set(re.findall(r'\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}', src))
