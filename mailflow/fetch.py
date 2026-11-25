@@ -72,26 +72,53 @@ def main():
     return folders
 
 
+def split_results(header):
+    """把一条 Authentication-Results 拆成各方法的结果（RFC 8601）。
+
+    从左到右扫一遍，同时记着是否在引号里、注释嵌套了几层：注释和引号里的内容全部丢掉，
+    只有落在最外层的分号才算分隔符。结构不完整（引号或括号没闭合）时返回 None。
+    """
+    parts, cur, depth, quoted, i = [], [], 0, False, 0
+    while i < len(header):
+        ch = header[i]
+        if ch == "\\" and (quoted or depth):
+            i += 2
+            continue
+        if quoted:
+            quoted = ch != '"'
+        elif depth:
+            depth += (ch == "(") - (ch == ")")
+        elif ch == '"':
+            quoted = True
+            cur.append('""')
+        elif ch == "(":
+            depth = 1
+            cur.append(" ")
+        elif ch == ")":
+            return None
+        elif ch == ";":
+            parts.append("".join(cur))
+            cur = []
+        else:
+            cur.append(ch)
+        i += 1
+    if quoted or depth:
+        return None
+    parts.append("".join(cur))
+    return [" ".join(p.split()).lower() for p in parts]
+
+
 def authenticated(msg):
     """Gmail 收信时写在最上面的认证结果里，必须有发件域名的 DKIM 通过。
 
     From 头谁都能写；DKIM 通过说明这封信确实由 jingyifan.love 的发信服务（Ask Worker）发出。
     只看第一条 Authentication-Results：它是 Gmail 自己加的，邮件里自带的同名头排在它后面。
-    按 RFC 8601 的结构解析：去掉括号注释和引号内容，按分号拆成各方法的结果，
-    只认 dkim 这一项自己的结果是 pass、且它的 header.i 或 header.d 恰好等于发件域名。
+    只认 dkim 这一项自己的结果是 pass，且它的 header.i 或 header.d 恰好等于发件域名。
     """
     results = msg.get_all("Authentication-Results") or []
     if not results:
         return False
-    top = " ".join(results[0].split())
-    for _ in range(5):                                   # 去掉（可嵌套的）注释
-        top = re.sub(r"\([^()]*\)", " ", top)
-    if "(" in top or ")" in top:
-        return False
-    top = re.sub(r'"[^"]*"', '""', top)                  # 引号里的内容不参与判断
-    if '"' in top.replace('""', ""):
-        return False
-    parts = [p.strip().lower() for p in top.split(";")]
+    parts = split_results(str(results[0]))
     if not parts or parts[0] != "mx.google.com":
         return False
     domain = C.SENDER_FILTER.split("@")[1].lower()
@@ -99,7 +126,11 @@ def authenticated(msg):
         tokens = part.split()
         if not tokens or tokens[0] != "dkim=pass":
             continue
-        props = dict(t.split("=", 1) for t in tokens[1:] if "=" in t)
+        props = {}
+        for t in tokens[1:]:
+            k, sep, v = t.partition("=")
+            if sep and k not in props:
+                props[k] = v
         if props.get("header.i") == "@" + domain or props.get("header.d") == domain:
             return True
     return False

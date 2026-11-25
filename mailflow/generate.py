@@ -2,7 +2,7 @@
 
 python3 generate.py "<请求文件夹>"
 """
-import getpass, json, os, subprocess, sys
+import getpass, json, os, stat, subprocess, sys
 from pathlib import Path
 import config as C
 from common import log, write_status
@@ -23,15 +23,19 @@ PROMPT = """你在处理一份通过仪见小镇 /ask 发来的请求。先读 {
 
 
 
-def check_build_tool():
-    """允许执行的那个脚本不能被执行它的人改写：要求它带系统的“不可修改”标记。"""
-    tool = C.BUILD_TOOL
-    if not tool:
-        return None
-    flags = subprocess.run(["ls", "-lO", str(tool)], capture_output=True, text=True).stdout
-    if "uchg" not in flags:
-        raise RuntimeError(f"{tool} 没有锁定。运行：chflags uchg '{tool}'")
-    return str(tool)
+def locked(path):
+    """文件带着系统的“不可修改”标记（chflags uchg），并且不是符号链接。"""
+    p = Path(path)
+    return p.is_file() and not p.is_symlink() and bool(os.stat(p).st_flags & stat.UF_IMMUTABLE)
+
+
+def check_locked():
+    """Claude 能写文件，所以它会读来当规则的文件、它能执行的脚本，都必须是它改不了的。"""
+    files = list(C.LOCKED_FILES) + ([C.BUILD_TOOL] if C.BUILD_TOOL else [])
+    loose = [str(f) for f in files if not locked(f)]
+    if loose:
+        raise RuntimeError("这些文件没有锁定，先运行 chflags uchg：" + "、".join(loose))
+    return str(Path(C.BUILD_TOOL).resolve()) if C.BUILD_TOOL else None
 
 
 def main(folder):
@@ -41,16 +45,17 @@ def main(folder):
     triage = tri.read_text(encoding="utf-8") if tri.exists() else "{}"
     prompt = (C.GENERATE_PROMPT or PROMPT).format(work=C.WORK_DIR, folder=folder, triage=triage)
     # 邮件内容不可信，所以这里给的权限尽量小：
-    # - 能读写文件，但唯一能执行的是 BUILD_TOOL，它必须是只读且不可修改的（见 check_build_tool）；
+    # - 工作目录是这一个请求的文件夹；私有文件夹只用来读规则，里面的规则文件都已锁定（见 check_locked）；
+    # - 唯一能执行的是 BUILD_TOOL，同样锁定，并且它自己会拒绝不认识的参数；
     # - 没有 cp、mkdir 之类的通用命令，默认也不联网搜索（查询词本身可以带出信息）。
     tools = ["Read", "Write", "Edit", "Glob", "Grep"]
-    build = check_build_tool()
+    build = check_locked()
     if build:
         tools.append(f"Bash({build}:*)")
     if C.ALLOW_WEB_SEARCH:
         tools.append("WebSearch")
     cmd = [C.CLAUDE_BIN, "-p", prompt, "--permission-mode", "acceptEdits",
-           "--add-dir", str(folder), "--allowedTools", *tools]
+           "--add-dir", str(C.WORK_DIR), "--allowedTools", *tools]
     # launchd 的环境里没有 USER，Claude 会因此读不到登录信息
     env = dict(os.environ, USER=getpass.getuser(), LOGNAME=getpass.getuser())
     tok = subprocess.run(["security", "find-generic-password", "-s", C.CLAUDE_TOKEN_SERVICE, "-w"],
@@ -59,7 +64,7 @@ def main(folder):
         env["CLAUDE_CODE_OAUTH_TOKEN"] = tok.stdout.strip()   # claude setup-token 生成的长期令牌
     write_status(folder, stage="生成中")
     log(f"Claude 开始生成：{folder.name}")
-    r = subprocess.run(cmd, cwd=C.WORK_DIR, capture_output=True, text=True, timeout=C.CLAUDE_TIMEOUT, env=env)
+    r = subprocess.run(cmd, cwd=folder, capture_output=True, text=True, timeout=C.CLAUDE_TIMEOUT, env=env)
     (folder / "产出" / "claude输出.log").write_text(r.stdout + "\n" + r.stderr, encoding="utf-8")
     pdfs = sorted(p.name for p in (folder / "产出").glob("*.pdf"))
     manual = (folder / "产出" / "需要人工处理.md").exists()
