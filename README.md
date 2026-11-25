@@ -4,18 +4,18 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/for-two%20players-d3a557?style=flat-square&labelColor=0b2036" alt="for two players" />
+  <img src="https://img.shields.io/badge/products-5%20on%20the%20dashboard-d3a557?style=flat-square&labelColor=0b2036" alt="5 products on the dashboard" />
   <img src="https://img.shields.io/badge/levels-9%20%2B%20an%20epilogue-d3a557?style=flat-square&labelColor=0b2036" alt="9 levels and an epilogue" />
-  <img src="https://img.shields.io/badge/tests-167%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="167 tests passing" />
+  <img src="https://img.shields.io/badge/tests-261%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="261 tests passing" />
   <img src="https://img.shields.io/badge/TypeScript-strict-d3a557?style=flat-square&labelColor=0b2036" alt="TypeScript strict" />
-  <img src="https://img.shields.io/badge/backend-none-d3a557?style=flat-square&labelColor=0b2036" alt="no backend" />
   <img src="https://img.shields.io/badge/art-drawn%20in%20code-d3a557?style=flat-square&labelColor=0b2036" alt="all art drawn in code" />
 </p>
 
 <p align="center">
-  <b>A private, bilingual game for two.</b><br/>
-  Walk a small pixel version of yourself through a town.<br/>
-  Every house is a level made from something that happened to us.<br/>
-  The last house holds a ring.
+  <b>A private, bilingual home for two.</b><br/>
+  It began as a game: walk a small pixel version of yourself through a town<br/>
+  where every house is a level made from something that happened to us.<br/>
+  It has grown into everything we build for each other, under one domain.
 </p>
 
 <p align="center">
@@ -33,7 +33,28 @@
 
 <br/>
 
-## ▶ How It Plays
+## ◆ What Lives Here
+
+`jingyifan.love` opens on a dashboard, one card per product. One question that only the two of us
+can answer stands in front of all of it.
+
+<table>
+  <tr>
+    <td width="33%" valign="top"><a href="src/features/world/"><img src="public/media/dashboard/town.png" alt="Yi Town card: the pixel town seen from above" /></a><br/><b>Yi Town</b> · <code>/town</code><br/><sub>Nine doors, nine levels, a prologue and an epilogue. The game the rest grew from.</sub></td>
+    <td width="33%" valign="top"><a href="src/features/clinic/"><img src="public/media/dashboard/clinic.png" alt="The Infirmary card: a pink house with a red cross" /></a><br/><b>The Infirmary</b> · <code>/clinic</code><br/><sub>For the bad days: say what hurts, breathe three times, read the letter the other one wrote in advance.</sub></td>
+    <td width="33%" valign="top"><a href="src/features/trip/"><img src="public/media/dashboard/trip.png" alt="See You in New York card: a boarding pass" /></a><br/><b>See You in New York</b> · <code>/trip</code><br/><sub>Jingyi's ticket for February 2027: both boarding passes, a countdown, and the itinerary a day at a time.</sub></td>
+  </tr>
+  <tr>
+    <td valign="top"><a href="src/features/ask/"><img src="public/media/dashboard/ask.png" alt="Ask Yifan card: an envelope sealed with a heart" /></a><br/><b>Ask Yifan</b> · <code>/ask</code><br/><sub>She writes what she needs and attaches files. It reaches his inbox, and the answer comes back by email.</sub></td>
+    <td valign="top"><a href="https://rayford295.github.io/motionmirror/"><img src="public/media/dashboard/motionmirror.png" alt="MotionMirror card" /></a><br/><b>MotionMirror</b> · <sub>off-site</sub><br/><sub>One phone video, every movement made clear: Rayford's jump shot and Jingyi's badminton.</sub></td>
+    <td valign="top"><br/><br/><p align="center"><sub><i>The next one is still a seed.</i></sub></p></td>
+  </tr>
+</table>
+
+The site exists in both languages and installs as an app that works offline. The town, the
+infirmary and the trip run in the browser and keep everything on the device.
+
+## ▶ How the Town Plays
 
 ```
   ┌──────────────────────────────────────────────────────────────┐
@@ -41,87 +62,114 @@
   └──────────────────────────────────────────────────────────────┘
 ```
 
-- **One question** only the two of us can answer opens the door. The answer is stored as a hash.
-- **The dashboard** at `jingyifan.love/` lists everything we build under the domain, one card per
-  product (`src/features/dashboard/products.ts`). Yi Town is the first, at `/town`; every later
-  product lives in this repository too.
-- **Pick who you are.** Progress is kept per player, per device, so both of us can play on one phone.
-- **Walk the town** with the arrow keys or WASD, a tap on any tile, or the d-pad on a phone. Your
-  partner waits by the fountain and tells you how far they have got. The sky follows the clock
-  in your own city, so one of us walks it by day and the other by lamplight.
-- **Ask Rayford.** The guide, Yifan in a suit, stands just south of the fountain. He explains what
-  Yi Town is, lists the levels, says where to go next with a hint, and can walk you to that door.
-- **Step onto a door** and a talk box tells that level's story. Go in and play it. A cleared house
-  flies a gold flag.
-- **Our cats keep the locks.** Coffee sits at the next locked door and Duoduo at the one after, and
-  each tells you, in its own way, which level to clear first. When a door opens they get up and
-  walk to the next one, and with nothing left to guard they go and sunbathe by the pond or sit in
-  the middle of the square.
-- **The infirmary** is the pink house with a red cross by the square, and the second card on the
-  dashboard (`/clinic`). It is for the bad days: say what hurts, breathe three times, and read the
-  letter the other one wrote in advance for exactly that. A cabinet of one-line notes, and a
-  private chart that never leaves the phone. Not a level; the door is always open.
-- **See You in New York** is the third card (`/trip`): Jingyi's ticket for February 2027, both legs
-  as boarding passes, a clock that counts down to boarding and then counts the days together, and
-  the itinerary, one row a day, written and photographed as we go. No player needed.
-- **Ask Yifan** is the fourth card (`/ask`): Jingyi writes what she needs, attaches files, and
-  sends; it lands in Yifan's inbox with the files, and he helps from the other side of the world.
-  A small Cloudflare Worker (`worker/`) sends the email. No player needed.
-- **Two signposts** lead out of the square: east to a day of Yifan's in College Station, west to a
-  day of Jingyi's in Shenzhen. Each is a map of that person's stops with their hours, and their
-  sprite stands wherever the clock in that city puts them. A red mailbox by the fountain holds
-  the voice notes the other one left; a jukebox in the corner plays our songs.
-- **The ring** is the ninth house, nine for 九九, a love that lasts. Once you have reached it, the partner by the fountain points
-  the way on. Progress lives on each phone, so a short code (or a link) carries it across.
+Pick who you are, then walk with the arrow keys, a tap on any tile, or the d-pad on a phone. Your
+partner waits by the fountain and tells you how far they have got. The sky follows the clock in
+your own city, so one of us walks it by day and the other by lamplight. Step onto a door and a
+talk box tells that level's story; a cleared house flies a gold flag. Our cats, Coffee and Duoduo,
+sit at the locked doors and tell you which level to clear first.
 
-The whole site stands on the town's meadow, and every heading is a sign in the same cream and navy.
-Everything runs in the browser and nothing leaves the device. The whole site exists in both
-languages, and it installs as an app that works offline.
+<details>
+<summary><b>The nine houses</b></summary>
+<br/>
 
-## ⌂ The Houses
-
-Each roof in the town has its own colour and carries its number. Walk into the door to play the level.
-
-| Roof | # | Level | The task | Behind the door |
-|:---:|:---:|---|---|---|
-| 🟥 | 1 | The Day We Met | Answer one question, then say the vow line out loud | Day counter, twin clocks, countdown; the vow of being each other's again, heard by the browser |
-| 🟦 | 2 | Love Map | Name six street views; each right answer puts a heart on the map to pick up | Texas, Los Angeles, Japan, Shenzhen, Hong Kong, New York, and why each is ours |
-| 🟧 | 3 | Tattoo | Handwrite a tattoo for the other one, on an arm or a shoulder, and ink it | Kept on the device; save it as a picture to send |
-| 🟩 | 4 | Moments | Put five memories in order, then put the other one's photo back together | The timeline, each memory badged with its day number; the portrait puzzle |
-| 🟫 | 5 | Gomoku | Ten endgames, one stone each; the stones you place stay and the tenth completes a heart | Your own colour to move, after our first game on a Zoom whiteboard |
-| 🟪 | 6 | Our Songs | Hear a passage, pick the title from four | Six of our songs through the official embeds; the jukebox in the corner plays them whole on YouTube |
-| ⬛ | 7 | Libra and Scorpius | Join the stars of both our signs | Real star positions; Libra's brightest stars are still the Scorpion's claws |
-| 🟥 | 8 | Us, in Old Verse | Put the missing characters of five love poems back | Su Wu, Guan Daosheng, Li Shangyin, the paired birds of the *Yutai xinyong*, one anonymous couplet |
-| 🟨 | 9 | The Ring | Try it on with the camera and take a photo; the photo clears the level | What is inside is not written down here |
+| Roof | # | Level | The task |
+|:---:|:---:|---|---|
+| 🟥 | 1 | The Day We Met | Answer one question, then say the vow line out loud |
+| 🟦 | 2 | Love Map | Name six street views; each right answer puts a heart on the map |
+| 🟧 | 3 | Tattoo | Handwrite a tattoo for the other one and ink it |
+| 🟩 | 4 | Moments | Put five memories in order, then put the other one's photo back together |
+| 🟫 | 5 | Gomoku | Ten endgames, one stone each; the tenth completes a heart |
+| 🟪 | 6 | Our Songs | Hear a passage, pick the title from four |
+| ⬛ | 7 | Libra and Scorpius | Join the stars of both our signs |
+| 🟥 | 8 | Us, in Old Verse | Put the missing characters of five love poems back |
+| 🟨 | 9 | The Ring | Try it on with the camera and take a photo |
 
 There is a short prologue before the first house, and there is more after the ninth. Neither is
 written down here; the town tells you when you get there.
 
-Rayford never mentions the ring, or what comes after it, before they happen; `src/features/guide/secret.test.ts` enforces it.
+</details>
+
+<details>
+<summary><b>Around the square</b></summary>
+<br/>
+
+- **Rayford**, the guide, stands south of the fountain. He lists the levels, gives a hint, and can
+  walk you to the next door. He never mentions the ring before it happens;
+  `src/features/guide/secret.test.ts` enforces it.
+- **Two signposts** lead out of the square: east to a day of Yifan's in College Station, west to a
+  day of Jingyi's in Shenzhen, each a map of that person's stops by the hour.
+- **A red mailbox** holds the voice notes the other one left, and **a jukebox** plays our songs.
+- **Progress** lives on each phone; a short code or a link carries it to another device.
+
+</details>
+
+## ✉ From Her Message to His Answer
+
+Ask Yifan is the one part of the site with a back end, and the one part that keeps working while
+Yifan sleeps, thirteen hours behind her.
+
+```
+  her phone            Cloudflare            his Mac, every ten minutes
+  ┌────────┐  POST   ┌──────────┐  email  ┌───────┐   ┌─────────────┐   ┌────────┐   ┌──────┐
+  │  /ask  │ ──────▶ │  Worker  │ ──────▶ │ fetch │ ▶ │ local model │ ▶ │ Claude │ ▶ │ send │ ──▶ her inbox
+  └────────┘         └──────────┘         └───────┘   └─────────────┘   └────────┘   └──────┘
+   src/features/ask     worker/                              mailflow/
+```
+
+The page posts her text and files to a small Worker (`worker/`), which turns them into one email.
+On Yifan's Mac, `mailflow/` collects each email into its own folder, has a local open model read
+the screenshots and sort the request, hands the work to Claude, and emails the finished files
+back to her. A message that fails Gmail's DKIM check, or asks for anything other than the work
+itself, stops and waits for him.
+
+Inbox addresses, local paths and her documents are kept out of this repository.
+
+## ▤ What Is in the Repository
+
+| Folder | What |
+|---|---|
+| [`src/`](src/) | The site. `core/` is shared; `features/` has one folder per feature, each with its own README |
+| [`public/`](public/) | Photos, music, models and the dashboard cards, one folder per feature |
+| [`worker/`](worker/) | The Ask Worker at `ask.jingyifan.love`: one endpoint that sends one email |
+| [`mailflow/`](mailflow/) | The pipeline on Yifan's Mac that answers those emails (Python, Ollama, Claude) |
+| [`scripts/`](scripts/) | Drawing scripts for the banner, the icons and the dashboard cards; small tools |
+| [`ring/`](ring/) | The ring's Blender script and renders |
+| [`paper/`](paper/) | The paper *MERIDIAN* ([arXiv:2610.41776](https://arxiv.org/abs/2610.41776)) and the Chinese report |
+| [`docs/`](docs/) | Changelog, guide, deployment, design notes |
 
 ## ⌨ Develop
 
 ```bash
 npm install
 npm run dev       # http://localhost:5173
-npm test          # 189 unit tests (Vitest)
+npm test          # 261 unit tests (Vitest)
 npm run build     # strict type-check + production build
-npm run banner    # redraw docs/banner.svg from the sprite data
-npm run icon      # redraw favicon.svg and the PNG icons from the sprites
 ```
 
 Vite · TypeScript · canvas 2D for the town (every tile and sprite is a string in `sprites.ts`
 and `tiles.ts`; there are no image files for the game) · Leaflet · three.js · MediaPipe ·
 Node 22. CI runs the tests and the build on every push.
 
+<details>
+<summary><b>More commands</b></summary>
+<br/>
+
+```bash
+npm run banner       # redraw docs/banner.svg from the sprite data
+npm run icon         # redraw favicon.svg and the PNG icons from the sprites
+npm run ask:deploy   # deploy the Ask Worker (after npx wrangler login)
+python3 mailflow/run.py   # one round of the mail flow; see mailflow/README.md for setup
+```
+
+</details>
+
 ## ⚑ More
 
 - [docs/CHANGELOG.md](docs/CHANGELOG.md): what changed, by version
 - [docs/GUIDE.md](docs/GUIDE.md): repository layout, everyday edits (add a memory, a word, a level), status, key dates, screenshots of every level
-- [docs/DEPLOY.md](docs/DEPLOY.md): publishing and private hosting
-- Design notes: [the site](docs/superpowers/specs/2026-10-24-yi-at-first-sight-design.md) · [the game of levels](docs/superpowers/specs/2026-10-25-quest-design.md) · [the town](docs/superpowers/specs/2026-10-26-town-design.md)
-- [paper/](paper/): the paper *MERIDIAN* ([arXiv:2610.41776](https://arxiv.org/abs/2610.41776)) and the Chinese feature report
-- Each folder under `src/features/` has its own README.
+- [docs/DEPLOY.md](docs/DEPLOY.md): publishing, the Worker, the mail flow, private hosting
+- Design notes: [the site](docs/superpowers/specs/2026-10-24-yi-at-first-sight-design.md) · [the game of levels](docs/superpowers/specs/2026-10-25-quest-design.md) · [the town](docs/superpowers/specs/2026-10-26-town-design.md) · [Ask Yifan](docs/superpowers/specs/2026-11-23-ask-design.md)
+- [worker/README.md](worker/README.md) · [mailflow/README.md](mailflow/README.md): the two halves behind Ask Yifan
 
 <p align="center">
   <sub>Live at <a href="https://jingyifan.love/">jingyifan.love</a>, unlisted. Code is MIT; the personal photos and messages here are ours, please do not redistribute (<a href="LICENSE">LICENSE</a>).</sub>

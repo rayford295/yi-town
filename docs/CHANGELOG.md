@@ -2,6 +2,19 @@
 
 Versions are tags of feeling more than of code; the site deploys on every push.
 
+## 1.23.0 (2026-11-24)
+
+- The mail flow (`mailflow/`): what happens after an Ask Yifan email arrives. A job on Yifan's
+  Mac runs every ten minutes: it fetches new requests over IMAP into one folder each, a local
+  model (Ollama) reads the screenshots and sorts the request, headless Claude does the work,
+  and the finished files go back to Jingyi by email. It runs unattended, also while he sleeps.
+- A request is accepted only when Gmail recorded a passing DKIM result for `jingyifan.love`,
+  and one that asks for anything but the work itself stops and waits for Yifan. The recipient
+  is fixed in a local file; automatic sends are capped per day.
+- Addresses and local paths live in `mailflow/config_local.py`, which is not in the repository.
+- The README is rewritten around the dashboard: the five products as cards, how a message
+  becomes an answer, and what each folder holds. The houses moved into a collapsed section.
+
 ## 1.22.1 (2026-11-24)
 
 Ask Yifan, the findings of the review of 1.22.0, each with a test that failed first:

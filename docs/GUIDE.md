@@ -40,6 +40,9 @@ yi-town/
 │       ├── poems/              #   lines.ts (five poems, bank/blank/solved), poems.ts (page)
 │       ├── ring/               #   3D viewer, webcam try-on, photo card
 │       └── letter/             #   the epilogue
+├── worker/                     # the Ask Worker (Cloudflare): one POST /send that emails the request to Yifan
+├── mailflow/                   # on Yifan's Mac: fetch those emails, sort them with a local model, answer with Claude, send back
+├── scripts/                    # banner.ts, icon.ts, the card drawings (ask-card.py, trip-card.py), small tools
 ├── ring/                       # the ring's Blender script and renders
 ├── paper/                      # the paper (LaTeX + PDF) and the Chinese report, sharing figures/
 ├── docs/

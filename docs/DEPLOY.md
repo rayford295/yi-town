@@ -97,6 +97,13 @@ error code; `E_VALIDATION_ERROR` "Missing domain or user" means `ASK_TO` is empt
 through Resend from the same Worker (the design's approach 2,
 `docs/superpowers/specs/2026-11-23-ask-design.md`).
 
+## The Mail Flow (Yifan's Mac)
+
+Not deployed anywhere: `mailflow/` runs on Yifan's Mac as a launchd job every ten minutes and
+answers the emails the Worker sends. Setup (the app password in the Keychain, the local config,
+loading the job) is in `mailflow/README.md`. It needs Ollama with the two models named in
+`mailflow/config.py`, the Claude Code CLI signed in, and Chrome for the PDFs.
+
 ## How It Was Published: GitHub Pages (Public, Free)
 
 *Historical: these are the steps that were used for the public rehearsal; see Status above for the current state.*

@@ -2,8 +2,8 @@
 
 Route: `/ask`, the fourth card on the dashboard. Jingyi writes what she needs, attaches files
 (the paperclip, drag and drop, or a pasted screenshot) and sends. One email with the files
-reaches Yifan's inbox, and he helps from there. It is one way on purpose: his answer comes over
-WeChat or as the thing done. Only the gate stands in front of it; no player is needed.
+reaches Yifan's inbox, and he helps from there. It is one way on purpose: the answer comes back
+to her own email (see `mailflow/` at the repository root), over WeChat, or as the thing done. Only the gate stands in front of it; no player is needed.
 
 The site has no server, so the email is sent by a small Cloudflare Worker: see
 `worker/README.md`. The page posts to `config.ask.url`; `VITE_ASK_URL` points a dev server at a

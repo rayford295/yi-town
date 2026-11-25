@@ -5,6 +5,9 @@ cannot send an email with attachments, so this Cloudflare Worker at `ask.jingyif
 one `POST /send` (`multipart/form-data`: `text`, `player`, `lang`, `files`) and sends one email
 to Yifan through the `send_email` binding. Nothing is stored.
 
+What happens to that email afterwards is in `mailflow/README.md`. The mail flow trusts an email
+only when it carries this domain's DKIM signature, which this Worker's sends do.
+
 | File | What |
 |---|---|
 | `src/handle.ts`, `handle.test.ts` | The request handler: origin, caps, the email |
