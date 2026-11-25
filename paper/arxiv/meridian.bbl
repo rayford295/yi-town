@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{41}
+\begin{thebibliography}{42}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -64,6 +64,14 @@
 \newblock \showarticletitle{CoupleVIBE: Mobile Implicit Communication to Improve Awareness for (Long-Distance) Couples}. In \bibinfo{booktitle}{\emph{Proceedings of the ACM 2011 Conference on Computer Supported Cooperative Work}} \emph{(\bibinfo{series}{CSCW '11})}. \bibinfo{publisher}{ACM}, \bibinfo{address}{New York, NY, USA}, \bibinfo{pages}{65--74}.
 \newblock
 \href{https://doi.org/10.1145/1958824.1958835}{doi:\nolinkurl{10.1145/1958824.1958835}}
+
+
+\bibitem[Bazarevsky et~al\mbox{.}(2020)]%
+        {bazarevsky2020blazepose}
+\bibfield{author}{\bibinfo{person}{Valentin Bazarevsky}, \bibinfo{person}{Ivan Grishchenko}, \bibinfo{person}{Karthik Raveendran}, \bibinfo{person}{Tyler Zhu}, \bibinfo{person}{Fan Zhang}, {and} \bibinfo{person}{Matthias Grundmann}.} \bibinfo{year}{2020}\natexlab{}.
+\newblock \bibinfo{title}{{BlazePose}: On-device Real-time Body Pose Tracking}.
+\newblock
+\showeprint[arxiv]{2006.10204}
 
 
 \bibitem[Birrell(1982)]%

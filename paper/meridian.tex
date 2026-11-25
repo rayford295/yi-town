@@ -76,7 +76,7 @@ a bilingual browser game developed by one member of a long-distance couple as a 
 other. Nine levels translate personally meaningful events, places and cultural references into
 tasks within a navigable pixel town, framed by a birthday prologue and a fictional wedding. This
 second version extends the record by four weeks. Drawing on research through design, we
-reconstruct seven design changes from 147 commits, 36 changelog versions and four design
+reconstruct seven design changes from 152 commits, 36 changelog versions and four design
 specifications. In those weeks the site gained three products that are not levels: an infirmary
 for the days after a quarrel, which began with a remark by the recipient; a page for her booked
 flight, which replaces a symbolic ticket with a real one; and a request box whose messages are
@@ -312,10 +312,10 @@ phone-oriented interface.
 \subsection{Scope, Corpus and Reconstruction}
 The first version's corpus comprised 109 commits dated 24--28 October 2026, 28 changelog entries
 from version 0.1.0 to 1.17.0, and three specifications for the site, quest and town, with a
-cut-off at commit \code{55440ae}. This version extends the cut-off to commit \code{c1303f4}
-(24 November 2026, version 1.24.0): 147 commits, 36 changelog entries and a fourth specification,
+cut-off at commit \code{55440ae}. This version extends the cut-off to commit \code{fc11108}
+(24 November 2026, version 1.24.0): 152 commits, 36 changelog entries and a fourth specification,
 for the request box. The count of commits is that of the public branch after the rewriting of
-24 November described in Section~\ref{sec:privacy}, which merged five commits into two. The 38
+24 November described in Section~\ref{sec:privacy}, which merged five commits into two. The 43
 added commits are unevenly spread: the infirmary and the trip page
 fall in the first eight days of November, and the request box, its server and the answering
 pipeline in two days at the end.
@@ -324,8 +324,10 @@ with substantial implementation assistance from an AI coding assistant. Jingyi i
 recipient. This account reports no interview, diary, recipient play session or relationship measure.
 
 The added record holds three traces that originate with the recipient: a remark of hers quoted in
-the changelog, a flight she booked, and requests she sent through the request box. We report that
-these exist and what the designer built in response. We do not report the content of her
+the changelog, a flight she booked, and requests she sent through the request box. A second program, MotionMirror, is reached from the site's dashboard and kept in its own
+repository; we inspected it at commit \code{80c4fd8} of 24 November 2026 and describe it in
+Section~\ref{sec:mm}, without counting its history in the corpus. We report that
+these traces exist and what the designer built in response. We do not report the content of her
 requests, and we treat none of the three as an evaluation. Whether and how the first play of
 31 October went is not part of the corpus, and we make no claim about it.
 
@@ -814,16 +816,15 @@ describes the page as one-way on purpose: the answer was to come over the couple
 messaging, or as the thing done.
 
 A browser cannot send an email with attachments, so this product required the site's first
-server-side code, and within a day it acquired an automated answerer. Both are described in
-Section~\ref{sec:askpath}. We say nothing in this paper about what her requests ask for.
+server-side code, and within a day it acquired an automated answerer. The page, the server and
+the answerer are described in Sections~\ref{sec:askpage}, \ref{sec:worker}
+and~\ref{sec:askpath}. We say nothing in this paper about what her requests ask for.
 
 \subsection{MotionMirror}
 The fifth card (\code{5bea274}, 22 November) is the only one that leaves the site. It opens, in
 a new tab, a separate public project of the couple's: a tool that analyses sports technique
 from a single phone video, phase by phase. The card names its two showcase recordings, Yifan's
-jump shot and Jingyi's badminton, and its status line says that the project is open source. We
-do not describe the tool here; it has its own repository and is not part of the inspected
-software.
+jump shot and Jingyi's badminton, and its status line says that the project is open source. Section~\ref{sec:mm} describes how it works.
 
 What the card adds to this case is a different relation between the two people. Every other
 product on the page is made by one of them for the other, or for the two of them alone. This
@@ -852,7 +853,7 @@ artefact stopped presenting itself as one.
 \yt{} is a static single-page application in strict TypeScript, built with Vite and served from
 static hosting under the couple's domain (Figure~\ref{fig:arch}). The deployment configuration
 targets GitHub Pages. There is no author-operated backend for progress; since version 1.22 there
-is one for requests (Section~\ref{sec:askpath}), which Figure~\ref{fig:arch} does not show. Each feature
+is one for requests (Sections~\ref{sec:worker} and~\ref{sec:askpath}), which Figure~\ref{fig:arch} does not show. Each feature
 is a folder (\code{src/features/<name>/}) with its page module, styles, data, tests and a README,
 and each page is a function \code{render(root) $\Rightarrow$ cleanup} loaded lazily by a path
 router, so the main bundle carries only the shell and the town. Heavy modules (Leaflet for the map,
@@ -1236,23 +1237,458 @@ about a flat, not a ring. The test guards the dictionary only; assets, routes, s
 visual cues lie outside it.
 
 
-\subsection{Changing a Site While Someone Is in It}\label{sec:update}
-The site deploys on every push, and the record for the period holds 38 commits and eight
-released versions. A site that changes this often will change while its one other user is in
-the middle of something. Until version 1.20 a new build could reload a page that was open. Since then the service
-worker waits: a bar at the bottom of the page says that a
-new version is ready and offers one button, and nothing reloads until it is pressed, so that a
-page is never replaced underneath someone half-way through a level or a letter. The check runs
-when the tab returns to view and once an hour.
+\subsection{Implementation and Verification}
+Table~\ref{tab:metrics} describes the implementation at both versions. For version 1.17.0 an
+audit reran the suite: all 153 tests in 36 files passed, and the strict TypeScript check and
+production build succeeded. For version 1.24.0 we repeated those steps: all 263 tests in 45 files
+passed, and the check and the build succeeded. The main JavaScript chunk grew from 114.09\,kB to
+126.76\,kB (42.58 to 46.58\,kB gzip), and the service worker's precache from 44 entries and
+302.12\,KiB to 51 entries and 363.49\,KiB; these are build sizes, not load times on phones. The
+large ring, map and try-on chunks are lazy loaded.
+
+The first audit independently enumerated the progress-code cases reported above. The progress
+and code modules have not changed since that commit, so the enumeration was not repeated.
+Dictionary tests check matching non-empty keys; puzzle tests check properties such as unique
+winning moves. The server has its own unit tests, counted in the 263; the answering pipeline has
+none, and its verification is the manual exercise described in Section~\ref{sec:verify}.
+Section~\ref{sec:producttests} lists the tests of each later system.
+
+The development records describe browser checks at desktop, 390-pixel and 320-pixel widths and a
+laptop-camera check of hand orientation; no per-release end-to-end report is archived. Systematic
+phone checks of speech, breath, camera completion and sharing remain outstanding.
+
+\begin{table}[t]
+  \caption{Implementation summary at the two versions of this paper.}
+  \label{tab:metrics}
+  \small
+  \begin{tabular}{@{}p{0.50\columnwidth}p{0.19\columnwidth}p{0.19\columnwidth}@{}}
+    \toprule
+    Measure & 1.17.0\newline 28 Oct. & 1.24.0\newline 24 Nov. \\
+    \midrule
+    TypeScript source, excluding tests (lines) & 8{,}414 & 9{,}758 \\
+    CSS (lines) & 1{,}080 & 1{,}234 \\
+    Bilingual dictionary (lines) & 791 & 989 \\
+    Test files / unit tests & 36 / 153 & 45 / 263 \\
+    Commits / versions & 109 / 28 & 152 / 36 \\
+    Main bundle (min.\ / gzip, kB) & 114 / 43 & 127 / 47 \\
+    Precached shell (files / KiB) & 44 / 302 & 51 / 364 \\
+    Feature folders & 24 & 27 \\
+    Runtime dependencies & 3 & 3 \\
+    Author-operated progress backend & 0 & 0 \\
+    Server-side endpoints & 0 & 1 \\
+    Server source (TypeScript lines) & 0 & 94 \\
+    Answering pipeline (Python lines) & 0 & 660 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+%% ===================================================================================
+\section{The Systems beside the Town}\label{sec:products}
+Section~\ref{sec:system} describes the game. This section describes, at the same level of
+detail, every other system reachable from the dashboard: how each stores its state, what rules
+it computes, what leaves the device, and how it is tested. Section~\ref{sec:after} says what
+each is for; here we say how each works. Constants are quoted from the source at the inspected
+commit, and file names are given so that each statement can be checked.
+
+\subsection{The Product Registry and Routing}\label{sec:registry}
+The dashboard is generated from one array. A product is a record
+\begin{equation}\label{eq:product}
+  P = (\mathit{id},\ \mathit{route},\ \mathit{title},\ \mathit{blurb},\ \mathit{image}^{?},\
+       \mathit{status}^{?},\ \mathit{external}^{?}),
+\end{equation}
+where \emph{title} and \emph{blurb} are keys of the bilingual dictionary, \emph{image} is an
+optional picture, \emph{status} is an optional function returning one line of text or nothing,
+and \emph{external} marks a route that leaves the site (\code{dashboard/products.ts}). The page
+maps the array to cards and appends the seed tile, which is markup with no entry in the array
+(\code{dashboard/dashboard.ts}). Each status function is evaluated once, when the page is
+drawn; the page does not poll. An external card is rendered as a link that opens a new tab with
+\code{rel="noopener"}.
+
+The five status rules are these. \emph{Town}: with $p$ the player chosen on this device and
+$C_p$ the levels that player has cleared, the line is the player's name and
+$|C_p|/9$; it is empty when no player is chosen or $|C_p|=0$, and it never reads the other
+player's set. \emph{Infirmary}: a constant string. \emph{Trip}: the function of
+Section~\ref{sec:tripclock}. \emph{Request box}: none. \emph{MotionMirror}: a constant string.
+
+\begin{table}[t]
+  \caption{What each route requires before it opens (\code{main.ts}).}
+  \label{tab:routes}
+  \small
+  \begin{tabular}{@{}p{0.31\columnwidth}ccp{0.23\columnwidth}@{}}
+    \toprule
+    Route & Password & Player & Level unlocked \\
+    \midrule
+    Dashboard, trip, request box & yes & no & no \\
+    Town, infirmary, city days & yes & yes & no \\
+    A level & yes & yes & yes, and entered by its door \\
+    MotionMirror (off-site) & to reach the card & no & no \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Routing is by path, with no framework (\code{core/router.ts}). A legacy fragment route of the
+form \code{\#/x} takes priority over the path, repeated and trailing slashes are normalised,
+and navigation calls \code{history.pushState} and then dispatches a custom event that the
+shell listens for. Plain left clicks on root-relative links are intercepted; links that carry
+\code{target} or \code{download} are left to the browser. Each page module is loaded on
+demand. If a module fails to load, which happens when a new build has replaced the files an
+open page expects, the shell reloads once, guarded by a flag in \code{sessionStorage} so that a
+real outage cannot cause a reload loop. Table~\ref{tab:routes} gives the three levels of
+requirement. Unknown paths fall back to the dashboard.
+
+\subsection{The Infirmary}\label{sec:clinic}
+\paragraph{Data.}
+There are four kinds of hurt, $H=\{\textit{fight},\textit{hurt},\textit{miss},\textit{tired}\}$.
+A prescription is a letter $(\mathit{from}, h, \mathit{paragraphs}, \mathit{signature})$ with
+$h\in H$ and paragraphs in both languages; a cabinet note is $(\mathit{from}, \mathit{zh},
+\mathit{en})$. The source holds eight letters, one from each partner for each hurt, each of
+six paragraphs in each language, and 36 notes, eighteen from each partner
+(\code{clinic/prescriptions.ts}). Two keys are kept in \code{localStorage} for each player
+$p$: a visit counter, \code{yi.clinic.visits.}$p$, and a private chart,
+\code{yi.clinic.chart.}$p$, a list of at most 30 entries $(\mathit{at},\mathit{text})$
+(\code{clinic/visits.ts}).
+
+\paragraph{Roles.}
+Whoever checks in is the patient $p$; the other partner $\bar p$ is the doctor. The letter shown
+for a hurt $h$ is the unique prescription with $\mathit{from}=\bar p$ and that hurt, and the
+cabinet is the subset of notes with $\mathit{from}=\bar p$. A player is therefore never shown
+their own words.
+
+\paragraph{Checking in and breathing.}
+Checking in increments the counter and nothing else: neither the hurt chosen nor the time is
+written to storage, and the time of check-in is held in memory only for the length of the
+visit. Three breaths follow, each of four seconds in, four seconds held and six seconds out,
+so the exercise lasts
+\begin{equation}\label{eq:clinicbreath}
+  3 \times (4 + 4 + 6)\ \mathrm{s} = 42\ \mathrm{s}.
+\end{equation}
+A button skips it, and when the browser reports a preference for reduced motion the exercise
+is omitted and the letter is shown at once.
+
+\paragraph{What the doctor is doing now.}
+The letter's first line is computed, not stored. Let $z_{\bar p}$ be the doctor's configured
+time zone and $\tau$ the present instant. The page reads the wall-clock hour and minute in
+$z_{\bar p}$ through the browser's internationalisation interface, forms
+$x = \mathrm{hour} + \mathrm{minute}/60$, and classifies it with the same function that tints
+the town's sky:
+\begin{equation}\label{eq:clinicphase}
+  \phi(x) = \begin{cases}
+    \textit{dawn} & 6 \le x < 7 \\
+    \textit{day} & 7 \le x < 17 \\
+    \textit{dusk} & 17 \le x < 19 \\
+    \textit{night} & \text{otherwise.}
+  \end{cases}
+\end{equation}
+The phase selects one of four sentences in the dictionary, which is filled with the doctor's
+name and the clock time. The line is thus a statement about the hour in a city. It uses no
+calendar, location, or signal from the other person's device, and the same sentence is shown at
+three in the afternoon on a working day and on a holiday.
+
+\paragraph{The cabinet.}
+A draw must not repeat the note just shown. With $N$ the doctor's notes, $\ell$ the last note
+shown and $r$ uniform on $[0,1)$, the pool is $N\setminus\{\ell\}$ when $|N|>1$ and $\ell$
+exists and $N$ otherwise, and the note drawn is
+\begin{equation}\label{eq:draw}
+  \mathrm{pool}\big[\min(|\mathrm{pool}|-1,\ \lfloor r\,|\mathrm{pool}| \rfloor)\big].
+\end{equation}
+Repeats after one intervening draw are allowed. A placeholder in a note is replaced by the
+number of days since the couple met, counted in the patient's time zone.
+
+\paragraph{Leaving.}
+``Tell them I am out'' builds one sentence containing the visit's length in minutes,
+$m=\max(1,\ \mathrm{round}(\Delta/60\,000))$ for $\Delta$ milliseconds since check-in, and
+passes it to the operating system's share sheet. If sharing is unavailable or fails for a
+reason other than the user cancelling, the sentence is copied to the clipboard and a notice
+says so. The application itself transmits nothing: the only network request the page makes is
+for an optional audio file on the site's own origin.
+
+\paragraph{Voice.}
+A letter can be heard if a recording exists at a path derived from its hurt and its writer. The
+page does not know in advance which recordings exist; it creates an audio element that loads
+metadata only and shows the play button when the browser reports that the file can play. A
+script records a reading at 44.1\,kHz mono, trims leading and trailing silence below an
+amplitude of 0.01 while keeping a quarter of a second before and half a second after the
+speech, and encodes it as AAC at 96\,kbit/s (\code{scripts/record-rx.py}).
+
+\paragraph{The chart.}
+Lines are trimmed, blank lines are ignored, new lines are placed first, and only the newest 30
+are kept. Erasing a line matches it by its timestamp. Entries that fail to parse are dropped
+on load. The chart is escaped before display and is never sent anywhere; when storage is
+blocked it lives in memory for the session.
+
+\paragraph{In the town.}
+The infirmary is a building with its door at tile $(7,8)$ and a cross for a sign
+(\code{world/town.ts}). Its door is always walkable, it is not in the level registry, and the
+guide can lead a player to it. The route itself requires a chosen player, because without one
+the page cannot tell patient from doctor.
+
+\paragraph{Tests.}
+Eleven tests in two files check that every patient has a letter from the other for every
+hurt, with equal numbers of paragraphs in the two languages and none empty; that no one
+receives their own letter and no pair of writer and hurt is duplicated; that each partner has
+at least ten notes in both languages; that a note is never drawn twice in a row, including the
+cases of an empty cabinet and a single note; that visit counts are kept per player and
+malformed storage is ignored; that the chart orders, trims, erases and caps as described; and
+that every hour of the day yields a line in both languages and a visit length of at least one
+whole minute. A further test of the town map checks that the door is reachable from the
+starting tile and unlocked.
+
+\subsection{The Trip Clock}\label{sec:tripclock}
+\paragraph{Data.}
+A flight leg is $(\mathit{from},\mathit{to},\mathit{departs},\mathit{arrives})$, where the
+airports carry an IANA time zone and coordinates and the two times are ISO~8601 strings with an
+explicit offset from UTC (\code{core/config.ts}). The trip is two legs, out and back. The
+countdown on the home page and the gold arc on the Love Map read the outbound leg from the
+same record, so there is one source for the date. The page keeps nothing in storage.
+
+\paragraph{Durations.}
+Because both times carry offsets, a leg's duration is a difference of absolute instants,
+$(\mathit{arrives}-\mathit{departs})/3\,600\,000$ hours, which gives 15.5\,h out and 16.25\,h
+back with no reasoning about time zones. Whether a leg lands on the next calendar day is a
+different question, about dates as passengers read them: the page compares the arrival date in
+the arrival airport's zone with the departure date in the departure airport's zone, and marks
+the leg ``+1 day'' when they differ. This is true of the return leg only.
+
+\paragraph{Phases.}
+Write $t_0<t_1<t_2<t_3$ for the instants of outbound departure, outbound arrival, return
+departure and return arrival, and $\tau$ for now. The phase is
+\begin{equation}\label{eq:tripphase}
+  \psi(\tau) = \begin{cases}
+    \textit{before} & \tau < t_0 \\
+    \textit{out} & t_0 \le \tau < t_1 \\
+    \textit{together} & t_1 \le \tau < t_2 \\
+    \textit{back} & t_2 \le \tau < t_3 \\
+    \textit{after} & \tau \ge t_3 ,
+  \end{cases}
+\end{equation}
+and the clock counts down to the upper bound of the current phase, with nothing to count to in
+the last (\code{trip/plan.ts}). The comparison is between instants, so the phase is the same
+for both partners wherever they are.
+
+\paragraph{Which day of the stay.}
+Days together are counted on New York's calendar, not the viewer's. Let $d_z(\tau)$ be the
+calendar date at instant $\tau$ in zone $z$, and $u(d)$ the UTC midnight of a date $d$ in
+milliseconds. With $z$ the destination's zone,
+\begin{equation}\label{eq:tripday}
+  n(\tau) = \mathrm{round}\!\left(\frac{u(d_z(\tau)) - u(d_z(t_1))}{86\,400\,000}\right) + 1 ,
+\end{equation}
+so the day of landing is day 1. Rounding absorbs the hour gained or lost when daylight saving
+time changes between the two dates. The length of the stay is $n(t_2)$, which is 11. A viewer
+in Shenzhen at noon and a viewer in New York at eleven the night before therefore see the same
+day number, which a count on the viewer's own calendar would not give.
+
+\paragraph{The dashboard line.}
+Before departure the card shows $\lceil (t_0-\tau)/86\,400\,000 \rceil$ days, with a separate
+string for one day; in the air it shows a fixed phrase; during the stay, ``day $n$ of 11''; on
+the way home and afterwards, fixed phrases.
+
+\paragraph{The page.}
+The clock is redrawn once a second, with the remaining time floored to days, hours and
+minutes. The region that holds it is marked as a polite live region for screen readers. The
+itinerary is a list of twelve entries, one for each date from the landing in New York to the
+landing back in Hong Kong, each with an optional title and note in both languages and a list
+of photographs or videos (\code{trip/itinerary.ts}). At the inspected commit five entries have
+titles. An entry earlier than today in New York is dimmed, today's is marked, and an entry
+without a title shows a placeholder.
+
+\paragraph{Tests.}
+Eight tests fix the two durations, the next-day rule, each of the five phases with its
+countdown target, the day number at 23:30 on the first night and on the last day, and the
+dashboard strings in both languages. Fourteen cases over the itinerary check that its first
+and last dates are the two landings, that the dates are consecutive, that every title and
+note exists in both languages or neither, and that every listed media file exists on disk
+under exactly that name.
+
+\subsection{The Service Worker, the Caches and Updates}\label{sec:update}
+The site installs as a progressive web application. Its service worker is generated at build
+time and configured in three parts (\code{vite.config.ts}).
+
+\emph{Precache.} Scripts, styles, markup, vector and raster images and fonts are precached,
+except photographs and other media, the hand-tracking model, and the chunks for the ring
+viewer, the try-on and the map; no single precached file may exceed 3\,MB. The exclusions keep
+the 21\,MB hand-tracking bundle from downloading at installation.
+
+\emph{Runtime caches.} Three named caches fill as the site is used
+(Table~\ref{tab:caches}). Media are served from the cache at once and refreshed in the
+background, so a photograph replaced under the same name reaches an installed phone on its
+next visit. Map tiles are served from the cache without revalidation for thirty days.
+
+\begin{table}[t]
+  \caption{Runtime caches of the service worker.}
+  \label{tab:caches}
+  \small
+  \begin{tabular}{@{}p{0.20\columnwidth}p{0.36\columnwidth}cc@{}}
+    \toprule
+    Content & Strategy & Entries & Age (days) \\
+    \midrule
+    Media, hand model & stale while revalidate & 200 & 365 \\
+    Web fonts & stale while revalidate & 30 & 365 \\
+    Map tiles & cache first & 400 & 30 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\emph{Updates.} The worker is registered in the mode in which a new version waits instead of
+taking over. The site deploys on every push, and the record for the period holds 43 commits
+and eight released versions, so a new build will often appear while its one other user is in
+the middle of something. Until version 1.20 a new build could reload a page that was open.
+Since then, when a new worker is ready the page appends one bar, marked as a status region,
+that says a new version is ready and offers one button; pressing it activates the new worker
+and reloads (\code{core/update.ts}). Nothing reloads until then, so a page is never replaced
+underneath someone half-way through a level or a letter. The page asks the browser to check
+for a new worker whenever the tab becomes visible again and once an hour; a failed check is
+ignored. The one exception to waiting is the failed module load described in
+Section~\ref{sec:registry}.
 
 The same question returns at a larger scale with the gate. Version 1.24 withdrew every earlier
-pass, so each device was asked for the password again on its next visit, and this time the
-recipient was not offered a choice. An update bar asks before it changes the page; a designer
-who changes the door does not. Both are decisions by one person about the other's access to
-something described as theirs in common.
+pass by changing the storage key under which a pass is remembered, so each device was asked
+for the password again on its next visit, and this time the recipient was not offered a
+choice. An update bar asks before it changes the page; a designer who changes the door does
+not. Both are decisions by one person about the other's access to something described as
+theirs in common.
 
-\subsection{From Her Message to His Answer}\label{sec:askpath}
-Figure~\ref{fig:askpath} shows the path of one request. It has two halves, built a day apart.
+\subsection{The Request Page}\label{sec:askpage}
+\paragraph{Limits.}
+One request carries at most ten files and 18\,MiB in total, the practical limit of one email
+after encoding, and the page keeps the newest 50 requests as history
+(\code{ask/core.ts}). A draft is checked in a fixed order: it is \emph{empty} if it has neither
+text nor files, \emph{too many} above ten files, and \emph{too big} above the byte limit. The
+server applies the same constants, imported from the same module.
+
+\paragraph{Preparing files.}
+A JPEG, PNG or WebP image larger than 1.5\,MiB is scaled before it is attached: it is decoded
+with its recorded orientation applied, drawn on a white ground so that its long edge is at
+most 2400 pixels, and encoded as JPEG at quality 0.85 (\code{ask/shrink.ts}). The original is
+kept if the result is not smaller or if any step fails. Other file types are attached as they
+are. Files being prepared are counted, and sending is disabled until the count returns to
+zero; before this rule, a send made in that moment left those files behind without notice.
+
+\paragraph{State.}
+The page's state is held outside the page, in a session object created once per load
+(\code{ask/session.ts}):
+\begin{equation}\label{eq:askstate}
+  S = (\mathit{draft},\ \mathit{history},\ \mathit{adding},\ \mathit{pending},\ \mathit{note},\
+       \mathit{retrying}),
+\end{equation}
+with \emph{draft} the text and files in the composer, \emph{adding} the number of files being
+prepared, \emph{pending} the one send in flight or none, \emph{note} the last validation
+error, and \emph{retrying} the failed entry that the composer currently holds. The page is a
+function of $S$ and subscribes to it. This is why a send survives events that redraw the page:
+switching language rebuilds the markup, and the new markup finds the same \emph{pending}.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+      font=\scriptsize\sffamily,
+      st/.style={draw=navy, line width=0.6pt, fill=cream, rounded corners=6pt, align=center, inner sep=3pt, minimum height=6.5mm, minimum width=1.5cm},
+      arr/.style={-{Stealth[length=1.6mm]}, navy, line width=0.5pt}]
+    \node[st] (idle) {composing};
+    \node[st, right=14mm of idle] (pend) {pending};
+    \node[st, above right=3mm and 14mm of pend, fill=gold!25] (sent) {sent};
+    \node[st, below right=3mm and 14mm of pend, fill=rose!20] (fail) {failed};
+    \draw[arr] (idle) -- node[above]{send} (pend);
+    \draw[arr] (pend) -- node[above, sloped]{ok} (sent);
+    \draw[arr] (pend) -- node[below, sloped]{error, 3 min} (fail);
+    \draw[arr] (fail.south) to[bend left=28] node[below]{send again} (pend.south);
+    \draw[arr] (idle.north) to[out=110,in=70,looseness=5] node[above]{invalid draft} (idle.north east);
+  \end{tikzpicture}
+  \caption{States of one request on the page. A draft that fails validation never leaves
+  \emph{composing}. A send that receives no answer is abandoned after three minutes. A failed
+  request keeps its text and files in the composer.}
+  \Description{A state diagram with four rounded boxes: composing, pending, sent and failed.
+  Arrows lead from composing to pending, from pending to sent and to failed, from failed back
+  to pending, and from composing to itself.}
+  \label{fig:askstates}
+\end{figure}
+
+\paragraph{Sending.}
+Figure~\ref{fig:askstates} shows the states of a request. Submitting does nothing while a send
+is pending or files are being prepared. Otherwise the draft is validated, and a valid draft is
+posted as a multipart form with the fields \emph{text}, \emph{lang}, \emph{player} if one is
+chosen, and one \emph{files} field per file. A controller aborts the request after
+180 seconds. The outcome is \emph{sent} only if the HTTP status is successful and the body
+says so. Otherwise the reason is taken from the body when it is one the page knows, and is
+\emph{network} if the request was rejected or timed out and \emph{server} in every other case,
+including a successful status with an unexpected body. The entry is written to storage only
+once its outcome is known. On success, the text is cleared only if it still equals what was
+sent, and only the files that were sent are removed, so anything typed or attached during the
+send remains.
+
+\paragraph{Sending again.}
+A failed entry keeps its text; file contents are never stored, only names and sizes. Pressing
+``send again'' has four possible results. It is refused while the session is busy. It is
+refused, with the entry kept, if the composer already holds different text. If the page has
+been reloaded since the failure and the entry had files, the text is restored and the user is
+asked to attach the files again. Otherwise it sends, and the new attempt replaces that failed
+entry and no other.
+
+\paragraph{Input.}
+On a device with a fine pointer, Enter sends and Shift with Enter breaks the line; on a touch
+device Enter breaks the line and the button sends. Enter never sends while an input method is
+composing text, and it also does not send when the key event reports key code 229, which is
+how one desktop browser signals the Enter that confirms a pinyin candidate after composition
+has formally ended. Pasted content is taken as files only when the clipboard holds a file and
+no plain text, so a paste from a spreadsheet arrives as text and not as a picture of it; a
+pasted screenshot is given a name with the time and a serial number. Dropped files are
+accepted anywhere on the window.
+
+\paragraph{Tests.}
+Fifty-two tests cover the constants and the validation order at their boundaries, the history
+store under malformed and failing storage, every branch of the outcome rule including a stall
+before and during the response body, the behaviour of a send across re-subscription, files
+added during a send, the four results of sending again, the keyboard rule with composition,
+the paste rule, and the scaling rule. The module that draws the page has no automated tests.
+
+\subsection{The Server}\label{sec:worker}
+The server is one function on an edge platform, bound to a custom domain, with a binding for
+sending email (\code{worker/src/handle.ts}). The destination address is a secret of the
+deployment; the sending address is an ordinary variable. It stores nothing and has no key,
+rate limit or challenge.
+
+\begin{table}[t]
+  \caption{The server's checks, in order, and its answers.}
+  \label{tab:worker}
+  \small
+  \begin{tabular}{@{}p{0.50\columnwidth}cl@{}}
+    \toprule
+    Condition & Status & Reason \\
+    \midrule
+    Origin absent or not allowed & 403 & server \\
+    Preflight request & 204 & \\
+    Not a POST to the one path & 404 & server \\
+    Body is not a form & 400 & empty \\
+    No text and no files & 400 & empty \\
+    More than ten files & 413 & too-many \\
+    More than 18\,MiB & 413 & too-big \\
+    Sending the email fails & 502 & server \\
+    Otherwise & 200 & \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Table~\ref{tab:worker} gives its checks in the order applied. Two origins are allowed, the
+site's and the development server's. A request from any other origin is refused before any
+cross-origin header is written, so a page elsewhere cannot read even the refusal. The origin
+header is set by browsers and can be set freely by any other client, which is why this check
+keeps other web pages out and does not keep people out.
+
+Three inputs are cleaned. A file name is reduced to its last path segment and stripped of
+control characters, the line and paragraph separators U+2028 and U+2029, and double quotes.
+The \emph{player} field is looked up in a map of two names and replaced by a default when it
+is anything else, so no text supplied by the client reaches the subject through that field.
+The language is English only if the field says so exactly.
+
+The email's subject is a fixed prefix, the name, and the first thirty code points of the text
+with white space collapsed, or the first file's name when there is no text. Its body is the
+text, a separator, the time of the request in each partner's city, the page language, and the
+names and sizes of the attachments. Twenty tests cover the cleaning rules, the subject, each
+row of Table~\ref{tab:worker}, and the fields of a complete send.
+
+\subsection{The Answering Pipeline}\label{sec:askpath}
+The pipeline is a set of scripts on the designer's laptop, run by the operating system's
+scheduler every 600 seconds (\code{mailflow/}). Figure~\ref{fig:askpath} shows the path of one
+request through it. A second scheduled agent keeps the laptop awake while it is on mains
+power. An exclusive file lock makes a run exit at once if the previous run has not finished.
 
 \begin{figure}[t]
   \centering
@@ -1284,47 +1720,124 @@ Figure~\ref{fig:askpath} shows the path of one request. It has two halves, built
   \label{fig:askpath}
 \end{figure}
 
-\paragraph{The server.}
-A function on an edge platform accepts one kind of request, from the site's origin only, checks
-the same limits the page enforces, and sends one email through the platform's mail binding to an
-address held as a secret outside the repository. It stores nothing. By a decision recorded on
-23 November it has no key, rate limit or challenge: the endpoint can write only to the designer's
-inbox, so the worst case considered was junk mail to him.
+\paragraph{Fetching.}
+The job opens the designer's mailbox over IMAP, read-only, in the folder that the server marks
+with the special-use flag for all mail; it finds that folder by the flag and not by name,
+because the folder's name is localised. It searches for messages from the site's sending
+address and keeps the identifiers it has already handled in a state file. Each new message is
+fetched without marking it as read and handled inside its own error boundary: a message that
+fails to parse is logged and skipped, and the state file is written after every message, so one
+malformed email cannot stop those behind it (\code{mailflow/fetch.py}).
 
-\paragraph{The answerer.}
-That reasoning held for a day. On 24 November a scheduled job was added on the designer's laptop
-(\code{fc593ec}) that acts on those emails, which makes the unauthenticated endpoint an input to
-automation. Every ten minutes the job runs four steps.
-\emph{Fetch}: it collects new requests over IMAP into one folder each. A message is accepted only
-if its sender and subject match and the receiving mail provider recorded a passing DKIM signature
-for the site's domain~\cite{rfc6376}; the first build checked the sender header alone, which
-anyone can write, and an automated review of that build flagged it. The signature shows that
-the message left through the site's own sender. It cannot show who wrote the request, because
-the server in front of it accepts requests from anyone.
-\emph{Sort}: a vision-language model and a text model, both run locally, transcribe attached
-images and classify the request. A request outside an agreed scope, or one that asks to send
-anything elsewhere, read or delete files, or run commands, stops there and waits for the designer.
+\paragraph{Authenticating.}
+A message is accepted only if three conditions hold: its sender address equals the site's
+sending address, its subject begins with the server's fixed prefix, and the receiving mail
+provider recorded a passing DKIM signature~\cite{rfc6376} for the site's domain. The third
+condition is read from the topmost \code{Authentication-Results} header, the one the provider
+adds on receipt; a header of the same name carried inside the message would lie below it and
+is ignored. Because the rest of that header is influenced by the sender, it is not searched
+for a substring. It is split in one pass from left to right that tracks, together, whether the
+scan is inside a quoted string and how deeply it is inside parenthesised comments:
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
+  \item Text inside quotes or comments is discarded, and a backslash there skips the next
+  character.
+  \item Only a semicolon outside both separates one result from the next.
+  \item The header is rejected if a quote or a comment is left open, if a closing parenthesis
+  appears outside a comment, or if the discarded text contains a semicolon, an equals sign or
+  the word \emph{dkim}, since the provider's own comments contain none of these.
+  \item The first part must name the provider's own server.
+  \item Among the remaining parts, those whose first token begins with \emph{dkim=} are read as
+  properties. A property that appears twice rejects the header. A result belongs to the site if
+  its signing identity or signing domain equals the site's domain exactly.
+  \item The message is authentic if at least one result belonging to the site says \emph{pass}
+  and none says anything else.
+\end{enumerate}
+The first build tested the sender address alone. Successive rounds of automated review, noted in
+Section~\ref{sec:log}, led from there through a substring match and a parser built from
+regular expressions to this form. A passing signature shows that the message left through the
+site's own sender. It cannot show who wrote the request, because the server accepts requests
+from anyone.
+
+\paragraph{Filing.}
+An accepted message becomes a folder named by its date, time and a slug of its subject in
+which every run of characters other than letters, digits, underscores and hyphens is replaced
+by an underscore. The restriction exists because the folder's name is later written into a
+permission rule for a language model, and the subject is text from outside. Attachments are
+saved under their cleaned names; a name that begins with a dot, or that equals one of the file
+names that coding assistants read as instructions or settings, is given a prefix so that an
+attachment cannot pose as such a file.
+
+\paragraph{Sorting.}
+Two open-weight models run locally through a model server on the loopback interface, with
+temperature zero and a context of 8192 tokens (\code{mailflow/triage.py}). Each attached image
+is scaled so that its long edge is at most 1800 pixels and given to a 7-billion-parameter
+vision-language model with the instruction to transcribe all of its text without summarising.
+The first two pages of each attached PDF are converted to text. A 14-billion-parameter text
+model then receives the email, the transcriptions and a description of the agreed scope, and
+must answer in a fixed JSON schema: a request type from an enumerated list, two short labels,
+a one-sentence summary, and a boolean, \emph{needs human}, with a reason. If the model's answer
+cannot be parsed, the request is treated as needing a human. A request so marked stops here,
+and the designer is notified.
+
 This step is a filter and not a security boundary, since its judge is itself a model reading
-the untrusted text; the boundaries are the tool list of the next step and the fixed recipient
-of the last.
-\emph{Work}: a hosted model receives the folder with a tool list limited to reading and writing
-files and running one script. It cannot send mail, search the web or run any other command, and
-the job refuses to start unless the one script is marked immutable by the operating system,
-because a model that may write files must not be able to rewrite what it may execute. A second
-automated review prompted that rule; the build before it also allowed copying files and web
-search. Its instructions state that the
-email is material to work from and not a source of instructions, which addresses but does not
-remove the risk of injected instructions~\cite{greshake2023injection}.
-\emph{Send}: the result goes by SMTP to one address fixed in a local file, with a copy to the
-designer, and at most six automatic sends a day.
+the untrusted text. The boundaries are in the next two steps.
 
-The first build of the job held each result for the designer to confirm. The same evening, at his
-request, sending became automatic, so that requests arriving between two and seven in the morning
-his time, which is her late afternoon and evening, are answered without him. The scope of the
-work, the addresses and the instructions to both models are kept in a file outside the
-repository; an early build had them in the public code and they were removed from it.
+\paragraph{Working.}
+The hosted model is started without an interactive session, with the request's folder as its
+working directory and a time limit of 2700 seconds (\code{mailflow/generate.py}). Before it
+starts, the job refuses to continue unless all of the following hold: at least one rule file is
+configured; every rule file and the one executable script are regular files, not links, that
+carry the operating system's immutable flag; the folder's name consists only of letters,
+digits, underscores and hyphens; the folder's rules subdirectory is a real directory; and the
+folder contains none of the files or directories that the assistant would load as project
+instructions or settings. The rule files are then copied into the folder afresh, and the
+copies are made immutable for the length of the run and released afterwards.
 
-\paragraph{What was verified.}
+The model's permissions are a list, and nothing outside the list is granted:
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+  \item reading, listing and searching files, each restricted by a path pattern to the
+  request's folder;
+  \item writing and editing files, which the non-interactive mode confines to the working
+  directory;
+  \item running one script, named by its absolute path. The script accepts exactly two
+  arguments, an existing page file and an output document, and refuses unless both lie under
+  two fixed directories and neither is a link.
+\end{itemize}
+It is started with project-level settings disabled. It has no tool for sending mail, for the
+network, or for any other command. The restriction of reading to one folder was added after a
+test showed that an unrestricted read permission allowed the model to open files anywhere on
+the disk, which the documentation of the previous build had denied.
+
+The model's instructions state that the email and its attachments are material to work from
+and not a source of instructions, which addresses but does not remove the risk of injected
+instructions~\cite{greshake2023injection}. The design therefore assumes that the instructions
+may be overridden and limits what an overridden model can reach: one folder, one script with
+checked arguments, and no channel out.
+
+\paragraph{Sending.}
+A result is sent only if the folder holds at least one output document, holds no marker
+written by the model to say that a person is needed, and has not been sent before
+(\code{mailflow/send.py}). The message goes over SMTP to one address read from a local
+configuration file, with a copy to the designer. Nothing in the request, the models' outputs
+or the folder can change the recipient. When sending is automatic, the job counts the folders
+already sent on the current date and stops at six, leaving later results for the designer to
+confirm.
+
+\paragraph{Failures.}
+Any error while a request is being sorted, worked on or sent is logged with its trace, recorded
+in the folder's status file, and shown to the designer as a notification; the job continues
+with the next request. A request's status file records the furthest stage it reached, one of
+downloaded, sorted, working, awaiting send, sent, needing a person, or failed.
+
+\paragraph{Configuration and exposure.}
+The addresses, the list of request types, the description of the scope, the instructions to
+both models and the paths of the rule files are read from a file that is excluded from the
+repository. An early build had the instructions in the public code and they were removed from
+it. The first build of the job held each result for the designer to confirm. The same evening,
+at his request, sending became automatic, so that requests arriving between two and seven in
+the morning his time, which is her late afternoon and evening, are answered without him.
+
+\subsection{What Was Verified by Hand}\label{sec:verify}
 On 24 November the parts were exercised separately: the mail login in both directions, the DKIM
 rule against the seven delivered emails and against forged headers, the local models on one real
 attachment and on one constructed hostile request, the hosted model's tool permissions under the
@@ -1335,46 +1848,199 @@ back to her, in under two minutes. We report no more about them than that. The f
 answers did not say that a machine had prepared them; since that night, answers of one kind
 open with a line that says so, and answers that deliver prepared documents still do not.
 
-\subsection{Implementation and Verification}
-Table~\ref{tab:metrics} describes the implementation at both versions. For version 1.17.0 an
-audit reran the suite: all 153 tests in 36 files passed, and the strict TypeScript check and
-production build succeeded. For version 1.24.0 we repeated those steps: all 263 tests in 45 files
-passed, and the check and the build succeeded. The main JavaScript chunk grew from 114.09\,kB to
-126.76\,kB (42.58 to 46.58\,kB gzip), and the service worker's precache from 44 entries and
-302.12\,KiB to 51 entries and 363.49\,KiB; these are build sizes, not load times on phones. The
-large ring, map and try-on chunks are lazy loaded.
+\subsection{MotionMirror}\label{sec:mm}
+MotionMirror is a separate program, in Python, in its own public repository under the MIT
+licence. We describe version 0.2.0 at commit \code{80c4fd8} (24 November 2026). It takes one
+video from one camera and reports, for each repetition of a movement, when its phases occur
+and a set of joint measurements at each phase. It has profiles for the golf swing, the
+basketball jump shot and badminton strokes. Its core has no dependencies; pose estimation,
+drawing and video encoding are an optional set.
 
-The first audit independently enumerated the progress-code cases reported above. The progress
-and code modules have not changed since that commit, so the enumeration was not repeated.
-Dictionary tests check matching non-empty keys; puzzle tests check properties such as unique
-winning moves. The server has its own unit tests, counted in the 263; the answering pipeline has
-none, and its verification is the manual exercise described in Section~\ref{sec:askpath}.
+\paragraph{Pose.}
+Every frame is passed to a body-landmark model that returns 33 named
+landmarks~\cite{bazarevsky2020blazepose,lugaresi2019mediapipe}, in its video mode, with a
+minimum confidence of 0.4 for detection, presence and tracking; no frames are skipped, and a
+clip that reports no frame rate is assumed to have 30 frames a second. Up to three people are
+detected in a frame. A landmark with visibility below 0.3 is treated as missing.
 
-The development records describe browser checks at desktop, 390-pixel and 320-pixel widths and a
-laptop-camera check of hand orientation; no per-release end-to-end report is archived. Systematic
-phone checks of speech, breath, camera completion and sharing remain outstanding.
+\paragraph{Choosing the athlete.}
+One person is kept per frame. A candidate is plausible if its torso and its legs each span
+more than 0.02 of the frame height. Among plausible candidates the tracker keeps the one whose
+hip midpoint is nearest the last accepted one, provided the hips moved no faster than three
+frame-heights a second; with no accepted pose, or after a second without one, it takes the
+largest body. If nobody is plausible it returns the most visible candidate without updating
+its anchor.
+
+\paragraph{A second pass for small figures.}
+If the median height of the athlete's bounding box is below 0.35 of the frame, the clip is
+processed again on a moving square crop. The crop's side is the larger of 1.9 times the box
+and 256 pixels; its centre and size are interpolated across gaps and smoothed with a moving
+average of about 0.3 seconds. Each crop is resized to $640\times640$, one pose is detected in
+it, and the landmarks are mapped back to the coordinates of the full frame.
+
+\paragraph{Geometry.}
+Landmarks are stored as fractions of the image's width and height. For all measurements the
+horizontal coordinate is multiplied by the aspect ratio, so that distances and angles are not
+distorted in a portrait or landscape frame, and the model's depth estimate is discarded: every
+quantity is two-dimensional. Lengths are divided by the athlete's torso length, the distance
+from the midpoint of the shoulders to the midpoint of the hips, taken as the median over the
+clip. A height above the head is therefore in torso lengths and a speed in torso lengths a
+second, and neither depends on how far the camera stood.
+
+\paragraph{Signals.}
+Tracked points such as the wrists and hips are filled across gaps of up to eight frames by
+linear interpolation, with longer gaps left empty, and smoothed with a centred moving average
+of five frames, three for badminton. Speed is a central difference of position, smoothed the
+same way. Joint angles are not filtered frame by frame; the value reported at a phase is the
+median of the angle over a window of two frames either side, one for most badminton phases.
+No model-based filter is used.
+
+\paragraph{Finding repetitions.}
+Each profile reduces a clip to one signal whose extrema mark candidate repetitions. An
+extremum is kept if it passes a threshold, is extreme within a radius, and is separated from
+its neighbour by a minimum time. Table~\ref{tab:mm} gives the three rules. Around each
+candidate the profile then places the remaining phases by searching fixed windows for a
+minimum or maximum of another signal, and rejects the candidate if its shape is implausible.
+
+\begin{table*}[t]
+  \caption{MotionMirror's three profiles: the signal whose extrema propose a repetition, the
+  rule for keeping one, and the phases placed around it. $p_k$ is the $k$th percentile of the
+  signal over the clip; $f$ is the frame rate; lengths are in torso lengths.}
+  \label{tab:mm}
+  \small
+  \begin{tabular}{@{}p{0.09\textwidth}p{0.22\textwidth}p{0.27\textwidth}p{0.34\textwidth}@{}}
+    \toprule
+    Profile & Anchor signal & Kept if & Phases, in order \\
+    \midrule
+    Golf & Height of the hands (midpoint of the wrists); the anchor is the top of the swing &
+    Beyond $p_{2}+0.4\,(p_{90}-p_{2})$; at least $1.8f$ frames apart; hands no more than 0.35
+    below the shoulders &
+    address, top, impact, finish \\
+    Basketball & Wrist height above the head plus elbow angle over $180^\circ$; the anchor is
+    the release &
+    At least $\max(1.0,\,p_{90})$; at least $1.2f$ frames apart; wrist at least 0.05 above
+    the nose &
+    set, dip, lift, release, follow-through, landing \\
+    Badminton & Speed of the racket-side wrist; the anchor is the contact &
+    At least $\max(2.5,\,p_{85})$ a second; at least $0.8f$ frames apart &
+    ready, backswing, contact, follow-through, recovery \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+\emph{Golf.} The top is the highest point of the hands, moved to the end of any pause there.
+The address is the last moment in the three seconds before the top at which the hands are
+quiet, where quiet means a speed at or below the larger of the clip's 30th percentile and 0.15;
+a candidate is rejected if the address is less than 0.3 seconds before the top or the hands
+rose less than a quarter of a torso. Impact is the first frame within 0.7 seconds after the top
+at which the hands are at least 60 percent of the way back to their address height and no
+lower than in the next two frames. The finish is the first quiet frame with the hands above
+the shoulders between 0.25 and 2.5 seconds after impact. The source describes impact as a pose
+proxy that may be a frame or two off, since neither club nor ball is modelled.
+
+\emph{Basketball.} The dip is the smallest knee angle on the shooting side between 0.9 and
+0.08 seconds before the release; the set is the slowest wrist in the 0.6 seconds before the
+dip; the lift is the fastest wrist between dip and release; the follow-through is the highest
+wrist in the 0.45 seconds after release; and the landing is the slowest hip between 0.25 and
+0.8 seconds after it. A candidate is rejected if the other hand is visible and never comes
+within 0.6 of the shooting wrist near the head before the release, a rule that separates a
+shot from a one-armed reach for the ball; the project's log records that it reduced three
+detections in a recording of two players to the two real shots.
+
+\emph{Badminton.} Contact is the speed peak, moved back to the highest point of the racket
+hand if that point lies more than 0.45 above the shoulders in the preceding 0.4 seconds. The
+backswing is the smallest elbow angle between 0.6 and 0.05 seconds before contact; ready is
+the slowest moment in the 0.8 seconds before that; the follow-through is the first frame
+within half a second at which the speed has fallen below 40 percent of its peak; and recovery
+is the slowest hip up to 1.2 seconds after contact. A stroke is called overhead if the wrist
+is above the nose at contact, underhand if below the hips, and a drive otherwise. The racket
+and the shuttle are not tracked.
+
+\paragraph{Which side.}
+The shooting or racket side may be given or chosen automatically. For basketball both sides
+are analysed and the one that yields more repetitions is kept, with ties broken by confidence;
+for badminton the side is the wrist with the higher 90th-percentile speed.
+
+\paragraph{Measurements and checks.}
+At each phase the profile records timings in seconds, joint angles in degrees, and positions
+and speeds in torso lengths. For golf these include the durations of backswing and downswing
+and their ratio, the angle of the leading arm at the top, the separation of the shoulder and
+hip lines, and the sideways drift of the head and hips; for the jump shot, the knee angle at
+the dip, the elbow angle and the wrist's height above the head at release, the time from dip
+to release, and the sideways drift between set and landing; for badminton, the elbow angle and
+hand height at contact, the peak hand speed, the width of the stance and the distance the hips
+travel in recovering. Each profile then compares a few of these with a reference range, for
+example a ratio of backswing to downswing between 2.0 and 4.0, or an elbow of at least
+$145^\circ$ at release. A repetition's score is the share of its measurable checks that fall
+inside their ranges, on a scale of 100, and its confidence is the mean landmark visibility
+across it, reduced when a timing falls outside a plausible interval. With two or more
+repetitions the program reports the mean and spread of each measurement.
+
+\paragraph{The ball.}
+Only the golf profile looks for a ball, and only on request. It locates the ball at rest by
+colour and shape near the feet in the frames before impact, then chains small bright moving
+regions after impact into a track, which is accepted only if it has at least four points,
+starts near the resting position and within ten frames of impact, and rises and advances
+steadily. When no track passes, an arc can be drawn as an illustration; it is dashed, it is
+labelled as a proxy, and no measurement uses it.
+
+\paragraph{Outputs.}
+An analysis writes the landmarks for every frame, one row of signals per frame, a report in
+structured and in readable form, the video with the skeleton, recent poses and live angles
+drawn over it, a chart of the signals with the phases marked, and a sheet with one image per
+phase for up to six repetitions. Two analyses of the same sport can be compared: the program
+tabulates, for a fixed list of measurements, the mean in each and their difference. It aligns
+nothing in time; repetitions are compared only through their summary values. A further command
+cuts a long recording into ranked clips by the amount of motion between frames.
+
+\paragraph{Tests and validation.}
+The repository holds 59 test functions. Those for the detection rules run on synthetic
+landmark sequences generated at 30 frames a second with known phase times, and assert, for
+example, that the top and impact of a synthetic golf swing are found within three frames, the
+release of a synthetic jump shot within 0.2 seconds, and that a clip with no motion yields no
+repetition. Continuous integration also runs the whole pipeline on one bundled video. There is
+no evaluation against manually labelled video or against a motion-capture reference. The
+program states this in its own output: its report carries the sentence ``Metrics are 2D
+single-camera pose proxies. Reference ranges are broad starter values for spotting outliers,
+not coaching verdicts'', and its planning documents list the comparison of detected phases
+with manual labels as work not yet done. The reference ranges are the project's own starting
+values and are not drawn from a cited source.
+
+\paragraph{The two showcase recordings.}
+The card on the dashboard names two recordings that the project publishes as examples, one of
+each author. The first is a jump shot filmed at 120 frames a second in portrait orientation,
+6.8 seconds long, in which the athlete is small enough in the frame to trigger the second
+pass; a pose was obtained in 706 of 820 frames and one shot was found. The second is a
+12.1-second badminton rally at the camera's normal rate in landscape orientation; a pose was
+obtained in all 364 frames and four strokes were found, classified as two drives and two
+overheads. These are demonstrations of the program on two clips, and we draw no conclusion
+from them about either person's technique.
+
+\subsection{Tests across the Systems}\label{sec:producttests}
+Table~\ref{tab:producttests} collects the automated tests of the systems in this section. The
+answering pipeline has none; what was checked by hand is listed in Section~\ref{sec:verify}.
 
 \begin{table}[t]
-  \caption{Implementation summary at the two versions of this paper.}
-  \label{tab:metrics}
+  \caption{Automated tests of the systems beside the town. Counts for the site are of test
+  cases run; they are included in the total of Table~\ref{tab:metrics}.}
+  \label{tab:producttests}
   \small
-  \begin{tabular}{@{}p{0.50\columnwidth}p{0.19\columnwidth}p{0.19\columnwidth}@{}}
+  \begin{tabular}{@{}p{0.40\columnwidth}p{0.30\columnwidth}r@{}}
     \toprule
-    Measure & 1.17.0\newline 28 Oct. & 1.24.0\newline 24 Nov. \\
+    System & Module & Tests \\
     \midrule
-    TypeScript source, excluding tests (lines) & 8{,}414 & 9{,}758 \\
-    CSS (lines) & 1{,}080 & 1{,}234 \\
-    Bilingual dictionary (lines) & 791 & 989 \\
-    Test files / unit tests & 36 / 153 & 45 / 263 \\
-    Commits / versions & 109 / 28 & 147 / 36 \\
-    Main bundle (min.\ / gzip, kB) & 114 / 43 & 127 / 47 \\
-    Precached shell (files / KiB) & 44 / 302 & 51 / 364 \\
-    Feature folders & 24 & 27 \\
-    Runtime dependencies & 3 & 3 \\
-    Author-operated progress backend & 0 & 0 \\
-    Server-side endpoints & 0 & 1 \\
-    Server source (TypeScript lines) & 0 & 94 \\
-    Answering pipeline (Python lines) & 0 & 556 \\
+    Infirmary & letters, notes, visits & 9 \\
+     & the doctor's clock & 2 \\
+    Trip & phases and days & 8 \\
+     & itinerary & 14 \\
+    Request page & limits, history, sending & 23 \\
+     & session state & 24 \\
+     & image scaling & 5 \\
+    Server & request handler & 20 \\
+    Routing & path router & 3 \\
+    Answering pipeline & all & 0 \\
+    \midrule
+    MotionMirror (separate repository) & all & 59 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -1428,8 +2094,10 @@ to follow it, where in the town the fiction had set the terms.
 The request box's specification of 23 November lists, among its non-goals, ``an AI that answers
 her''. The answering pipeline was built the next day. The record shows the reason given for the
 change, which is the designer's sleep, and shows no discussion of the non-goal it overturns. The
-same commit range contains the two corrections described in Section~\ref{sec:askpath}: the
-sender check, and the removal of the pipeline's instructions from public code.
+commits that follow it record six rounds of automated review in one night, each answered by a
+narrower design: the sender check became a signature check and then a parser; the model's tools
+shrank from a general allow-list to one folder and one script; its rule files became locked
+copies; and its instructions were removed from the public code (Section~\ref{sec:askpath}).
 
 Across these episodes, the recurring issue is how a technical rule expresses an assumption
 about the other person. In the later ones the rule also begins to act for one person toward
@@ -1595,13 +2263,17 @@ one is dated 24 November 2026 and inspects version 1.24.0.
 \begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
   \item New: Section~\ref{sec:after} on the dashboard and everything on it (the infirmary, the
   trip page, the request box, the MotionMirror card and the seed tile);
-  Section~\ref{sec:update} on updating a site in use;
+  Section~\ref{sec:products}, which gives for each of these systems its data, rules, data flows
+  and tests, including the request page's state machine, the server's checks, the answering
+  pipeline's authentication and sandbox, the service worker, and MotionMirror's pose pipeline
+  and detection rules;
   Section~\ref{sec:askpath} on the server and the answering pipeline; Section~\ref{sec:delegated};
-  three episodes in Section~\ref{sec:log}; Table~\ref{tab:after}; Figures~\ref{fig:dash}, \ref{fig:cards}
+  three episodes in Section~\ref{sec:log}; Tables~\ref{tab:after}, \ref{tab:routes}, \ref{tab:caches}, \ref{tab:worker}, \ref{tab:mm}
+  and~\ref{tab:producttests}; Figures~\ref{fig:dash}, \ref{fig:cards}, \ref{fig:askstates}
   and~\ref{fig:askpath}; three references.
   \item Corrected: the first version's statement that the application has no author-operated
   backend now holds for progress only. The privacy discussion is extended accordingly.
-  \item Updated: the corpus (147 commits, 36 versions, four specifications), the audit (263
+  \item Updated: the corpus (152 commits, 36 versions, four specifications), the audit (263
   tests), the description of the entry gate, which is now a password, Tables~\ref{tab:dates} and~\ref{tab:metrics}, the abstract and the conclusion.
   \item Unchanged: the account of the town, its nine levels, the two cutscenes, the quest model
   and the progress codes. ``Pre-deployment'' is dropped from the description of the case, since
@@ -1621,7 +2293,8 @@ would need an ethics determination before data collection.
 \section*{Code and Data Availability}
 The source is public at \url{https://github.com/rayford295/yi-town} (since 30 October 2026) and
 the game runs at \url{https://jingyifan.love}. The version inspected in this paper is 1.24.0,
-commit \code{c1303f4}; the first version of the paper inspected 1.17.0, commit \code{55440ae}.
+commit \code{fc11108}; MotionMirror was inspected at version 0.2.0, commit \code{80c4fd8}, in
+its own repository, \url{https://github.com/rayford295/motionmirror}; the first version of the paper inspected 1.17.0, commit \code{55440ae}.
 Development continues on the main branch. The answering pipeline's code is in the repository;
 its configuration, the scope of its work and everything it processes are not. The code is released under the
 MIT License. The photographs, voice notes, letters and other personal material in the repository

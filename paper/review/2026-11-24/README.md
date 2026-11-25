@@ -41,9 +41,12 @@ All 44 entries of `references.bib` (41 cited) were checked on 24 November 2026.
 - **Eleven entries without a DOI** (books, standards, a W3C report) were not re-verified here;
   their status is as recorded in `../2026-10-29/audit/BIBLIOGRAPHY-AUDIT.md`.
 
-The four references added in version 2 are `hancock2020aimc`, `jakesch2019aimc`,
+`bazarevsky2020blazepose`, added with the technical section, was compared with the arXiv API
+(title, year, six authors in order) and agrees.
+
+The five references added in version 2 are `bazarevsky2020blazepose`, `hancock2020aimc`, `jakesch2019aimc`,
 `greshake2023injection` and `rfc6376`. A matching record shows that a work exists as cited; it
-does not show that the sentence citing it is fair to it. Those four sentences were written from
+does not show that the sentence citing it is fair to it. Those sentences were written from
 the papers' own abstracts and should be read against them by the authors.
 
 ## Privacy
@@ -51,3 +54,17 @@ the papers' own abstracts and should be read against them by the authors.
 The manuscript, this folder and the commit messages were searched for anything that says what
 the recipient's requests are about. The manuscript says that requests were sent and says nothing
 of their content.
+
+## The Technical Section (Section 7)
+
+Section 7 was written from the source at commit `fc11108` (and MotionMirror at `80c4fd8`), not
+from the READMEs. Three read-throughs produced fact sheets with file and line references, one
+for the infirmary, the trip page, the dashboard and the service worker; one for the request
+page, the Worker and the mail flow; one for MotionMirror. Constants quoted in the paper were
+then checked against the files by hand for the day-phase function, the note draw, the trip's
+phase and day rules, the cache settings, and MotionMirror's three detection thresholds, its
+tracker constants, the auto-zoom trigger and the scoring rule. Every other constant in the
+section rests on the fact sheets and should be spot-checked before a camera-ready version.
+
+MotionMirror's repository states its test count as 28 in its changelog; counting test functions
+gives 59, and the paper reports 59. Its tests were not run for this check.
