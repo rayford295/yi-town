@@ -21,9 +21,9 @@ export function takeKeyFromHash(): boolean {
   return true;
 }
 
-export type Fail = 'key' | 'network' | 'too-big' | 'bad' | 'ai' | 'server' | 'missing';
+export type Fail = 'key' | 'network' | 'too-big' | 'bad' | 'ai' | 'server' | 'missing' | 'full';
 export type Result<T> = ({ ok: true } & T) | { ok: false; reason: Fail };
-const FAILS: readonly Fail[] = ['key', 'network', 'too-big', 'bad', 'ai', 'server', 'missing'];
+const FAILS: readonly Fail[] = ['key', 'network', 'too-big', 'bad', 'ai', 'server', 'missing', 'full'];
 
 async function call<T>(path: string, init: RequestInit = {}, timeout = 60_000): Promise<Result<T>> {
   const stop = new AbortController();

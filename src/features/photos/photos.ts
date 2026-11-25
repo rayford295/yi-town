@@ -40,7 +40,7 @@ const monthLabel = (ym: string): string => {
   const [y, m] = ym.split('-').map(Number);
   return getLang() === 'zh' ? `${y} 年 ${m} 月` : new Date(y, m - 1, 1).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
 };
-const failText = (f: Fail): string => t(f === 'network' ? 'photos.err.network' : f === 'key' ? 'photos.pair.bad' : 'photos.err.server');
+const failText = (f: Fail): string => t(f === 'network' ? 'photos.err.network' : f === 'key' ? 'photos.pair.bad' : f === 'full' ? 'photos.err.full' : 'photos.err.server');
 
 let redraw: (() => void) | null = null;   // the current render's way to draw the results again
 
@@ -63,7 +63,7 @@ async function pump(): Promise<void> {
       if (!ready) { up.state = 'decode'; continue; }
       up.state = 'sending'; redraw?.();
       const r = await uploadPhoto({ ...ready.meta, who: uploader() }, ready.full, ready.thumb);
-      if (!r.ok) { up.state = 'fail'; if (r.reason === 'key') S.error = 'key'; continue; }
+      if (!r.ok) { up.state = 'fail'; if (r.reason === 'key') S.error = 'key'; if (r.reason === 'full') toast(t('photos.err.full')); continue; }
       up.state = r.duplicate ? 'dup' : 'done';
       if (S.photos && !S.photos.some((p) => p.id === r.photo.id)) S.photos = [r.photo, ...S.photos];
       store.setItem(COUNT_KEY, String(S.photos?.length ?? 0));

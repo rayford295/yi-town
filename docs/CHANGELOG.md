@@ -9,10 +9,10 @@ Versions are tags of feeling more than of code; the site deploys on every push.
   both. The page finds photos by those words, by a range of days and by who added them, as a grid
   by month or on a travel map with one dotted line per trip. When and where come from the EXIF,
   read in the browser before the photo is shrunk.
-- The photos are kept by a second Worker at `photos.jingyifan.love` (R2 for the pictures, D1 for
-  the rows). It is the first part of the site with real access control: a random album key,
+- The photos are kept by a second Worker at `photos.jingyifan.love` (D1 for the rows and, spread
+  over five free databases, the pictures; no card on the account). It is the first part of the site with real access control: a random album key,
   given to each device once by a pairing link, since the gate's hash is in a public bundle.
-- 292 unit tests.
+- 293 unit tests.
 
 ## 1.24.0 (2026-11-24)
 

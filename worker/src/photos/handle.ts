@@ -1,5 +1,10 @@
-// Our Album, the server half (photos.jingyifan.love). The pictures sit in R2, one row per photo in
-// D1, and a vision model on Workers AI writes each photo's caption and tags when it arrives.
+// Our Album, the server half (photos.jingyifan.love). One row per photo in D1, the pictures in D1
+// as well, and a vision model on Workers AI writes each photo's caption and tags when it arrives.
+//
+// Why D1 for pictures (Yifan, 2026-11-25: no card on the account, so no R2): a free D1 database
+// holds 500 MB and a row at most 2 MB. The pictures are spread over "shelves": the main database
+// (DB) and SHELF1, SHELF2, … Each upload goes to the first shelf with room; the photo's row
+// remembers which. Adding a shelf is one database and one binding in photos.toml.
 //
 // Unlike the Ask Worker this one stores private photos, so it does not trust the site's gate (a
 // hash in a public bundle). Every request carries the album key, a long random secret set with
@@ -10,13 +15,6 @@ import {
 } from '../../../src/features/photos/core';
 
 // The few binding shapes this Worker uses, so it needs no @cloudflare/workers-types.
-export type R2Object = { body: ReadableStream; httpEtag: string; size: number; arrayBuffer(): Promise<ArrayBuffer> };
-export type Bucket = {
-  get(key: string): Promise<R2Object | null>;
-  head(key: string): Promise<unknown | null>;
-  put(key: string, value: ArrayBuffer, opts?: { httpMetadata?: { contentType?: string } }): Promise<unknown>;
-  delete(keys: string | string[]): Promise<void>;
-};
 export type Stmt = {
   bind(...values: unknown[]): Stmt;
   first<T = Record<string, unknown>>(): Promise<T | null>;
@@ -24,15 +22,34 @@ export type Stmt = {
   run(): Promise<unknown>;
 };
 export type DB = { prepare(sql: string): Stmt };
+type Shelf = `SHELF${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}`;
 export type Env = {
+  /** The photos table, and shelf 0 for pictures. */
   DB: DB;
-  BUCKET: Bucket;
   AI: { run(model: string, input: unknown): Promise<unknown> };
   /** Secret: the album key. Never in the repository. */
   PHOTOS_KEY: string;
   /** Var: the Workers AI model that reads the photos. */
   VISION_MODEL: string;
-};
+} & Partial<Record<Shelf, DB>>;
+
+/** What one shelf may hold: under the free plan's 500 MB, with room for its index. */
+export const SHELF_CAP = 480_000_000;
+/** The shelves in order: the main database first, then SHELF1, SHELF2, … as bound. */
+export const shelves = (env: Env): DB[] =>
+  [env.DB, ...([1, 2, 3, 4, 5, 6, 7, 8, 9] as const).map((i) => env[`SHELF${i}`]).filter((d): d is DB => !!d)];
+
+/** D1 hands a BLOB back as an array of numbers. */
+const bytesOf = (v: unknown): Uint8Array<ArrayBuffer> =>
+  v instanceof ArrayBuffer ? new Uint8Array(v)
+    : Uint8Array.from(ArrayBuffer.isView(v) ? new Uint8Array(v.buffer, v.byteOffset, v.byteLength) : (v as number[]));
+
+async function readPicture(env: Env, row: Row, size: 'full' | 'thumb'): Promise<Uint8Array<ArrayBuffer> | null> {
+  const db = shelves(env)[row.shelf];
+  if (!db) return null;
+  const hit = await db.prepare('SELECT data FROM pictures WHERE id = ? AND size = ?').bind(row.id, size).first<{ data: unknown }>();
+  return hit ? bytesOf(hit.data) : null;
+}
 /** Turns a place's coordinates into a short name; swapped out in tests. */
 export type Geocode = (lat: number, lng: number) => Promise<string | null>;
 
@@ -41,6 +58,7 @@ const ORIGINS = ['https://jingyifan.love', 'http://localhost:5173', 'http://loca
 export type Row = {
   id: string; taken_at: string; date_source: string; lat: number | null; lng: number | null; place: string | null;
   caption_zh: string | null; caption_en: string | null; tags: string; who: string; name: string; w: number; h: number; uploaded_at: string;
+  shelf: number;
 };
 export const toPhoto = (r: Row): Photo => ({
   id: r.id, takenAt: r.taken_at, dateSource: r.date_source as Photo['dateSource'], lat: r.lat, lng: r.lng, place: r.place,
@@ -83,15 +101,15 @@ For tags give 6 to 10 short lowercase words a person might search for: what is i
 beach, skyline, snow), the kind of place, the mood or occasion. Give each tag in English and also in
 Chinese (for example "beach", "海边"). Do not guess who the people are or name them.`;
 
-function base64(buf: ArrayBuffer): string {
-  const bytes = new Uint8Array(buf);
+function base64(buf: ArrayBuffer | Uint8Array): string {
+  const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
   let s = '';
   for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
   return btoa(s);
 }
 
 /** Ask the vision model about one picture. Never throws: a photo is kept even if this fails. */
-export async function describe(env: Env, jpeg: ArrayBuffer): Promise<Reading> {
+export async function describe(env: Env, jpeg: ArrayBuffer | Uint8Array): Promise<Reading> {
   try {
     const out = await env.AI.run(env.VISION_MODEL, {
       messages: [{ role: 'user', content: [
@@ -134,7 +152,7 @@ export const nominatim: Geocode = async (lat, lng) => {
   } catch { return null; }
 };
 
-const COLS = 'id, taken_at, date_source, lat, lng, place, caption_zh, caption_en, tags, who, name, w, h, uploaded_at';
+const COLS = 'id, taken_at, date_source, lat, lng, place, caption_zh, caption_en, tags, who, name, w, h, uploaded_at, shelf';
 const getRow = (env: Env, id: string) => env.DB.prepare(`SELECT ${COLS} FROM photos WHERE id = ?`).bind(id).first<Row>();
 
 export async function handle(req: Request, env: Env, geocode: Geocode = nominatim, now: Date = new Date()): Promise<Response> {
@@ -163,9 +181,10 @@ export async function handle(req: Request, env: Env, geocode: Geocode = nominati
 
   // GET /photos/:id/full|thumb: the picture. Ids never change content, so it can be cached for good.
   if (req.method === 'GET' && id && (parts[2] === 'full' || parts[2] === 'thumb') && parts.length === 3) {
-    const obj = await env.BUCKET.get(`${parts[2]}/${id}.jpg`);
-    if (!obj) return no(404, 'missing');
-    return new Response(obj.body, { headers: { ...cors, 'Content-Type': 'image/jpeg', 'Cache-Control': 'private, max-age=31536000, immutable', ETag: obj.httpEtag } });
+    const row = await getRow(env, id);
+    const bytes = row && await readPicture(env, row, parts[2]);
+    if (!bytes) return no(404, 'missing');
+    return new Response(bytes, { headers: { ...cors, 'Content-Type': 'image/jpeg', 'Cache-Control': 'private, max-age=31536000, immutable', ETag: `"${id}-${parts[2]}"` } });
   }
 
   // POST /photos: one photo (meta, full, thumb). Its id is a hash of the original file, so the same
@@ -181,17 +200,24 @@ export async function handle(req: Request, env: Env, geocode: Geocode = nominati
     const existing = await getRow(env, meta.id);
     if (existing) return json({ ok: true, photo: toPhoto(existing), duplicate: true });
     const [fullBuf, thumbBuf] = await Promise.all([full.arrayBuffer(), thumb.arrayBuffer()]);
-    await Promise.all([
-      env.BUCKET.put(`full/${meta.id}.jpg`, fullBuf, { httpMetadata: { contentType: 'image/jpeg' } }),
-      env.BUCKET.put(`thumb/${meta.id}.jpg`, thumbBuf, { httpMetadata: { contentType: 'image/jpeg' } }),
-    ]);
+    // The first shelf with room for both pictures.
+    const all = shelves(env);
+    let shelf = -1;
+    for (let i = 0; i < all.length && shelf < 0; i++) {
+      const used = await all[i].prepare('SELECT COALESCE(SUM(bytes), 0) AS used FROM pictures').first<{ used: number }>();
+      if ((used?.used ?? 0) + fullBuf.byteLength + thumbBuf.byteLength <= SHELF_CAP) shelf = i;
+    }
+    if (shelf < 0) return no(507, 'full');
+    const put = 'INSERT OR REPLACE INTO pictures (id, size, bytes, data) VALUES (?, ?, ?, ?)';
+    await all[shelf].prepare(put).bind(meta.id, 'full', fullBuf.byteLength, fullBuf).run();
+    await all[shelf].prepare(put).bind(meta.id, 'thumb', thumbBuf.byteLength, thumbBuf).run();
     const [reading, place] = await Promise.all([
       describe(env, thumbBuf),
       meta.lat !== null && meta.lng !== null ? geocode(meta.lat, meta.lng) : Promise.resolve(null),
     ]);
-    await env.DB.prepare(`INSERT INTO photos (${COLS}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(
+    await env.DB.prepare(`INSERT INTO photos (${COLS}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(
       meta.id, meta.takenAt, meta.dateSource, meta.lat, meta.lng, place, reading.zh, reading.en, JSON.stringify(reading.tags),
-      meta.who, meta.name, meta.w, meta.h, now.toISOString(),
+      meta.who, meta.name, meta.w, meta.h, now.toISOString(), shelf,
     ).run();
     const row = await getRow(env, meta.id);
     return row ? json({ ok: true, photo: toPhoto(row) }) : no(500, 'server');
@@ -203,9 +229,9 @@ export async function handle(req: Request, env: Env, geocode: Geocode = nominati
 
   // POST /photos/:id/describe: read the picture again (after a failed or poor first reading).
   if (req.method === 'POST' && parts[2] === 'describe') {
-    const obj = await env.BUCKET.get(`thumb/${id}.jpg`);
-    if (!obj) return no(404, 'missing');
-    const r = await describe(env, await obj.arrayBuffer());
+    const thumbBytes = await readPicture(env, row, 'thumb');
+    if (!thumbBytes) return no(404, 'missing');
+    const r = await describe(env, thumbBytes);
     if (!r.zh && !r.en) return no(502, 'ai');
     await env.DB.prepare('UPDATE photos SET caption_zh = ?, caption_en = ?, tags = ? WHERE id = ?').bind(r.zh, r.en, JSON.stringify(r.tags), id).run();
     return json({ ok: true, photo: toPhoto((await getRow(env, id))!) });
@@ -236,7 +262,7 @@ export async function handle(req: Request, env: Env, geocode: Geocode = nominati
 
   // DELETE /photos/:id: the row and both pictures.
   if (req.method === 'DELETE' && parts.length === 2) {
-    await env.BUCKET.delete([`full/${id}.jpg`, `thumb/${id}.jpg`]);
+    await shelves(env)[row.shelf]?.prepare('DELETE FROM pictures WHERE id = ?').bind(id).run();
     await env.DB.prepare('DELETE FROM photos WHERE id = ?').bind(id).run();
     return json({ ok: true });
   }

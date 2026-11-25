@@ -1,52 +1,65 @@
 import { describe, expect, it } from 'vitest';
-import { handle, placeName, readUpload, sameKey, type Env, type Row } from './handle';
+import { SHELF_CAP, handle, placeName, readUpload, sameKey, type DB, type Env, type Row } from './handle';
 
 const SITE = 'https://jingyifan.love';
 const KEY = 'k'.repeat(32);
 const ID = 'a'.repeat(32);
 
-/** An in-memory stand-in for D1 that understands exactly the statements handle.ts sends. */
-function fakeEnv(reply: unknown = { response: '{"zh":"海边的日落","en":"Sunset","tags":["beach","海边"]}' }) {
+type Pic = { id: string; size: string; bytes: number; data: number[] };
+/** An in-memory stand-in for one D1 database, understanding exactly the statements handle.ts
+ * sends. `preUsed` pretends the shelf already holds that many bytes. BLOBs come back as arrays
+ * of numbers, as D1 returns them. */
+function fakeDb(preUsed = 0) {
   const rows = new Map<string, Row>();
-  const objects = new Map<string, ArrayBuffer>();
+  const pics = new Map<string, Pic>();
+  const db: DB = {
+    prepare(sql: string) {
+      let args: unknown[] = [];
+      const stmt = {
+        bind: (...v: unknown[]) => { args = v; return stmt; },
+        first: async <T>() => {
+          if (sql.includes('SUM(bytes)')) return { used: preUsed + [...pics.values()].reduce((n, p) => n + p.bytes, 0) } as T;
+          if (sql.includes('FROM pictures')) { const p = pics.get(`${args[0]}/${args[1]}`); return (p ? { data: p.data } : null) as T | null; }
+          return (rows.get(String(args[0])) ?? null) as T | null;
+        },
+        all: async <T>() => ({ results: [...rows.values()].sort((a, b) => (a.taken_at < b.taken_at ? 1 : -1)) as T[] }),
+        run: async () => {
+          if (sql.includes('INTO pictures')) {
+            const [id, size, bytes, data] = args as [string, string, number, ArrayBuffer];
+            pics.set(`${id}/${size}`, { id, size, bytes, data: Array.from(new Uint8Array(data)) });
+          } else if (sql.startsWith('DELETE FROM pictures')) {
+            for (const k of [...pics.keys()]) if (k.startsWith(`${args[0]}/`)) pics.delete(k);
+          } else if (sql.startsWith('INSERT')) {
+            const [id, taken_at, date_source, lat, lng, place, caption_zh, caption_en, tags, who, name, w, h, uploaded_at, shelf] = args as never[];
+            rows.set(id, { id, taken_at, date_source, lat, lng, place, caption_zh, caption_en, tags, who, name, w, h, uploaded_at, shelf });
+          } else if (sql.startsWith('DELETE')) rows.delete(String(args[0]));
+          else if (sql.startsWith('UPDATE')) {
+            const id = String(args[args.length - 1]);
+            const cols = [...sql.matchAll(/(\w+) = \?/g)].map((m) => m[1]).filter((c) => c !== 'id');
+            const r = rows.get(id)!;
+            cols.forEach((c, i) => { (r as Record<string, unknown>)[c] = args[i]; });
+            if (sql.includes("date_source = 'manual'")) r.date_source = 'manual';
+          }
+          return {};
+        },
+      };
+      return stmt;
+    },
+  };
+  return { db, rows, pics };
+}
+
+function fakeEnv(reply: unknown = { response: '{"zh":"海边的日落","en":"Sunset","tags":["beach","海边"]}' }, mainUsed = 0, shelfUsed = 0) {
+  const main = fakeDb(mainUsed), shelf1 = fakeDb(shelfUsed);
   const ai: unknown[] = [];
   const env: Env = {
     PHOTOS_KEY: KEY,
     VISION_MODEL: 'test-model',
     AI: { run: async (_m, input) => { ai.push(input); if (reply instanceof Error) throw reply; return reply; } },
-    BUCKET: {
-      get: async (k) => { const b = objects.get(k); return b ? { body: new Blob([b]).stream(), httpEtag: '"e"', size: b.byteLength, arrayBuffer: async () => b } : null; },
-      head: async (k) => (objects.has(k) ? {} : null),
-      put: async (k, v) => { objects.set(k, v); return {}; },
-      delete: async (ks) => { for (const k of [ks].flat()) objects.delete(k); },
-    },
-    DB: {
-      prepare(sql: string) {
-        let args: unknown[] = [];
-        const stmt = {
-          bind: (...v: unknown[]) => { args = v; return stmt; },
-          first: async <T>() => (rows.get(String(args[0])) ?? null) as T | null,
-          all: async <T>() => ({ results: [...rows.values()].sort((a, b) => (a.taken_at < b.taken_at ? 1 : -1)) as T[] }),
-          run: async () => {
-            if (sql.startsWith('INSERT')) {
-              const [id, taken_at, date_source, lat, lng, place, caption_zh, caption_en, tags, who, name, w, h, uploaded_at] = args as never[];
-              rows.set(id, { id, taken_at, date_source, lat, lng, place, caption_zh, caption_en, tags, who, name, w, h, uploaded_at });
-            } else if (sql.startsWith('DELETE')) rows.delete(String(args[0]));
-            else if (sql.startsWith('UPDATE')) {
-              const id = String(args[args.length - 1]);
-              const cols = [...sql.matchAll(/(\w+) = \?/g)].map((m) => m[1]).filter((c) => c !== 'id');
-              const r = rows.get(id)!;
-              cols.forEach((c, i) => { (r as Record<string, unknown>)[c] = args[i]; });
-              if (sql.includes("date_source = 'manual'")) r.date_source = 'manual';
-            }
-            return {};
-          },
-        };
-        return stmt;
-      },
-    },
+    DB: main.db,
+    SHELF1: shelf1.db,
   };
-  return { env, rows, objects, ai };
+  return { env, rows: main.rows, pics: main.pics, shelf1, ai };
 }
 
 type Opts = { method?: string; path?: string; key?: string | null; origin?: string | null; body?: BodyInit; headers?: Record<string, string> };
@@ -89,12 +102,12 @@ describe('the album key', () => {
 
 describe('upload', () => {
   it('stores both pictures, reads the photo, looks up the place and lists it', async () => {
-    const { env, objects, ai } = fakeEnv();
+    const { env, pics, ai } = fakeEnv();
     const res = await handle(req({ method: 'POST', body: uploadForm() }), env, geo, new Date('2027-02-06T00:00:00Z'));
     const body = await res.json() as { ok: boolean; photo: Record<string, unknown> };
     expect(body.ok).toBe(true);
     expect(body.photo).toMatchObject({ id: ID, captionZh: '海边的日落', captionEn: 'Sunset', tags: ['beach', '海边'], place: '纽约', who: 'jingyi', lat: 40.7128 });
-    expect([...objects.keys()].sort()).toEqual([`full/${ID}.jpg`, `thumb/${ID}.jpg`]);
+    expect([...pics.keys()].sort()).toEqual([`${ID}/full`, `${ID}/thumb`]);
     expect(JSON.stringify(ai[0])).toContain('data:image/jpeg;base64,');
     const list = await (await handle(req(), env, geo)).json() as { photos: unknown[] };
     expect(list.photos).toHaveLength(1);
@@ -115,7 +128,17 @@ describe('upload', () => {
     const { env } = fakeEnv();
     expect((await handle(req({ method: 'POST', body: uploadForm(meta({ who: 'stranger' })) }), env, geo)).status).toBe(400);
     expect((await handle(req({ method: 'POST', body: uploadForm(meta({ id: '../x' })) }), env, geo)).status).toBe(400);
-    expect((await handle(req({ method: 'POST', body: uploadForm(meta(), 7 * 1024 * 1024) }), env, geo)).status).toBe(413);
+    expect((await handle(req({ method: 'POST', body: uploadForm(meta(), 1_900_001) }), env, geo)).status).toBe(413);
+  });
+  it('goes to the next shelf when the first is full, and says so when all are', async () => {
+    const { env, pics, shelf1 } = fakeEnv(undefined, SHELF_CAP - 500);
+    const body = await (await handle(req({ method: 'POST', body: uploadForm() }), env, geo)).json() as { ok: boolean };
+    expect(body.ok).toBe(true);
+    expect(pics.size).toBe(0);
+    expect(shelf1.pics.size).toBe(2);
+    expect((await handle(req({ path: `/photos/${ID}/full` }), env, geo)).status).toBe(200);
+    const full = fakeEnv(undefined, SHELF_CAP, SHELF_CAP);
+    expect((await handle(req({ method: 'POST', body: uploadForm() }), full.env, geo)).status).toBe(507);
   });
 });
 
@@ -139,10 +162,10 @@ describe('one photo', () => {
     expect((await handle(req({ method: 'PATCH', path: `/photos/${ID}`, body: JSON.stringify({ takenAt: 'soon' }) }), env, geo)).status).toBe(400);
   });
   it('deletes the row and both pictures', async () => {
-    const { env, rows, objects } = await withOne();
+    const { env, rows, pics } = await withOne();
     expect((await handle(req({ method: 'DELETE', path: `/photos/${ID}` }), env, geo)).status).toBe(200);
     expect(rows.size).toBe(0);
-    expect(objects.size).toBe(0);
+    expect(pics.size).toBe(0);
   });
   it('404s an unknown id', async () => {
     const { env } = await withOne();

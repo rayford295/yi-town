@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/for-two%20players-d3a557?style=flat-square&labelColor=0b2036" alt="for two players" />
   <img src="https://img.shields.io/badge/products-6%20on%20the%20dashboard-d3a557?style=flat-square&labelColor=0b2036" alt="6 products on the dashboard" />
   <img src="https://img.shields.io/badge/levels-9%20%2B%20an%20epilogue-d3a557?style=flat-square&labelColor=0b2036" alt="9 levels and an epilogue" />
-  <img src="https://img.shields.io/badge/tests-292%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="292 tests passing" />
+  <img src="https://img.shields.io/badge/tests-293%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="293 tests passing" />
   <img src="https://img.shields.io/badge/TypeScript-strict-d3a557?style=flat-square&labelColor=0b2036" alt="TypeScript strict" />
   <img src="https://img.shields.io/badge/art-drawn%20in%20code-d3a557?style=flat-square&labelColor=0b2036" alt="all art drawn in code" />
 </p>
@@ -132,7 +132,7 @@ Inbox addresses, local paths and her documents are kept out of this repository.
 |---|---|
 | [`src/`](src/) | The site. `core/` is shared; `features/` has one folder per feature, each with its own README |
 | [`public/`](public/) | Photos, music, models and the dashboard cards, one folder per feature |
-| [`worker/`](worker/) | Two Workers: Ask at `ask.jingyifan.love` (one email per request) and the album at `photos.jingyifan.love` (R2, D1, Workers AI) |
+| [`worker/`](worker/) | Two Workers: Ask at `ask.jingyifan.love` (one email per request) and the album at `photos.jingyifan.love` (D1, Workers AI) |
 | [`mailflow/`](mailflow/) | The pipeline on Yifan's Mac that answers those emails (Python, Ollama, Claude) |
 | [`scripts/`](scripts/) | Drawing scripts for the banner, the icons and the dashboard cards; small tools |
 | [`ring/`](ring/) | The ring's Blender script and renders |
@@ -144,7 +144,7 @@ Inbox addresses, local paths and her documents are kept out of this repository.
 ```bash
 npm install
 npm run dev       # http://localhost:5173
-npm test          # 292 unit tests (Vitest)
+npm test          # 293 unit tests (Vitest)
 npm run build     # strict type-check + production build
 ```
 

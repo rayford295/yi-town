@@ -29,10 +29,11 @@ export type Photo = {
 export type Upload = Pick<Photo, 'id' | 'takenAt' | 'dateSource' | 'lat' | 'lng' | 'who' | 'name' | 'w' | 'h'>;
 
 /** The long edge of the picture that is kept, and of the one shown in the grid and on the map. */
-export const FULL_EDGE = 2400;
+export const FULL_EDGE = 2048;
 export const THUMB_EDGE = 480;
-/** What one upload may weigh, after the page has shrunk it. */
-export const MAX_FULL = 6 * 1024 * 1024;
+/** What one upload may weigh, after the page has shrunk it. A D1 row holds at most 2,000,000
+ * bytes, and the pictures are rows (worker/src/photos/handle.ts). */
+export const MAX_FULL = 1_900_000;
 export const MAX_THUMB = 400 * 1024;
 export const WHO = ['jingyi', 'yifan'] as const;
 

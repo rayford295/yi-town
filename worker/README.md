@@ -58,15 +58,20 @@ Read 2026-11-23:
 
 # The Album Worker (photos.jingyifan.love)
 
-The server half of `/photos` (see `src/features/photos/README.md`). Pictures in the R2 bucket
-`yi-photos` (`full/<id>.jpg`, `thumb/<id>.jpg`), one row per photo in the D1 database
-`yi-photos` (`src/photos/schema.sql`), captions and tags from a vision model on Workers AI
-(`VISION_MODEL` in `photos.toml`), and the city from OpenStreetMap's Nominatim at upload.
+The server half of `/photos` (see `src/features/photos/README.md`). Everything is in D1 and
+nothing in R2: R2 needs a card on the account, even inside its free tier (Yifan, 2026-11-25).
+One row per photo in the database `yi-photos` (`src/photos/schema.sql`). The pictures, one row
+per size in a `pictures` table (`src/photos/pictures.sql`), are spread over **shelves**:
+`yi-photos` itself, then `yi-photos-shelf-1` to `-4`, bound as `DB` and `SHELF1`–`SHELF4`. On the
+free plan a database holds 500 MB and a row 2 MB, so a shelf is filled to 480 MB and a picture is
+at most 1.9 MB. Five shelves hold about 2.4 GB, some 4,000 photos. Captions and tags come from a
+vision model on Workers AI (`VISION_MODEL` in `photos.toml`), the city from OpenStreetMap's
+Nominatim at upload.
 
 | Route | What |
 |---|---|
 | `GET /photos` | Every photo, newest first |
-| `POST /photos` | One photo: `meta` (JSON), `full`, `thumb`. A photo already there is answered with `duplicate: true` |
+| `POST /photos` | One photo: `meta` (JSON), `full`, `thumb`, onto the first shelf with room. A photo already there is answered with `duplicate: true`; all shelves full is `507` |
 | `GET /photos/:id/full`, `/thumb` | The picture, cached privately for a year (an id never changes content) |
 | `PATCH /photos/:id` | Correct `takenAt`, `captionZh`, `captionEn` or `tags` |
 | `POST /photos/:id/describe` | Ask the model again |
@@ -76,19 +81,21 @@ The server half of `/photos` (see `src/features/photos/README.md`). Pictures in 
 request: `Authorization: Bearer <PHOTOS_KEY>`, compared in constant time. A secret shorter than
 16 characters opens nothing. CORS answers only `https://jingyifan.love` and the dev servers.
 
-**Set up once** (the D1 database and its table already exist):
+**Set up once** (the five databases and their tables already exist):
 
 ```bash
-# 1. Cloudflare dashboard → R2 → enable R2 (free up to 10 GB; asks for a card once), then:
-npx wrangler r2 bucket create yi-photos
-# 2. The album key: a long random string, kept out of the repository.
+# The album key: a long random string, kept out of the repository.
 openssl rand -hex 24 | tee /dev/tty | npx wrangler secret put PHOTOS_KEY -c worker/photos.toml
-# 3. Deploy; the first deploy creates photos.jingyifan.love.
-npm run photos:deploy
+npm run photos:deploy    # the first deploy creates photos.jingyifan.love
 ```
 
 Then open `https://jingyifan.love/photos#key=<the key>` on each of our devices once (send it to
 Jingyi over WeChat). To change the key, put a new secret; every device is asked again.
 
-The schema, if the database is ever made again:
-`npx wrangler d1 execute yi-photos --remote --file worker/src/photos/schema.sql -c worker/photos.toml`.
+**Adding a shelf** when the album says it is full: `npx wrangler d1 create yi-photos-shelf-5`,
+apply `pictures.sql` to it (below), add a `[[d1_databases]]` block with binding `SHELF5` to
+`photos.toml`, and deploy. The free plan allows ten databases per account.
+
+The tables, if a database is ever made again:
+`npx wrangler d1 execute yi-photos --remote --file worker/src/photos/schema.sql -c worker/photos.toml`, and
+`npx wrangler d1 execute <each shelf> --remote --file worker/src/photos/pictures.sql -c worker/photos.toml`.

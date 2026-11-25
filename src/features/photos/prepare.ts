@@ -2,7 +2,7 @@
 // EXIF (before anything else, since redrawing on a canvas drops the EXIF), name it by a hash of the
 // original file, and draw the two sizes the album keeps.
 import exifr from 'exifr';
-import { FULL_EDGE, THUMB_EDGE, stampFromExif, stampOf, validLatLng, type Upload } from './core';
+import { FULL_EDGE, MAX_FULL, THUMB_EDGE, stampFromExif, stampOf, validLatLng, type Upload } from './core';
 
 export type Prepared = { meta: Omit<Upload, 'who'>; full: Blob; thumb: Blob };
 
@@ -45,8 +45,14 @@ export async function prepare(file: File): Promise<Prepared | null> {
   let bitmap: ImageBitmap;
   try { bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch { return null; }
   try {
-    const [full, thumb] = await Promise.all([draw(bitmap, FULL_EDGE, 0.86), draw(bitmap, THUMB_EDGE, 0.8)]);
-    if (!full || !thumb) return null;
+    // A busy photo can come out over what one stored picture may weigh: try plainer, then smaller.
+    let full: Blob | null = null;
+    for (const [edge, q] of [[FULL_EDGE, 0.85], [FULL_EDGE, 0.72], [1600, 0.72], [1280, 0.7]] as const) {
+      full = await draw(bitmap, edge, q);
+      if (full && full.size <= MAX_FULL) break;
+    }
+    const thumb = await draw(bitmap, THUMB_EDGE, 0.8);
+    if (!full || !thumb || full.size > MAX_FULL) return null;
     return { meta: { id, ...when, name: file.name, w: bitmap.width, h: bitmap.height }, full, thumb };
   } finally { bitmap.close(); }
 }

@@ -11,14 +11,32 @@ workers_dev = false
 pattern = "photos.jingyifan.love"
 custom_domain = true
 
-[[r2_buckets]]
-binding = "BUCKET"
-bucket_name = "yi-photos"
-
 [[d1_databases]]
 binding = "DB"
 database_name = "yi-photos"
 database_id = "dca8c1e9-541b-49c4-b84b-7c3a8f995801"
+
+# Shelves for the pictures: 480 MB each on the free plan. To add one, create yi-photos-shelf-N,
+# apply pictures.sql to it, and add a block here with binding SHELFN.
+[[d1_databases]]
+binding = "SHELF1"
+database_name = "yi-photos-shelf-1"
+database_id = "b9c40d3c-2adb-4b3d-a9b4-d8aef0d532c9"
+
+[[d1_databases]]
+binding = "SHELF2"
+database_name = "yi-photos-shelf-2"
+database_id = "9e1cc8db-4cb0-4262-a2e5-0dd58e63703b"
+
+[[d1_databases]]
+binding = "SHELF3"
+database_name = "yi-photos-shelf-3"
+database_id = "9c463e19-79de-45cc-8a54-44eaf0f10ca3"
+
+[[d1_databases]]
+binding = "SHELF4"
+database_name = "yi-photos-shelf-4"
+database_id = "90f87167-2248-41c3-a7c2-f4b9a43c2d34"
 
 [ai]
 binding = "AI"
