@@ -24,6 +24,7 @@ The paper reports a design case. It does not report a recipient evaluation or a 
 | [meridian.tex](meridian.tex), [references.bib](references.bib) | Canonical manuscript and bibliography. Edit these files for subsequent revisions. |
 | [review/2026-10-29/](review/2026-10-29/) | The 29 October review report, its evidence and change record, and the figures the manuscript uses. |
 | [review/2026-11-24/](review/2026-11-24/) | Version 2: what was re-verified, and the check of every reference against its primary record. |
+| [versions/](versions/) | One folder per version: the PDF and the arXiv source archive as fixed, with checksums and the steps to submit. |
 | [arxiv/](arxiv/) | Generated standalone source, bibliography, preview PDF, upload archive and metadata. |
 | `report-zh.pdf`, `report-zh.html` | Original Chinese feature report and its source; not updated by the manuscript review. |
 | `figures/` | Original figures used by the Chinese report. Reviewed figures are stored separately. |
