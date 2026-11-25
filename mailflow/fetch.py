@@ -169,9 +169,11 @@ def save_message(M, uid):
     except Exception:
         when = datetime.now().astimezone()
     title = subject[len(C.SUBJECT_PREFIX):].strip()
-    folder = C.INBOX_DIR / f"{when:%Y-%m-%d_%H%M} {safe(title, 40)}"
+    # 文件夹名之后会写进给 Claude 的权限规则里，而标题来自邮件，所以这里只留字母、数字、汉字、下划线和连字符。
+    slug = re.sub(r"[^\w-]+", "_", title, flags=re.UNICODE).strip("_")[:40] or "untitled"
+    folder = C.INBOX_DIR / f"{when:%Y-%m-%d_%H%M}_{slug}"
     if folder.exists():
-        folder = folder.with_name(f"{folder.name} {uid}")
+        folder = folder.with_name(f"{folder.name}_{uid}")
     att = folder / "附件"
     att.mkdir(parents=True, exist_ok=True)
     body, names = "", []

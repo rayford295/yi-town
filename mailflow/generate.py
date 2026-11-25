@@ -2,7 +2,7 @@
 
 python3 generate.py "<请求文件夹>"
 """
-import getpass, json, os, shutil, stat, subprocess, sys
+import getpass, json, os, re, shutil, stat, subprocess, sys
 from pathlib import Path
 import config as C
 from common import log, write_status
@@ -29,6 +29,12 @@ def locked(path):
     return p.is_file() and not p.is_symlink() and bool(os.stat(p).st_flags & stat.UF_IMMUTABLE)
 
 
+def unlock(directory):
+    for p in Path(directory).glob("*"):
+        if p.is_file() and not p.is_symlink():
+            os.chflags(p, 0)
+
+
 def check_locked():
     """Claude 能写文件，所以它会读来当规则的文件、它能执行的脚本，都必须是它改不了的。"""
     if not C.LOCKED_FILES:
@@ -47,10 +53,17 @@ def main(folder):
     triage = tri.read_text(encoding="utf-8") if tri.exists() else "{}"
     build = check_locked()
     # 规则文件复制进这个请求的文件夹再给 Claude 读：它对私有文件夹没有任何访问权。
+    # 文件夹名会进权限规则，而它来自邮件标题：不是纯粹的字母数字汉字就不运行。
+    if not re.fullmatch(r"[\w-]+", folder.name, flags=re.UNICODE):
+        raise RuntimeError(f"文件夹名里有不允许的字符，不运行：{folder.name}")
     rules = folder / "规则"
-    rules.mkdir(exist_ok=True)
+    unlock(rules)
+    shutil.rmtree(rules, ignore_errors=True)             # 每次都从锁定的原件重新复制，并把副本也锁上
+    rules.mkdir()
     for f in C.LOCKED_FILES:
-        shutil.copyfile(f, rules / Path(f).name)
+        copy = rules / Path(f).name
+        shutil.copyfile(f, copy)
+        os.chflags(copy, stat.UF_IMMUTABLE)
     for bad in [".claude", ".mcp.json", "CLAUDE.md", "CLAUDE.local.md", "AGENTS.md"]:
         if (folder / bad).exists():
             raise RuntimeError(f"请求文件夹里出现了不该有的 {bad}，不运行。")
@@ -78,7 +91,10 @@ def main(folder):
         env["CLAUDE_CODE_OAUTH_TOKEN"] = tok.stdout.strip()   # claude setup-token 生成的长期令牌
     write_status(folder, stage="生成中")
     log(f"Claude 开始生成：{folder.name}")
-    r = subprocess.run(cmd, cwd=folder, capture_output=True, text=True, timeout=C.CLAUDE_TIMEOUT, env=env)
+    try:
+        r = subprocess.run(cmd, cwd=folder, capture_output=True, text=True, timeout=C.CLAUDE_TIMEOUT, env=env)
+    finally:
+        unlock(rules)                                    # 跑完解锁，方便以后整个文件夹删掉
     (folder / "产出" / "claude输出.log").write_text(r.stdout + "\n" + r.stderr, encoding="utf-8")
     pdfs = sorted(p.name for p in (folder / "产出").glob("*.pdf"))
     manual = (folder / "产出" / "需要人工处理.md").exists()
