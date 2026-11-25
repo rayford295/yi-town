@@ -9,3 +9,11 @@ dist/
 # Blender autosave backups
 *.blend1
 __pycache__/
+
+# Mail flow: private values and runtime files stay local
+mailflow/config_local.py
+mailflow/state.json
+mailflow/*.log
+mailflow/launchd.out
+mailflow/launchd.err
+mailflow/.lock
