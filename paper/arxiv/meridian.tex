@@ -83,8 +83,8 @@ flight, which replaces a symbolic ticket with a real one; and a request box whos
 answered, while the designer sleeps, by a pipeline of a local language model and a hosted one.
 The request box ends the first version's claim of no author-operated backend, and we trace where
 her files now travel. An audit reproduced 263 passing unit tests; the progress model is unchanged
-and keeps its exhaustive check of 1,024 codes. The answering pipeline was tested in parts; at the time of writing it had
-stopped one real request for the designer and completed none. No recipient evaluation or relationship outcome
+and keeps its exhaustive check of 1,024 codes. The answering pipeline was tested in parts, and it began to receive real
+requests on the night it was built. No recipient evaluation or relationship outcome
 is reported. The contribution is an inspectable account of design decisions and their trade-offs:
 between authoring a gift and leaving the recipient free to decline or reshape it, and between
 being reachable across thirteen hours and answering in person. The site is at
@@ -179,9 +179,10 @@ an interface.
 The first version of this paper (30 October 2026) reported the artefact and a retrospective
 reconstruction of its development before the recipient's planned first play on 31 October 2026.
 This second version keeps that account and extends the record to 24 November 2026. In those four
-weeks the site stopped being one game. Its front page now lists five cards, and three of them
-are products of a different kind: a place to hide after a quarrel, a page for a booked flight,
-and a box for asking the designer for help. They matter to the first version's argument for two
+weeks the site stopped being one game. Its front page now lists five cards and a sixth tile that promises more. Three of the cards
+are products of a different kind from the game: a place to hide after a quarrel, a page for a
+booked flight, and a box for asking the designer for help. A fourth leads out to a project the
+two made together for other people. They matter to the first version's argument for two
 reasons. One of them began with something the recipient said, which is the first trace in the
 record of the recipient reshaping the gift. Another gave the site its first server and, a day
 later, an automated pipeline that answers her in the designer's place while he sleeps.
@@ -400,8 +401,8 @@ stored digests, four at first and now one,
 Hashing changes how the answer is compared, but the date also appears in the game's own narrative;
 it is a recognition question, not a secret, and calling it a password does not make it one. Behind it is a dashboard that lists everything the couple
 build under the domain (Figure~\ref{fig:front}a), of which \yt{} is the first; the figure shows
-it as it was at the first version, with one card, and Section~\ref{sec:after} describes the four
-added since. Choosing the town
+it as it was at the first version, with one card; Figure~\ref{fig:dash} shows it now, and
+Section~\ref{sec:after} describes what was added. Choosing the town
 asks \emph{Who are you?} (Figure~\ref{fig:front}b). Progress is kept per player on each device,
 so both can play on one phone.
 
@@ -688,12 +689,48 @@ recognition where supported, Coffee carries the rings down the aisle on a red pi
 %% ===================================================================================
 \section{After the Town}\label{sec:after}
 The first version described a finished gift with a beginning and an end. In the four weeks that
-followed, the dashboard gained four cards (Figure~\ref{fig:cards}). Three are products kept in
-the same repository and described here; the fifth card links to a separate project of the
-couple's and is not discussed. None of the three is a level. None has a lock, none counts toward
-progress, and nothing in them waits to be revealed, so staged access (\dc{2}) and delayed
-disclosure (\dc{6}) do not apply to them. Table~\ref{tab:after} sets them against the
-commitments.
+followed, the page behind the gate changed from a list with one entry into the centre of the
+site. This section goes through everything on it, in the order of the page: the dashboard
+itself, its five cards, and a sixth tile that is not a product (Figure~\ref{fig:dash}). Three
+of the cards are products kept in the same repository (Figure~\ref{fig:cards}). None of those
+three is a level. None has a lock, none counts toward progress, and nothing in them waits to be
+revealed, so staged access (\dc{2}) and delayed disclosure (\dc{6}) do not apply to them.
+Table~\ref{tab:after} sets them against the commitments.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.86\columnwidth]{figures/page-dashboard-v2.jpg}
+  \caption{The dashboard at version 1.24, in English. From the top: \yt{}; the infirmary, with
+  its status line; the trip, counting down; the request box; MotionMirror, which leads off the
+  site; and the seed tile. The pill over the request box is the site's jukebox. The flight
+  number on the trip card is masked for publication; the live page shows it.}
+  \Description{A tall screenshot on a green pixel meadow. A header card reads Jingyi and Yifan,
+  everything we make together lives here. Below are five picture cards in two columns, each with
+  a title, a line of text and an Enter button, and a sixth tile with a dashed border, a seedling
+  and the words Next, still growing.}
+  \label{fig:dash}
+\end{figure}
+
+\subsection{The Dashboard}
+Its header says ``Everything we make together lives here'', and the code describes it the same
+way: a list, \code{PRODUCTS}, with one entry for each thing the couple build under the domain,
+newest last. Adding a product means a folder, a route and one entry in that list. The first
+version's dashboard had one card and read as a title page for the game; with five it reads as a
+home page, and the game is one room in it.
+
+Three decisions on this page are recorded in the comments beside the list. First, a card may
+carry one line of live state, and what the line withholds is chosen as carefully as what it
+shows. The town's card shows how many levels the person holding this device has cleared and
+never the partner's count, because how far the other has got would reveal that there is an end
+worth reaching; delayed disclosure (\dc{6}) thus reaches the one page that sits outside the
+game. The infirmary's card says only that it is always open, and shows no count of visits. The
+trip's card counts days to the flight, then the days together, then says that she is on her way
+home. The request box has no line, since nothing about it changes between visits. Second, the
+cards differ in what they ask first. The town asks who is playing, because it keeps progress;
+the infirmary asks too, because it must know whose letter to show; the trip and the request box
+ask nothing beyond the gate. Third, each card's picture is drawn by a script in the repository
+from the same sprites and palette as the town (\dc{5}), so that a product about a flight and a
+product about a quarrel look like houses on the same street.
 
 \begin{figure}[t]
   \centering
@@ -701,8 +738,8 @@ commitments.
   \begin{subfigure}[b]{0.325\columnwidth}\includegraphics[width=\linewidth]{figures/card-trip.jpg}\caption{Trip}\end{subfigure}\hfill
   \begin{subfigure}[b]{0.325\columnwidth}\includegraphics[width=\linewidth]{figures/card-ask.jpg}\caption{Request box}\end{subfigure}\\[3pt]
   \includegraphics[width=0.9\columnwidth]{figures/clinic-town.jpg}
-  \caption{After the town. Top: the pictures on three of the dashboard's cards, each drawn by a
-  script in the repository. Bottom: the infirmary as a house in the town, north-west of the
+  \caption{Three of the later products. Top: the pictures on their dashboard cards, each drawn
+  by a script in the repository. Bottom: the infirmary as a house in the town, north-west of the
   fountain, with the talk box that opens at its door. It has no number on its roof and no cat at
   its door.}
   \Description{Three small pixel pictures: a pink house with a red cross, two cities joined by a
@@ -712,9 +749,10 @@ commitments.
 \end{figure}
 
 \begin{table}[t]
-  \caption{The three later products against the commitments written for the town.
-  \emph{kept}: the product follows it; \emph{n/a}: nothing in the product for it to govern;
-  \emph{broken}: the product departs from it by design.}
+  \caption{The three later products in the repository against the commitments written for the
+  town. \emph{kept}: the product follows it; \emph{n/a}: nothing in the product for it to
+  govern; \emph{broken}: the product departs from it by design. MotionMirror is a separate
+  project and the seed tile has no behaviour; neither is rated.}
   \label{tab:after}
   \small
   \begin{tabular}{@{}p{0.34\columnwidth}ccc@{}}
@@ -778,6 +816,34 @@ messaging, or as the thing done.
 A browser cannot send an email with attachments, so this product required the site's first
 server-side code, and within a day it acquired an automated answerer. Both are described in
 Section~\ref{sec:askpath}. We say nothing in this paper about what her requests ask for.
+
+\subsection{MotionMirror}
+The fifth card (\code{5bea274}, 22 November) is the only one that leaves the site. It opens, in
+a new tab, a separate public project of the couple's: a tool that analyses sports technique
+from a single phone video, phase by phase. The card names its two showcase recordings, Yifan's
+jump shot and Jingyi's badminton, and its status line says that the project is open source. We
+do not describe the tool here; it has its own repository and is not part of the inspected
+software.
+
+What the card adds to this case is a different relation between the two people. Every other
+product on the page is made by one of them for the other, or for the two of them alone. This
+one is made with both of them as its subjects and is addressed to strangers. The dashboard
+therefore holds, side by side, things that only two people are meant to open and a thing meant
+for anyone, behind the same gate and in the same pixel frame. The arrow on its button, which
+points up and out where the others point right, is the page's only sign of that difference.
+
+\subsection{The Seed}
+The last tile has a dashed border, a seedling, and two lines: ``Next'' and ``Still growing''.
+It is not a link and has no behaviour. It stands at the end of the list,
+and the request box's specification speaks of that product as making good the seed tile's
+promise, and of keeping the tile as the last one all the same.
+
+The town was built with an ending: a ninth house, a letter, a ceremony. The tile states the
+opposite about the site that now contains the town, which is that it is unfinished on purpose.
+The final letter in the town, written after the first version of this paper, ends with ``to be
+continued'', and the itinerary's unwritten days say ``still growing'' in the tile's own words.
+A gift is usually finished when it is handed over. These three places mark the point where the
+artefact stopped presenting itself as one.
 
 %% ===================================================================================
 \section{System}\label{sec:system}
@@ -1170,6 +1236,21 @@ about a flat, not a ring. The test guards the dictionary only; assets, routes, s
 visual cues lie outside it.
 
 
+\subsection{Changing a Site While Someone Is in It}\label{sec:update}
+The site deploys on every push, and the record for the period holds 38 commits and eight
+released versions. A site that changes this often will change while its one other user is in
+the middle of something. Until version 1.20 a new build could reload a page that was open. Since then the service
+worker waits: a bar at the bottom of the page says that a
+new version is ready and offers one button, and nothing reloads until it is pressed, so that a
+page is never replaced underneath someone half-way through a level or a letter. The check runs
+when the tab returns to view and once an hour.
+
+The same question returns at a larger scale with the gate. Version 1.24 withdrew every earlier
+pass, so each device was asked for the password again on its next visit, and this time the
+recipient was not offered a choice. An update bar asks before it changes the page; a designer
+who changes the door does not. Both are decisions by one person about the other's access to
+something described as theirs in common.
+
 \subsection{From Her Message to His Answer}\label{sec:askpath}
 Figure~\ref{fig:askpath} shows the path of one request. It has two halves, built a day apart.
 
@@ -1247,11 +1328,12 @@ repository; an early build had them in the public code and they were removed fro
 On 24 November the parts were exercised separately: the mail login in both directions, the DKIM
 rule against the seven delivered emails and against forged headers, the local models on one real
 attachment and on one constructed hostile request, the hosted model's tool permissions under the
-scheduler's environment, and the outgoing message without sending it. One real request arrived that evening while the job was running. It was fetched, passed the
-signature check, and was stopped by the local model as outside the scope, which was the right
-outcome: it asked for the designer's own opinion. No real request had travelled the whole path,
-to the hosted model and back to her, when this was written, and the emails the job sends do
-not say that a machine prepared them.
+scheduler's environment, and the outgoing message without sending it. Real requests began to arrive that evening, after the cut-off of the corpus. The job handled
+them in both of the ways it was built to: it stopped a request that was outside its scope and
+left it for the designer, and it carried another along the whole path, to the hosted model and
+back to her, in under two minutes. We report no more about them than that. The first build's
+answers did not say that a machine had prepared them; since that night, answers of one kind
+open with a line that says so, and answers that deliver prepared documents still do not.
 
 \subsection{Implementation and Verification}
 Table~\ref{tab:metrics} describes the implementation at both versions. For version 1.17.0 an
@@ -1443,10 +1525,10 @@ An answer that arrives in twenty minutes meets the need; an answer he wrote woul
 attended to it. Research on AI-mediated communication suggests the trade is not neutral, since
 suspected machine authorship can lower trust in a message~\cite{hancock2020aimc,jakesch2019aimc}.
 
-Three properties of the present build bear on this. The answers carry no mark of how they were
-made. The specification's non-goal was reversed without a recorded conversation between the two
+Three properties of the build bear on this. Its answers at first carried no mark of how they
+were made, and only some do now. The specification's non-goal was reversed without a recorded conversation between the two
 people it concerns. And the name on the card still says the request goes to him. This paper,
-which both authors sign, is one disclosure; a line in each answer would be a more reliable one.
+which both authors sign, is one disclosure; a line in every answer would be a more reliable one.
 We do not know how the recipient reads an answer prepared this way, and the question belongs to
 her.
 
@@ -1462,8 +1544,7 @@ Until 24 November the models worked on the software. Since then one also works i
 kind of assistant that wrote the pages now prepares answers that reach the recipient under the
 designer's address. Mistakes of the first kind are caught by tests and review before she sees
 anything. Mistakes of the second kind arrive in her inbox, and the only checks before that are
-the scope test of a small local model and a daily limit. On its first evening that test did the
-one thing a person would have wanted from it: it recognised a question meant for him and left it
+the scope test of a small local model and a daily limit. On its first evening that test stopped a request it judged to be outside its scope and left it
 for him.
 
 \subsection{Limitations and Next Evidence}
@@ -1471,7 +1552,8 @@ The principal limitation is evidential: developer playtesting is the only report
 recipient experience, sustained practice or relationship outcome has been collected. The second
 version adds four weeks of development record and three traces of the recipient's activity; it
 adds no account from her. The answering pipeline is described from its code and a manual exercise
-of its parts on the day it was built, before any real request had passed through it. The corpus
+of its parts on the day it was built; its first real requests are reported only as having
+happened. The corpus
 is brief and selectively interpreted, with no independent analysis. Engineering checks are also
 bounded: tests do not establish deployment-wide privacy, all-browser compatibility or equivalent
 experience across languages; approximate hand scaling is not a fit measurement. Union merge
@@ -1511,9 +1593,11 @@ owed when the reply is prompt, useful and not written by the person addressed.
 The first version was dated 30 October 2026 and inspected version 1.17.0 of the software; this
 one is dated 24 November 2026 and inspects version 1.24.0.
 \begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
-  \item New: Section~\ref{sec:after} on the infirmary, the trip page and the request box;
+  \item New: Section~\ref{sec:after} on the dashboard and everything on it (the infirmary, the
+  trip page, the request box, the MotionMirror card and the seed tile);
+  Section~\ref{sec:update} on updating a site in use;
   Section~\ref{sec:askpath} on the server and the answering pipeline; Section~\ref{sec:delegated};
-  three episodes in Section~\ref{sec:log}; Table~\ref{tab:after}; Figures~\ref{fig:cards}
+  three episodes in Section~\ref{sec:log}; Table~\ref{tab:after}; Figures~\ref{fig:dash}, \ref{fig:cards}
   and~\ref{fig:askpath}; three references.
   \item Corrected: the first version's statement that the application has no author-operated
   backend now holds for progress only. The privacy discussion is extended accordingly.

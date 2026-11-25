@@ -4,7 +4,7 @@ The current manuscript is **version 2** (24 November 2026) of **MERIDIAN: Memory
 
 Version 1 (30 October 2026) is on arXiv as [arXiv:2610.41776](https://arxiv.org/abs/2610.41776) (cs.HC and cs.CY; CC BY 4.0). Version 2 is prepared here and **has not yet been submitted to arXiv as a replacement**; both authors need to read and approve it first.
 
-The paper reports a design case. It does not report a recipient evaluation or a measured effect on intimacy. Version 2 extends the record by four weeks: the infirmary, the trip page, the request box with its server and its answering pipeline, and what they do to the first version's claims. It reports that the recipient sent requests and nothing of what they contain. Its last section lists the changes.
+The paper reports a design case. It does not report a recipient evaluation or a measured effect on intimacy. Version 2 extends the record by four weeks: the dashboard and everything on it (the infirmary, the trip page, the request box with its server and its answering pipeline, the MotionMirror card and the seed tile), how the site is updated while in use, and what these do to the first version's claims. It reports that the recipient sent requests and nothing of what they contain. Its last section lists the changes.
 
 ```bibtex
 @misc{chen2026meridian,
@@ -20,7 +20,7 @@ The paper reports a design case. It does not report a recipient evaluation or a 
 
 | File | Contents |
 |---|---|
-| [meridian.pdf](meridian.pdf) | Version 2: 16 pages, 16 figures, 6 tables and 41 cited references. |
+| [meridian.pdf](meridian.pdf) | Version 2: 18 pages, 17 figures, 6 tables and 41 cited references. |
 | [meridian.tex](meridian.tex), [references.bib](references.bib) | Canonical manuscript and bibliography. Edit these files for subsequent revisions. |
 | [review/2026-10-29/](review/2026-10-29/) | The 29 October review report, its evidence and change record, and the figures the manuscript uses. |
 | [review/2026-11-24/](review/2026-11-24/) | Version 2: what was re-verified, and the check of every reference against its primary record. |
