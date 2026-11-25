@@ -8,8 +8,8 @@ Status: built, not yet submitted. Both authors approve the text before it is rep
 2. Upload `meridian-v2-arxiv-source.tar.gz` (delete the files of the previous version first if
    arXiv shows them). It holds `meridian.tex`, `references.bib`, `meridian.bbl`, `README.txt`
    and `figures/`; the processor is pdfLaTeX.
-3. Check arXiv's own PDF against `meridian-v2.pdf`: 24 pages, the Chinese text, the new figures
-   (10, 11, 17 and 18), the eleven tables, and the 42 references.
+3. Check arXiv's own PDF against `meridian-v2.pdf`: 27 pages, the Chinese text, the eleven new
+   figures (2, 11, 12 and 18 to 25), the eleven tables, and the 42 references.
 4. Title and authors are unchanged. Replace the abstract and the comments with the text below.
 5. Categories (cs.HC, cs.CY) and the licence (CC BY 4.0) stay as they are.
 
@@ -19,7 +19,7 @@ How can shared memories become playable structures for partners who live in diff
 
 ## Comments
 
-24 pages, 18 figures, 11 tables. v2: adds four weeks of record and a technical description of every system on the site (the dashboard, three further products, a server, an automated answering pipeline, the service worker, and a separate pose-analysis program), corrects the claim of no author-operated backend, updates the audit; see the section "Changes in Version 2". Design case; no recipient evaluation reported.
+27 pages, 25 figures, 11 tables. v2: adds four weeks of record and a technical description of every system on the site (the dashboard, three further products, a server, an automated answering pipeline, the service worker, and a separate pose-analysis program), corrects the claim of no author-operated backend, updates the audit; see the section "Changes in Version 2". Design case; no recipient evaluation reported.
 
 ## What Changed since Version 1
 
@@ -28,7 +28,7 @@ How can shared memories become playable structures for partners who live in diff
   systems (data, rules, data flows, tests), including the request page's states, the server's
   checks, the answering pipeline's authentication and sandbox, the service worker and caches,
   and MotionMirror's pose pipeline and detection rules; a discussion of answers prepared by a machine; three more
-  reconstructed decisions; four figures; six tables; five references.
+  reconstructed decisions; eleven figures; six tables; five references.
 - Corrected: "no author-operated backend" now holds for progress only; the privacy section
   follows a request's files through the outside parties they reach. One reference of version 1
   lacked an author (MediaPipe, Wei Hua).

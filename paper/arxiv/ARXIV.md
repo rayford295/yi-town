@@ -16,7 +16,7 @@ How can shared memories become playable structures for partners who live in diff
 
 ## Comments
 
-24 pages, 18 figures, 11 tables. v2: adds four weeks of record and a technical description of every system on the site (the dashboard, three further products, a server, an automated answering pipeline, the service worker, and a separate pose-analysis program), corrects the claim of no author-operated backend, updates the audit; see the section "Changes in Version 2". Design case; no recipient evaluation reported.
+27 pages, 25 figures, 11 tables. v2: adds four weeks of record and a technical description of every system on the site (the dashboard, three further products, a server, an automated answering pipeline, the service worker, and a separate pose-analysis program), corrects the claim of no author-operated backend, updates the audit; see the section "Changes in Version 2". Design case; no recipient evaluation reported.
 
 ## Category
 

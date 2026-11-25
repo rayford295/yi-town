@@ -25,7 +25,8 @@ Run at commit `c1303f4` (version 1.24.0):
 
 ## References
 
-All 44 entries of `references.bib` (41 cited) were checked on 24 November 2026.
+The 45 entries of `references.bib` (42 cited) were checked on 24 November 2026; 43 of them
+against a primary record.
 
 - **31 entries with a DOI** were compared with their Crossref records
   (`crossref-check.json`): title, year, author family names in order, and pages where Crossref
@@ -38,8 +39,14 @@ All 44 entries of `references.bib` (41 cited) were checked on 24 November 2026.
   its twelfth author, Wei Hua, in version 1; this is corrected. `zhang2020hands` agrees.
 - **RFC 6376** was compared with the RFC Editor's text: title, date, and the three names, which
   the RFC lists as editors; the entry says so.
-- **Eleven entries without a DOI** (books, standards, a W3C report) were not re-verified here;
-  their status is as recorded in `../2026-10-29/audit/BIBLIOGRAPHY-AUDIT.md`.
+- **Eight books** were compared with Open Library records: author, title, the cited year among
+  the recorded editions, and the cited publisher. All agree (Stafford 2005, Huizinga 1955, Salen
+  and Zimmerman 2003, Juul 2005, Sicart 2014, Isbister 2016, Birrell 1982, Meeus 1998).
+- **The W3C report** was fetched from its own address: the title and the date of the draft
+  agree with the entry.
+- **ISO/IEC 7064:2003** could not be fetched (the standards body refuses automated requests),
+  so that one entry rests on the record in `../2026-10-29/audit/BIBLIOGRAPHY-AUDIT.md`.
+- `strong1996feather`, which is in the file and not cited, was not checked.
 
 `bazarevsky2020blazepose`, added with the technical section, was compared with the arXiv API
 (title, year, six authors in order) and agrees.
@@ -68,3 +75,15 @@ section rests on the fact sheets and should be spot-checked before a camera-read
 
 MotionMirror's repository states its test count as 28 in its changelog; counting test functions
 gives 59, and the paper reports 59. Its tests were not run for this check.
+
+## Figures Added in Version 2
+
+Eleven figures are new. Two are drawn from data: the development timeline, from the commit
+dates of the public branch at `fc11108`, and the MotionMirror signals, from the per-frame
+tables in that project's published examples. Their colours were checked with a palette
+validator for separation under colour-vision deficiency. Five are screenshots of the built
+site at phone or desktop size; in them the personal letter and note, the flight numbers and the
+clock times on the boarding passes are masked, and the requests shown on the request page were
+written for the figure and never sent. Four are diagrams. The key-pose figure reuses two
+sheets that MotionMirror publishes; the people in them are the two authors, and other people
+are visible at a distance in the indoor one.

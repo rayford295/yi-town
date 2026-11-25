@@ -20,7 +20,7 @@ The paper reports a design case. It does not report a recipient evaluation or a 
 
 | File | Contents |
 |---|---|
-| [meridian.pdf](meridian.pdf) | Version 2: 24 pages, 18 figures, 11 tables and 42 cited references. |
+| [meridian.pdf](meridian.pdf) | Version 2: 27 pages, 25 figures, 11 tables and 42 cited references. |
 | [meridian.tex](meridian.tex), [references.bib](references.bib) | Canonical manuscript and bibliography. Edit these files for subsequent revisions. |
 | [review/2026-10-29/](review/2026-10-29/) | The 29 October review report, its evidence and change record, and the figures the manuscript uses. |
 | [review/2026-11-24/](review/2026-11-24/) | Version 2: what was re-verified, and the check of every reference against its primary record. |

@@ -314,7 +314,7 @@ The first version's corpus comprised 109 commits dated 24--28 October 2026, 28 c
 from version 0.1.0 to 1.17.0, and three specifications for the site, quest and town, with a
 cut-off at commit \code{55440ae}. This version extends the cut-off to commit \code{fc11108}
 (24 November 2026, version 1.24.0): 152 commits, 36 changelog entries and a fourth specification,
-for the request box. The count of commits is that of the public branch after the rewriting of
+for the request box (Figure~\ref{fig:timeline}). The count of commits is that of the public branch after the rewriting of
 24 November described in Section~\ref{sec:privacy}, which merged five commits into two. The 43
 added commits are unevenly spread: the infirmary and the trip page
 fall in the first eight days of November, and the request box, its server and the answering
@@ -339,6 +339,23 @@ request box (Section~\ref{sec:log}). Each episode links a source change to an
 interpretation of the design trade-off. The selection illustrates decisions discussed in this
 paper rather than an exhaustive coding of all commits. Version history establishes what changed
 and when, not the designer's unrecorded motivation or the recipient's response.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig-timeline.pdf}
+  \caption{The development record, one bar for each day's commits on the public branch. The
+  shaded span is the corpus of the first version of this paper: five days in which the town
+  was built. Everything to its right is new in this version: two days of preparation for
+  publication, then three additions spread over three weeks, then a single day,
+  24 November, on which the request box, its server, the answering pipeline and the password
+  were all built. Counts for that day are after the rewriting of history described in
+  Section~\ref{sec:privacy}.}
+  \Description{A bar chart of commits per day from 24 October to 24 November 2026. Tall bars on
+  24 to 30 October, the tallest 52 on 26 October; a long quiet stretch with single commits on
+  4, 8, 21, 22 and 23 November; and a bar of 16 on 24 November. Labelled markers name the
+  events on each active day.}
+  \label{fig:timeline}
+\end{figure*}
 
 \subsection{Knowledge Claims and Positionality}
 Research through design can make an artefact and its rationale available for scrutiny without
@@ -1290,6 +1307,54 @@ it computes, what leaves the device, and how it is tested. Section~\ref{sec:afte
 each is for; here we say how each works. Constants are quoted from the source at the inspected
 commit, and file names are given so that each statement can be checked.
 
+\begin{figure*}[t]
+  \centering
+  \begin{tikzpicture}[
+      font=\scriptsize\sffamily,
+      tile/.style={draw=navy, line width=0.7pt, fill=cream, rounded corners=2pt, align=center, minimum width=2.62cm, minimum height=9mm, inner sep=2pt},
+      st/.style={draw=navy!55, line width=0.4pt, fill=gold!22, rounded corners=1.5pt, align=center, minimum width=2.62cm, minimum height=10.5mm, inner sep=2pt, font=\tiny\sffamily},
+      leaves/.style={st, fill=rose!14, draw=rose, dashed},
+      none/.style={st, fill=white, draw=navy!30},
+      lab/.style={font=\tiny\sffamily\itshape, text=navy!70, anchor=east},
+      arr/.style={-{Stealth[length=1.5mm]}, navy, line width=0.5pt}]
+    \node[tile, fill=navy, text=cream, minimum width=3.2cm] (gate) at (0,0) {Gate\\\tiny one password, hashed};
+    \node[tile, fill=navy, text=cream, minimum width=11.2cm, right=5mm of gate] (dash) {Dashboard\\\tiny product registry $\cdot$ one status line per card};
+    \draw[arr] (gate) -- (dash);
+    \node[tile, below=7mm of gate.south west, anchor=north west] (town) {\yt{}\\\tiny nine levels};
+    \node[tile, right=1.6mm of town] (clinic) {Infirmary\\\tiny letters, notes, chart};
+    \node[tile, right=1.6mm of clinic] (trip) {Trip\\\tiny clock, passes, plan};
+    \node[tile, right=1.6mm of trip] (ask) {Request box\\\tiny composer, history};
+    \node[tile, right=1.6mm of ask] (mm) {MotionMirror\\\tiny off-site};
+    \node[tile, right=1.6mm of mm, dashed, minimum width=1.5cm] (seed) {Seed\\\tiny no behaviour};
+    \foreach \n in {town,clinic,trip,ask,mm,seed} \draw[arr] (dash.south -| \n) -- (\n.north);
+    \node[st, below=2.2mm of town] (s1) {progress per player\\codes exchanged by hand};
+    \node[st, below=2.2mm of clinic] (s2) {visit count\\private chart (30 lines)};
+    \node[none, below=2.2mm of trip] (s3) {none\\dates in the source};
+    \node[st, below=2.2mm of ask] (s4) {history (50 entries)\\names and sizes only};
+    \node[none, below=2.2mm of mm] (s5) {a separate program\\run on one's own files};
+    \node[none, below=2.2mm of s1] (o1) {nothing};
+    \node[none, below=2.2mm of s2] (o2) {nothing\\one line, if she shares it};
+    \node[none, below=2.2mm of s3] (o3) {nothing};
+    \node[leaves, below=2.2mm of s4] (o4) {text and files, to a server,\\two mail providers, a laptop\\and a model provider};
+    \node[none, below=2.2mm of s5] (o5) {the link itself};
+    \node[lab] at ($(town.west)+(-2mm,0)$) {page};
+    \node[lab] at ($(s1.west)+(-2mm,0)$) {kept on the device};
+    \node[lab] at ($(o1.west)+(-2mm,0)$) {leaves the device};
+  \end{tikzpicture}
+  \caption{The site at version 1.24. Every page lies behind the gate and is reached from the
+  dashboard. The second row shows what each page keeps in the browser's storage, and the third
+  what it sends anywhere. Only the request box sends anything, and what it sends travels
+  further than the rest of the site put together (Figure~\ref{fig:askpath}).}
+  \Description{A diagram in three rows under a header. The header shows a gate leading to a
+  dashboard. The first row has six tiles: Yi Town, infirmary, trip, request box, MotionMirror
+  and a dashed seed tile. The second row lists what each stores on the device. The third row
+  says nothing leaves the device for the first three, and for the request box lists a server,
+  two mail providers, a laptop and a model provider.}
+  \label{fig:sitemap}
+\end{figure*}
+
+Figure~\ref{fig:sitemap} gives the whole site at a glance.
+
 \subsection{The Product Registry and Routing}\label{sec:registry}
 The dashboard is generated from one array. A product is a record
 \begin{equation}\label{eq:product}
@@ -1337,6 +1402,7 @@ real outage cannot cause a reload loop. Table~\ref{tab:routes} gives the three l
 requirement. Unknown paths fall back to the dashboard.
 
 \subsection{The Infirmary}\label{sec:clinic}
+Figure~\ref{fig:clinic} shows one visit from start to finish.
 \paragraph{Data.}
 There are four kinds of hurt, $H=\{\textit{fight},\textit{hurt},\textit{miss},\textit{tired}\}$.
 A prescription is a letter $(\mathit{from}, h, \mathit{paragraphs}, \mathit{signature})$ with
@@ -1416,6 +1482,23 @@ are kept. Erasing a line matches it by its timestamp. Entries that fail to parse
 on load. The chart is escaped before display and is never sent anywhere; when storage is
 blocked it lives in memory for the session.
 
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig-clinic.jpg}
+  \caption{A visit to the infirmary, on a phone, in English. From the left: checking in by
+  naming what hurts; the first of three breaths; the letter for that hurt, opening with a line
+  computed from the clock in the writer's city; and the cabinet of notes above the private
+  chart. The letter and the note are masked here because they are personal; the line above
+  the letter and the line on the chart are shown as the page displays them, and the chart's
+  line was typed for this figure.}
+  \Description{Four phone screenshots side by side on a green pixel meadow. The first shows a
+  title card and four buttons naming kinds of hurt. The second shows a large pink circle with
+  the words breathe in. The third shows a letter whose paragraphs are replaced by grey bars.
+  The fourth shows a yellow sticky note with its text hidden, and a text box labelled never
+  sent, kept on this phone only.}
+  \label{fig:clinic}
+\end{figure*}
+
 \paragraph{In the town.}
 The infirmary is a building with its door at tile $(7,8)$ and a cross for a sign
 (\code{world/town.ts}). Its door is always walkable, it is not in the level registry, and the
@@ -1462,8 +1545,42 @@ departure and return arrival, and $\tau$ for now. The phase is
   \end{cases}
 \end{equation}
 and the clock counts down to the upper bound of the current phase, with nothing to count to in
-the last (\code{trip/plan.ts}). The comparison is between instants, so the phase is the same
+the last (\code{trip/plan.ts}; Figure~\ref{fig:trip}). The comparison is between instants, so the phase is the same
 for both partners wherever they are.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[font=\scriptsize\sffamily, x=1cm, y=1cm]
+    \fill[cream] (0,0) rectangle (1.5,0.5);
+    \fill[sky!30] (1.5,0) rectangle (2.5,0.5);
+    \fill[gold!38] (2.5,0) rectangle (6.4,0.5);
+    \fill[sky!30] (6.4,0) rectangle (7.4,0.5);
+    \fill[cream] (7.4,0) rectangle (8.3,0.5);
+    \draw[navy, line width=0.6pt] (0,0) rectangle (8.3,0.5);
+    \foreach \x/\l in {1.5/t_0, 2.5/t_1, 6.4/t_2, 7.4/t_3}
+      { \draw[navy, line width=0.6pt] (\x,-0.12) -- (\x,0.62); \node[above] at (\x,0.6) {$\l$}; }
+    \node at (0.75,0.25) {before}; \node at (2.0,0.25) {out}; \node at (4.45,0.25) {together};
+    \node at (6.9,0.25) {back}; \node at (7.85,0.25) {after};
+    \foreach \i in {1,...,11} { \draw[navy!60, line width=0.4pt] ({2.5+(\i-0.5)*3.9/11},-0.12) -- ({2.5+(\i-0.5)*3.9/11},-0.3); }
+    \node[below, font=\tiny\sffamily] at (2.68,-0.3) {1};
+    \node[below, font=\tiny\sffamily] at (6.22,-0.3) {11};
+    \node[below, font=\tiny\sffamily, text=navy!75] at (4.45,-0.32) {day $n$, on New York's calendar};
+    \node[below, font=\tiny\sffamily, text=navy!75] at (0.75,-0.05) {counts to $t_0$};
+    \node[below, font=\tiny\sffamily, text=navy!75] at (7.85,-0.05) {rests};
+  \end{tikzpicture}\\[6pt]
+  \includegraphics[width=0.94\columnwidth]{figures/fig-trip.jpg}
+  \caption{The trip clock. Top: the five phases are intervals between four instants, so they
+  are the same wherever the page is opened; only the day number depends on a calendar, and the
+  calendar is the destination's. Bottom: the page 70 days before departure. Left, the
+  countdown and the two legs; right, the itinerary, where a day not yet written reads ``still
+  growing''. Flight numbers and clock times are masked for publication.}
+  \Description{Top: a horizontal bar divided into five labelled intervals, before, out,
+  together, back and after, separated by four marked instants, with eleven small ticks under
+  the interval called together. Bottom: two phone screenshots, one with a countdown of 70 days
+  and two boarding passes between Hong Kong and New York, the other with a list of dated rows
+  most of which say still growing.}
+  \label{fig:trip}
+\end{figure}
 
 \paragraph{Which day of the stay.}
 Days together are counted on New York's calendar, not the viewer's. Let $d_z(\tau)$ be the
@@ -1592,12 +1709,18 @@ switching language rebuilds the markup, and the new markup finds the same \emph{
     \draw[arr] (fail.south) to[bend left=28] node[below]{send again} (pend.south);
     \draw[arr] (idle.north) to[out=110,in=70,looseness=5] node[above]{invalid draft} (idle.north east);
   \end{tikzpicture}
-  \caption{States of one request on the page. A draft that fails validation never leaves
-  \emph{composing}. A send that receives no answer is abandoned after three minutes. A failed
-  request keeps its text and files in the composer.}
+  \\[6pt]
+  \includegraphics[width=0.52\columnwidth]{figures/fig-ask.jpg}
+  \caption{Top: states of one request on the page. A draft that fails validation never leaves
+  \emph{composing}; a send that receives no answer is abandoned after three minutes; a failed
+  request keeps its text and files in the composer. Bottom: the page with three constructed
+  examples, written for this figure and never sent: a delivered request with a file, a failed
+  one offering to send again, and a draft.}
   \Description{A state diagram with four rounded boxes: composing, pending, sent and failed.
   Arrows lead from composing to pending, from pending to sent and to failed, from failed back
-  to pending, and from composing to itself.}
+  to pending, and from composing to itself. Below, a phone screenshot of a chat-like page with
+  two message bubbles, the second outlined with dashes and carrying a send again button, and a
+  text box with a paperclip and a send button.}
   \label{fig:askstates}
 \end{figure}
 
@@ -1690,35 +1813,58 @@ scheduler every 600 seconds (\code{mailflow/}). Figure~\ref{fig:askpath} shows t
 request through it. A second scheduled agent keeps the laptop awake while it is on mains
 power. An exclusive file lock makes a run exit at once if the previous run has not finished.
 
-\begin{figure}[t]
+\begin{figure*}[t]
   \centering
   \begin{tikzpicture}[
       font=\scriptsize\sffamily,
-      box/.style={draw=navy, line width=0.6pt, fill=cream, rounded corners=1.5pt, align=center, inner sep=3pt, minimum height=7mm, minimum width=1.55cm},
-      ext/.style={box, dashed, fill=white},
-      loc/.style={box, fill=gold!25},
-      arr/.style={-{Stealth[length=1.6mm]}, navy, line width=0.5pt}]
-    \node[box] (page) {Request page\\\tiny her phone};
-    \node[ext, right=4mm of page] (worker) {Worker\\\tiny Cloudflare};
-    \node[ext, right=4mm of worker] (mail) {His mailbox\\\tiny Gmail};
-    \node[loc, below=7mm of mail] (fetch) {Fetch\\\tiny DKIM check};
-    \node[loc, left=4mm of fetch] (local) {Local model\\\tiny read, sort, refuse};
-    \node[ext, left=4mm of local] (hosted) {Hosted model\\\tiny does the work};
-    \node[loc, below=7mm of hosted] (send) {Send\\\tiny one fixed address};
-    \node[ext, right=4mm of send] (her) {Her mailbox};
-    \node[navy, font=\scriptsize\itshape, anchor=west] at ($(her.east)+(2mm,0)$) {gold: his laptop};
-    \draw[arr] (page) -- (worker); \draw[arr] (worker) -- (mail); \draw[arr] (mail) -- (fetch);
-    \draw[arr] (fetch) -- (local); \draw[arr] (local) -- (hosted); \draw[arr] (hosted) -- (send);
-    \draw[arr] (send) -- (her);
+      box/.style={draw=navy, line width=0.7pt, rounded corners=2pt, align=center, inner sep=2pt, minimum height=9.5mm, minimum width=1.86cm},
+      hers/.style={box, fill=cream},
+      ext/.style={box, fill=white, dashed},
+      loc/.style={box, fill=gold!28},
+      note/.style={font=\tiny\sffamily, align=center, text=navy!80, text width=1.95cm},
+      zone/.style={font=\tiny\sffamily\itshape, text=navy!65},
+      arr/.style={-{Stealth[length=1.6mm]}, navy, line width=0.6pt}]
+    \node[hers] (page) at (0,0) {Request page};
+    \node[ext, right=3.1mm of page] (worker) {Server};
+    \node[ext, right=3.1mm of worker] (inbox) {His mailbox};
+    \node[loc, right=3.1mm of inbox] (fetch) {Fetch};
+    \node[loc, right=3.1mm of fetch] (sort) {Sort};
+    \node[ext, right=3.1mm of sort] (work) {Work};
+    \node[loc, right=3.1mm of work] (send) {Send};
+    \node[ext, right=3.1mm of send] (her) {Her mailbox};
+    \foreach \a/\b in {page/worker, worker/inbox, inbox/fetch, fetch/sort, sort/work, work/send, send/her} \draw[arr] (\a) -- (\b);
+    \node[zone, above=1.2mm of page] {her phone};
+    \node[zone, above=1.2mm of worker] {edge platform};
+    \node[zone, above=1.2mm of inbox] {mail provider};
+    \node[zone, above=1.2mm of fetch] {his laptop};
+    \node[zone, above=1.2mm of sort] {his laptop};
+    \node[zone, above=1.2mm of work] {model provider};
+    \node[zone, above=1.2mm of send] {his laptop};
+    \node[zone, above=1.2mm of her] {mail provider};
+    \node[note, below=1.5mm of page] {up to 10 files, 18\,MiB;\\large photos scaled;\\history kept locally};
+    \node[note, below=1.5mm of worker] {origin and limits\\checked; one email;\\stores nothing;\\no authentication};
+    \node[note, below=1.5mm of inbox] {records the DKIM\\result on receipt};
+    \node[note, below=1.5mm of fetch] {sender, subject\\prefix, and a parsed\\DKIM pass; one\\folder per request};
+    \node[note, below=1.5mm of sort] {two local models:\\transcribe images,\\classify, or stop\\for a person};
+    \node[note, below=1.5mm of work] {hosted model in a\\sandbox: one folder,\\one locked script,\\no network tools};
+    \node[note, below=1.5mm of send] {one fixed recipient;\\copy to him;\\at most six a day};
+    \node[note, below=1.5mm of her] {the answer, as\\documents};
+    \draw[rose, line width=0.7pt, dashed, rounded corners=3pt] ($(fetch.north west)+(-1.2mm,5mm)$) rectangle ($(send.south east)+(1.2mm,-14.5mm)$);
+    \node[font=\tiny\sffamily\itshape, text=rose, anchor=south east] at ($(send.south east)+(1.2mm,-18mm)$) {scheduled every ten minutes};
   \end{tikzpicture}
-  \caption{The path of one request. Gold boxes run on the designer's laptop; dashed boxes are
-  services operated by others. Her text and files pass through four outside parties on the way
+  \caption{The path of one request, left to right, with the check applied at each step. Gold
+  boxes run on the designer's laptop; dashed boxes are services operated by others; the dashed
+  frame is the scheduled job. Her text and files pass through four outside parties on the way
   to an answer: the edge platform, his mail provider, the provider of the hosted model, and her
-  own mail provider.}
-  \Description{A flow of eight boxes in three rows: request page, worker, his mailbox; then fetch,
-  local model, hosted model; then send, her mailbox. Fetch, local model and send are shaded gold.}
+  own mail provider. The local models keep the sorting step on the laptop; the working step
+  sends the files on.}
+  \Description{A row of eight boxes joined by arrows: request page, server, his mailbox, fetch,
+  sort, work, send, her mailbox. Above each is the place it runs: her phone, an edge platform,
+  a mail provider, his laptop, his laptop, a model provider, his laptop, a mail provider. Below
+  each is a short note on what is checked there. A dashed frame encloses fetch, sort, work and
+  send.}
   \label{fig:askpath}
-\end{figure}
+\end{figure*}
 
 \paragraph{Fetching.}
 The job opens the designer's mailbox over IMAP, read-only, in the folder that the server marks
@@ -1856,6 +2002,37 @@ and a set of joint measurements at each phase. It has profiles for the golf swin
 basketball jump shot and badminton strokes. Its core has no dependencies; pose estimation,
 drawing and video encoding are an optional set.
 
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+      font=\scriptsize\sffamily,
+      box/.style={draw=navy, line width=0.6pt, fill=cream, rounded corners=1.5pt, align=center, inner sep=2pt, minimum height=8.5mm, minimum width=1.95cm},
+      opt/.style={box, dashed, fill=white},
+      outp/.style={box, fill=gold!28},
+      arr/.style={-{Stealth[length=1.5mm]}, navy, line width=0.5pt}]
+    \node[box] (v) {One video\\\tiny one camera};
+    \node[box, right=3.5mm of v] (pose) {Pose\\\tiny 33 landmarks, every frame};
+    \node[box, right=3.5mm of pose] (who) {Athlete\\\tiny one of up to three};
+    \node[opt, below=5mm of who] (zoom) {Second pass\\\tiny if the figure is small};
+    \node[box, left=3.5mm of zoom] (geo) {Geometry\\\tiny aspect, torso lengths};
+    \node[box, left=3.5mm of geo] (sig) {Signals\\\tiny fill, smooth, speed};
+    \node[box, below=5mm of sig] (anchor) {Anchor\\\tiny extrema of one signal};
+    \node[box, right=3.5mm of anchor] (ph) {Phases\\\tiny windows, rejections};
+    \node[outp, right=3.5mm of ph] (out) {Measures, checks\\\tiny report, overlay, sheet};
+    \draw[arr] (v) -- (pose); \draw[arr] (pose) -- (who); \draw[arr] (who) -- (zoom);
+    \draw[arr] (zoom) -- (geo); \draw[arr] (geo) -- (sig); \draw[arr] (sig) -- (anchor);
+    \draw[arr] (anchor) -- (ph); \draw[arr] (ph) -- (out);
+  \end{tikzpicture}
+  \caption{MotionMirror from a video to a report. The dashed step runs only when the athlete
+  occupies less than 0.35 of the frame's height. The last row is the part that differs between
+  the golf, basketball and badminton profiles.}
+  \Description{A flow of nine boxes in three rows joined by arrows: one video, pose, athlete;
+  then second pass, geometry, signals; then anchor, phases, and measures and checks.}
+  \label{fig:mmpipe}
+\end{figure}
+
+Figure~\ref{fig:mmpipe} gives its stages.
+
 \paragraph{Pose.}
 Every frame is passed to a body-landmark model that returns 33 named
 landmarks~\cite{bazarevsky2020blazepose,lugaresi2019mediapipe}, in its video mode, with a
@@ -1927,6 +2104,44 @@ minimum or maximum of another signal, and rejects the candidate if its shape is 
     \bottomrule
   \end{tabular}
 \end{table*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig-mm-signals.pdf}
+  \caption{The anchor signal of each profile on one of the project's published example
+  recordings, with the phases the program reported for one repetition (vertical lines) and,
+  where the rule has one, its threshold (dashed). Top: in the golf swing the hands rise to the
+  \emph{top}, fall to \emph{impact} and rise again to a finish that is higher than the top,
+  which is why the rule keeps the first extremum and not the highest. Middle: the release score
+  of the jump shot crosses its threshold once. Bottom: in the overhead stroke the wrist is
+  fastest after the shuttle is struck, so \emph{contact} is placed at the hand's highest point
+  before the speed peak. Signals are read from the per-frame tables the program wrote; nothing
+  here measures how close a reported phase is to the true one.}
+  \Description{Three line charts stacked. The first shows hand height over five seconds with
+  four labelled vertical lines: address, top, impact, finish. The second shows a score rising
+  above a dashed threshold with six labelled lines from set to landing. The third shows wrist
+  speed with several peaks above a dashed threshold and five labelled lines from ready to
+  recovery.}
+  \label{fig:mmsignals}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig-mm-keyposes.jpg}
+  \caption{Key-pose sheets from the two showcase recordings named on the dashboard card, as the
+  program writes them: one frame per phase with the skeleton drawn over it. Top: the jump shot,
+  six phases from \emph{set} to \emph{landing}; the athlete is small in the frame, which
+  triggered the second pass. Bottom: one of four badminton strokes, an overhead, five phases
+  from \emph{ready} to \emph{recovery}. The people shown are the two authors.}
+  \Description{Two strips of video frames. The upper strip has six frames of a person shooting a
+  basketball on an outdoor court by the sea, each labelled with a phase name and a time. The
+  lower strip has five frames of a person playing badminton on an indoor court, each labelled
+  with a phase name, with coloured lines drawn along the limbs.}
+  \label{fig:mmkeyposes}
+\end{figure*}
+
+Figure~\ref{fig:mmsignals} shows the three anchor signals on real recordings, and
+Figure~\ref{fig:mmkeyposes} the frames chosen for two of them.
 
 \emph{Golf.} The top is the highest point of the hands, moved to the end of any pause there.
 The address is the last moment in the three seconds before the top at which the hands are
@@ -2269,8 +2484,9 @@ one is dated 24 November 2026 and inspects version 1.24.0.
   and detection rules;
   Section~\ref{sec:askpath} on the server and the answering pipeline; Section~\ref{sec:delegated};
   three episodes in Section~\ref{sec:log}; Tables~\ref{tab:after}, \ref{tab:routes}, \ref{tab:caches}, \ref{tab:worker}, \ref{tab:mm}
-  and~\ref{tab:producttests}; Figures~\ref{fig:dash}, \ref{fig:cards}, \ref{fig:askstates}
-  and~\ref{fig:askpath}; three references.
+  and~\ref{tab:producttests}; Figures~\ref{fig:timeline}, \ref{fig:dash}, \ref{fig:cards},
+  \ref{fig:sitemap}, \ref{fig:clinic}, \ref{fig:trip}, \ref{fig:askstates}, \ref{fig:askpath},
+  \ref{fig:mmpipe}, \ref{fig:mmsignals} and~\ref{fig:mmkeyposes}; three references.
   \item Corrected: the first version's statement that the application has no author-operated
   backend now holds for progress only. The privacy discussion is extended accordingly.
   \item Updated: the corpus (152 commits, 36 versions, four specifications), the audit (263

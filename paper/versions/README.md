@@ -7,7 +7,7 @@ after its version is fixed. Each version also has a git tag.
 | Version | Date | Software inspected | Tag | arXiv | Pages |
 |---|---|---|---|---|---|
 | [v1](v1-2026-10-30/) | 30 October 2026 | 1.17.0, commit `55440ae` | `paper-v1` | [2610.41776v1](https://arxiv.org/abs/2610.41776v1), announced | 13 |
-| [v2](v2-2026-11-24/) | 24 November 2026 | 1.24.0, commit `fc11108`; MotionMirror 0.2.0 | `paper-v2` | not yet submitted | 24 |
+| [v2](v2-2026-11-24/) | 24 November 2026 | 1.24.0, commit `fc11108`; MotionMirror 0.2.0 | `paper-v2` | not yet submitted | 27 |
 
 ## Files
 
@@ -15,8 +15,8 @@ after its version is fixed. Each version also has a git tag.
 |---|---|
 | `v1-2026-10-30/meridian-v1.pdf` | `279789df1645688b` |
 | `v1-2026-10-30/meridian-v1-arxiv-source.tar.gz` | `b49f474f844cd4e7` |
-| `v2-2026-11-24/meridian-v2.pdf` | `46b2587163e7decb` |
-| `v2-2026-11-24/meridian-v2-arxiv-source.tar.gz` | `12a24a2675fd8bf3` |
+| `v2-2026-11-24/meridian-v2.pdf` | `403b0cce478295ab` |
+| `v2-2026-11-24/meridian-v2-arxiv-source.tar.gz` | `d86d31fbc364acca` |
 
 The v1 files are the ones in the repository at commit `d007e17`, when the arXiv identifier was
 recorded. What changed between the versions is listed in the paper's own section "Changes in
