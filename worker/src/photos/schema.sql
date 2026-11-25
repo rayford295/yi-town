@@ -18,3 +18,10 @@ CREATE TABLE IF NOT EXISTS photos (
   shelf       INTEGER NOT NULL DEFAULT 0   -- which database holds its pictures: 0 = this one, 1 = SHELF1, …
 );
 CREATE INDEX IF NOT EXISTS photos_taken ON photos (taken_at);
+
+-- Wrong keys by address, for the lock (handle.ts: ten in fifteen minutes).
+CREATE TABLE IF NOT EXISTS attempts (
+  ip      TEXT PRIMARY KEY,
+  fails   INTEGER NOT NULL,
+  last_at TEXT NOT NULL
+);

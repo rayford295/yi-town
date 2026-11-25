@@ -12,11 +12,11 @@ the grid to one of them. Only the gate stands in front of the page; no player is
 The site is static and its gate is a hash in a public bundle, so private photos cannot sit
 behind it. They are kept by a Worker at `photos.jingyifan.love` (`worker/src/photos/`): the
 pictures and one row per photo in D1 (the pictures spread over several free databases, see
-`worker/README.md`). Every request carries the **album key**, a random
-secret that only the Worker and our two devices know. A device gets it once, from a pairing link
-`https://jingyifan.love/photos#key=…` (the page takes the key and wipes it from the address bar)
-or by pasting it. Pictures are fetched with the key and shown as `blob:` URLs, so no photo has a
-public address.
+`worker/README.md`). Every request carries the site's own password, which the Worker checks
+against the gate's hash, with a lock after ten wrong tries. The device remembers the password
+when it is typed at the gate, or once on the album page. Pictures are fetched with it and shown
+as `blob:` URLs, so no photo has a public address. The limit of this choice is written down in
+`worker/README.md`.
 
 ## One Photo, From the Phone to the Album
 
@@ -35,7 +35,7 @@ Uploads run one at a time and keep going while the page is redrawn (the language
 |---|---|
 | `photos.ts`, `photos.css` | The page: key panel, toolbar, grid, map, viewer |
 | `core.ts`, `core.test.ts` | The photo type, filtering, months, tags, trips, reading the model's reply; shared with the Worker |
-| `api.ts` | The album key, calls to the Worker, pictures as `blob:` URLs |
+| `api.ts` | The remembered password, calls to the Worker, pictures as `blob:` URLs |
 | `prepare.ts` | EXIF, the hash, the two sizes |
 | `../../../worker/src/photos/` | The Worker: `handle.ts`, its tests, `schema.sql` |
 | `../../../scripts/photos-card.py` | Draws the dashboard card, `public/media/dashboard/photos.png` |

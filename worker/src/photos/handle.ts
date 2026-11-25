@@ -6,9 +6,12 @@
 // (DB) and SHELF1, SHELF2, … Each upload goes to the first shelf with room; the photo's row
 // remembers which. Adding a shelf is one database and one binding in photos.toml.
 //
-// Unlike the Ask Worker this one stores private photos, so it does not trust the site's gate (a
-// hash in a public bundle). Every request carries the album key, a long random secret set with
-// `wrangler secret put PHOTOS_KEY`; the two of us each open one pairing link to put it on a device.
+// Unlike the Ask Worker this one stores private photos, so every request carries a key, checked
+// here: the site's own password, compared by its SHA-256 against the gate's ANSWERS, so changing
+// the gate's password changes the album's too. Yifan's decision (2026-11-25), knowing that the
+// gate's hash sits in a public bundle and eight digits can be found from it offline. What this
+// Worker adds is a lock: ten wrong tries from one address shut it out for fifteen minutes.
+import { ANSWERS, normalise } from '../../../src/core/gate';
 import {
   MAX_FULL, MAX_THUMB, WHO, isId, isStamp, parseReading, validLatLng,
   type Photo, type Reading, type Upload,
@@ -27,8 +30,6 @@ export type Env = {
   /** The photos table, and shelf 0 for pictures. */
   DB: DB;
   AI: { run(model: string, input: unknown): Promise<unknown> };
-  /** Secret: the album key. Never in the repository. */
-  PHOTOS_KEY: string;
   /** Var: the Workers AI model that reads the photos. */
   VISION_MODEL: string;
 } & Partial<Record<Shelf, DB>>;
@@ -68,13 +69,30 @@ function safeTags(s: string): string[] {
   try { const v = JSON.parse(s); return Array.isArray(v) ? v.filter((t) => typeof t === 'string') : []; } catch { return []; }
 }
 
-/** The same length of work whatever the guess, so the key cannot be found a character at a time. */
-export function sameKey(given: string, key: string): boolean {
-  if (!key || key.length < 16) return false;   // an unset or toy secret opens nothing
-  let diff = given.length ^ key.length;
-  for (let i = 0; i < key.length; i++) diff |= key.charCodeAt(i) ^ (given.charCodeAt(i % (given.length || 1)) || 0);
+/** Equal strings of the same length, compared without stopping at the first difference. */
+const sameHex = (a: string, b: string): boolean => {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return diff === 0;
+};
+async function sha256(text: string): Promise<string> {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, '0')).join('');
 }
+/** True when `given` is the site's password (digits only, separators ignored, as at the gate). */
+export async function isPassword(given: string, answers: readonly string[] = ANSWERS): Promise<boolean> {
+  const n = normalise(given);
+  if (!n) return false;
+  const h = await sha256(n);
+  return answers.some((a) => sameHex(h, a));
+}
+
+/** Ten wrong keys from one address within fifteen minutes lock it out until fifteen minutes
+ * after the last one. A right key clears the count. */
+export const LOCK_AFTER = 10;
+export const LOCK_MS = 15 * 60 * 1000;
+type Attempt = { fails: number; last_at: string };
 
 /** Checks what the page sent about a photo; null when anything is off. */
 export function readUpload(raw: unknown): Upload | null {
@@ -155,7 +173,9 @@ export const nominatim: Geocode = async (lat, lng) => {
 const COLS = 'id, taken_at, date_source, lat, lng, place, caption_zh, caption_en, tags, who, name, w, h, uploaded_at, shelf';
 const getRow = (env: Env, id: string) => env.DB.prepare(`SELECT ${COLS} FROM photos WHERE id = ?`).bind(id).first<Row>();
 
-export async function handle(req: Request, env: Env, geocode: Geocode = nominatim, now: Date = new Date()): Promise<Response> {
+export async function handle(
+  req: Request, env: Env, geocode: Geocode = nominatim, now: Date = new Date(), answers: readonly string[] = ANSWERS,
+): Promise<Response> {
   const origin = req.headers.get('Origin');
   const cors: Record<string, string> = origin && ORIGINS.includes(origin)
     ? { 'Access-Control-Allow-Origin': origin, 'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
@@ -165,8 +185,17 @@ export async function handle(req: Request, env: Env, geocode: Geocode = nominati
   const no = (status: number, reason: string) => json({ ok: false, reason }, status);
 
   if (req.method === 'OPTIONS') return new Response(null, { status: origin && ORIGINS.includes(origin) ? 204 : 403, headers: cors });
+  const ip = req.headers.get('CF-Connecting-IP') ?? 'unknown';
+  const tries = await env.DB.prepare('SELECT fails, last_at FROM attempts WHERE ip = ?').bind(ip).first<Attempt>();
+  const recent = !!tries && now.getTime() - Date.parse(tries.last_at) < LOCK_MS;
+  if (recent && tries!.fails >= LOCK_AFTER) return no(429, 'locked');
   const auth = req.headers.get('Authorization') ?? '';
-  if (!sameKey(auth.replace(/^Bearer\s+/i, ''), env.PHOTOS_KEY)) return no(401, 'key');
+  if (!(await isPassword(auth.replace(/^Bearer\s+/i, ''), answers))) {
+    await env.DB.prepare('INSERT OR REPLACE INTO attempts (ip, fails, last_at) VALUES (?, ?, ?)')
+      .bind(ip, (recent ? tries!.fails : 0) + 1, now.toISOString()).run();
+    return no(401, 'key');
+  }
+  if (tries) await env.DB.prepare('DELETE FROM attempts WHERE ip = ?').bind(ip).run();
 
   const parts = new URL(req.url).pathname.split('/').filter(Boolean);   // photos[, id[, full|thumb|describe]]
   if (parts[0] !== 'photos') return no(404, 'missing');

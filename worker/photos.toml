@@ -1,6 +1,6 @@
 # Our Album: the Worker behind https://jingyifan.love/photos. See worker/README.md.
-# Deploy with `npm run photos:deploy`. The album key is the secret PHOTOS_KEY, set once with
-# `npx wrangler secret put PHOTOS_KEY -c worker/photos.toml`; it is never written here.
+# Deploy with `npm run photos:deploy`. No secret: the key is the site's own password, checked
+# against the gate's hash (src/core/gate.ts).
 name = "yi-photos"
 main = "src/photos/index.ts"
 compatibility_date = "2026-11-01"

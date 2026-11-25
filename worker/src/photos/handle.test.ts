@@ -1,8 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { SHELF_CAP, handle, placeName, readUpload, sameKey, type DB, type Env, type Row } from './handle';
+import { LOCK_AFTER, LOCK_MS, SHELF_CAP, handle as realHandle, isPassword, placeName, readUpload, type DB, type Env, type Geocode, type Row } from './handle';
 
 const SITE = 'https://jingyifan.love';
-const KEY = 'k'.repeat(32);
+// A stand-in password and its hash; the real one is never written in this public repository.
+const KEY = '12345678';
+const hex = async (text: string) =>
+  Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text))), (b) => b.toString(16).padStart(2, '0')).join('');
+const ANSWERS = [await hex(KEY)];
+const handle = (r: Request, env: Env, geocode: Geocode, now?: Date) => realHandle(r, env, geocode, now, ANSWERS);
 const ID = 'a'.repeat(32);
 
 type Pic = { id: string; size: string; bytes: number; data: number[] };
@@ -12,19 +17,25 @@ type Pic = { id: string; size: string; bytes: number; data: number[] };
 function fakeDb(preUsed = 0) {
   const rows = new Map<string, Row>();
   const pics = new Map<string, Pic>();
+  const attempts = new Map<string, { fails: number; last_at: string }>();
   const db: DB = {
     prepare(sql: string) {
       let args: unknown[] = [];
       const stmt = {
         bind: (...v: unknown[]) => { args = v; return stmt; },
         first: async <T>() => {
+          if (sql.includes('FROM attempts')) return (attempts.get(String(args[0])) ?? null) as T | null;
           if (sql.includes('SUM(bytes)')) return { used: preUsed + [...pics.values()].reduce((n, p) => n + p.bytes, 0) } as T;
           if (sql.includes('FROM pictures')) { const p = pics.get(`${args[0]}/${args[1]}`); return (p ? { data: p.data } : null) as T | null; }
           return (rows.get(String(args[0])) ?? null) as T | null;
         },
         all: async <T>() => ({ results: [...rows.values()].sort((a, b) => (a.taken_at < b.taken_at ? 1 : -1)) as T[] }),
         run: async () => {
-          if (sql.includes('INTO pictures')) {
+          if (sql.includes('INTO attempts')) {
+            attempts.set(String(args[0]), { fails: Number(args[1]), last_at: String(args[2]) });
+          } else if (sql.startsWith('DELETE FROM attempts')) {
+            attempts.delete(String(args[0]));
+          } else if (sql.includes('INTO pictures')) {
             const [id, size, bytes, data] = args as [string, string, number, ArrayBuffer];
             pics.set(`${id}/${size}`, { id, size, bytes, data: Array.from(new Uint8Array(data)) });
           } else if (sql.startsWith('DELETE FROM pictures')) {
@@ -46,20 +57,19 @@ function fakeDb(preUsed = 0) {
       return stmt;
     },
   };
-  return { db, rows, pics };
+  return { db, rows, pics, attempts };
 }
 
 function fakeEnv(reply: unknown = { response: '{"zh":"海边的日落","en":"Sunset","tags":["beach","海边"]}' }, mainUsed = 0, shelfUsed = 0) {
   const main = fakeDb(mainUsed), shelf1 = fakeDb(shelfUsed);
   const ai: unknown[] = [];
   const env: Env = {
-    PHOTOS_KEY: KEY,
     VISION_MODEL: 'test-model',
     AI: { run: async (_m, input) => { ai.push(input); if (reply instanceof Error) throw reply; return reply; } },
     DB: main.db,
     SHELF1: shelf1.db,
   };
-  return { env, rows: main.rows, pics: main.pics, shelf1, ai };
+  return { env, rows: main.rows, pics: main.pics, attempts: main.attempts, shelf1, ai };
 }
 
 type Opts = { method?: string; path?: string; key?: string | null; origin?: string | null; body?: BodyInit; headers?: Record<string, string> };
@@ -87,11 +97,23 @@ describe('the album key', () => {
     expect((await handle(req({ method: 'OPTIONS', key: null }), env, geo)).status).toBe(204);
     expect((await handle(req(), env, geo)).status).toBe(200);
   });
-  it('an unset or short secret opens nothing', async () => {
-    expect(sameKey('', '')).toBe(false);
-    expect(sameKey('abc', 'abc')).toBe(false);
-    expect(sameKey(KEY, KEY)).toBe(true);
-    expect(sameKey(KEY.slice(1), KEY)).toBe(false);
+  it('takes the password with any separators, as the gate does, and nothing else', async () => {
+    expect(await isPassword('1234-5678', ANSWERS)).toBe(true);
+    expect(await isPassword(' 1234 5678 ', ANSWERS)).toBe(true);
+    expect(await isPassword('12345679', ANSWERS)).toBe(false);
+    expect(await isPassword('', ANSWERS)).toBe(false);
+    expect(await isPassword('abc', ANSWERS)).toBe(false);
+  });
+  it('locks an address out after ten wrong tries, for fifteen minutes after the last', async () => {
+    const { env } = fakeEnv();
+    const t0 = new Date('2027-02-05T10:00:00Z');
+    const at = (ms: number) => new Date(t0.getTime() + ms);
+    const from = (ip: string, key: string) => new Request('https://photos.jingyifan.love/photos', { headers: { Origin: SITE, Authorization: `Bearer ${key}`, 'CF-Connecting-IP': ip } });
+    for (let i = 0; i < LOCK_AFTER; i++) expect((await handle(from('1.1.1.1', `0000000${i}`), env, geo, at(i * 1000))).status).toBe(401);
+    expect((await handle(from('1.1.1.1', KEY), env, geo, at(20_000))).status).toBe(429);      // even the right key
+    expect((await handle(from('2.2.2.2', KEY), env, geo, at(20_000))).status).toBe(200);      // another address is fine
+    expect((await handle(from('1.1.1.1', KEY), env, geo, at(9_000 + LOCK_MS + 1))).status).toBe(200);   // lock over
+    expect((await handle(from('1.1.1.1', '00000000'), env, geo, at(9_000 + LOCK_MS + 2))).status).toBe(401);   // count started again
   });
   it('answers CORS only for the site', async () => {
     const { env } = fakeEnv();

@@ -1,29 +1,20 @@
-// Our Album, talking to the Worker (worker/src/photos/). Every call carries the album key, which
-// lives on this device after one pairing link (/photos#key=…). Pictures are fetched with the key
-// and shown as blob: URLs, so no photo ever has a public address.
+// Our Album, talking to the Worker (worker/src/photos/). Every call carries the key: the site's
+// own password, remembered on this device when it is typed at the gate (or once on this page).
+// Pictures are fetched with the key and shown as blob: URLs, so no photo has a public address.
 import { safeStorage } from '../../core/storage';
 import type { Photo, Upload } from './core';
 
 export const API = (import.meta.env?.VITE_PHOTOS_URL as string | undefined) ?? 'https://photos.jingyifan.love';
-const KEY = 'yi.photos.key';
+export const KEY = 'yi.photos.key';
 const store = safeStorage();
 
 export const getKey = (): string => store.getItem(KEY) ?? '';
 export const setKey = (k: string): void => { store.setItem(KEY, k.trim()); };
 export const forgetKey = (): void => { store.setItem(KEY, ''); };
 
-/** A key in the address (#key=…) is taken onto the device and wiped from the address bar. */
-export function takeKeyFromHash(): boolean {
-  const m = location.hash.match(/[#&]key=([A-Za-z0-9_-]{16,})/);
-  if (!m) return false;
-  setKey(m[1]);
-  history.replaceState(null, '', location.pathname + location.search);
-  return true;
-}
-
-export type Fail = 'key' | 'network' | 'too-big' | 'bad' | 'ai' | 'server' | 'missing' | 'full';
+export type Fail = 'key' | 'locked' | 'network' | 'too-big' | 'bad' | 'ai' | 'server' | 'missing' | 'full';
 export type Result<T> = ({ ok: true } & T) | { ok: false; reason: Fail };
-const FAILS: readonly Fail[] = ['key', 'network', 'too-big', 'bad', 'ai', 'server', 'missing', 'full'];
+const FAILS: readonly Fail[] = ['key', 'locked', 'network', 'too-big', 'bad', 'ai', 'server', 'missing', 'full'];
 
 async function call<T>(path: string, init: RequestInit = {}, timeout = 60_000): Promise<Result<T>> {
   const stop = new AbortController();

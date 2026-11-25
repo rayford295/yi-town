@@ -38,5 +38,8 @@ export async function tryGate(answer: string, answers: readonly string[] = ANSWE
   const h = await hash(n);
   if (!answers.includes(h)) return false;
   store.setItem(KEY, '1');
+  // The album's Worker checks the same password on every request (worker/src/photos/), so the
+  // device keeps it for that page: whoever has come in the door can open the album.
+  store.setItem('yi.photos.key', n);
   return true;
 }

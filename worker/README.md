@@ -77,20 +77,21 @@ Nominatim at upload.
 | `POST /photos/:id/describe` | Ask the model again |
 | `DELETE /photos/:id` | The row and both pictures |
 
-**Access.** Unlike Ask, this Worker stores private things, so it checks a secret on every
-request: `Authorization: Bearer <PHOTOS_KEY>`, compared in constant time. A secret shorter than
-16 characters opens nothing. CORS answers only `https://jingyifan.love` and the dev servers.
+**Access.** Unlike Ask, this Worker stores private things, so every request carries
+`Authorization: Bearer <the site's password>`. The Worker hashes it and compares it with the
+gate's `ANSWERS` (`src/core/gate.ts`), so there is no secret to set, and changing the gate's
+password changes the album's. Ten wrong tries from one address lock it out for fifteen minutes
+(the `attempts` table). CORS answers only `https://jingyifan.love` and the dev servers.
 
-**Set up once** (the five databases and their tables already exist):
+This is Yifan's choice (2026-11-25), made knowing its limit: the gate's hash is in the public
+bundle, and eight digits can be found from it offline in seconds, so anyone who does that can
+open the album. A long random key, given to each device once, would close that; the lock only
+stops guessing against the Worker itself.
 
-```bash
-# The album key: a long random string, kept out of the repository.
-openssl rand -hex 24 | tee /dev/tty | npx wrangler secret put PHOTOS_KEY -c worker/photos.toml
-npm run photos:deploy    # the first deploy creates photos.jingyifan.love
-```
-
-Then open `https://jingyifan.love/photos#key=<the key>` on each of our devices once (send it to
-Jingyi over WeChat). To change the key, put a new secret; every device is asked again.
+**Deploy** (the five databases and their tables already exist): `npm run photos:deploy`. The
+first deploy creates `photos.jingyifan.love`. A device that has passed the gate since this
+version remembers the password for the album; one that passed it earlier is asked once on the
+album page.
 
 **Adding a shelf** when the album says it is full: `npx wrangler d1 create yi-photos-shelf-5`,
 apply `pictures.sql` to it (below), add a `[[d1_databases]]` block with binding `SHELF5` to

@@ -89,7 +89,7 @@ async function render(): Promise<void> {
   if (path === '/' || path === '/town') closeDoors();
   // While the picker stands in for another address (a /sync?c=… link on a fresh phone), that
   // address is kept so the picker can hand it back.
-  // A hash that is a route (#/sync) is rewritten away; any other (the album's #key=…) is left for its page.
+  // A hash that is a route (#/sync) is rewritten away; any other is left for its page.
   const keepHash = path === asked().path && location.hash && !location.hash.startsWith('#/') ? location.hash : '';
   const want = (path === asked().path ? path + asked().search : path) + keepHash;
   if (path !== '/start' && want !== location.pathname + location.search + location.hash) history.replaceState(null, '', want);

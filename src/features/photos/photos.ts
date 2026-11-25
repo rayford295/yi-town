@@ -1,7 +1,7 @@
 // Our Album (/photos): the two of us put photos in, a vision model says what is in each, and the
 // page finds them by words, by dates and by who added them, as a grid by month or on a travel map.
 // Not a level and no player needed; it opens from the dashboard. The pictures live behind the
-// album key (api.ts), never at a public address.
+// site's password (api.ts), never at a public address.
 import './photos.css';
 import type * as Leaflet from 'leaflet';
 import { t, getLang, type Key } from '../../core/i18n';
@@ -15,7 +15,7 @@ import {
 } from './core';
 import {
   deletePhoto, describeAgain, dropImages, getKey, forgetKey, imageUrl, listPhotos, patchPhoto, setKey,
-  takeKeyFromHash, uploadPhoto, type Fail,
+  uploadPhoto, type Fail,
 } from './api';
 import { prepare } from './prepare';
 
@@ -40,14 +40,14 @@ const monthLabel = (ym: string): string => {
   const [y, m] = ym.split('-').map(Number);
   return getLang() === 'zh' ? `${y} 年 ${m} 月` : new Date(y, m - 1, 1).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
 };
-const failText = (f: Fail): string => t(f === 'network' ? 'photos.err.network' : f === 'key' ? 'photos.pair.bad' : f === 'full' ? 'photos.err.full' : 'photos.err.server');
+const failText = (f: Fail): string => t(f === 'network' ? 'photos.err.network' : f === 'key' ? 'photos.pair.bad' : f === 'locked' ? 'photos.pair.locked' : f === 'full' ? 'photos.err.full' : 'photos.err.server');
 
 let redraw: (() => void) | null = null;   // the current render's way to draw the results again
 
 async function load(): Promise<void> {
   const r = await listPhotos();
   if (r.ok) { S.photos = r.photos; S.error = null; store.setItem(COUNT_KEY, String(r.photos.length)); }
-  else { S.error = r.reason; if (r.reason === 'key') S.photos = null; }
+  else { S.error = r.reason; if (r.reason === 'key' || r.reason === 'locked') S.photos = null; }
   redraw?.();
 }
 
@@ -85,8 +85,6 @@ function addFiles(files: Iterable<File>): void {
 
 // ── The page ────────────────────────────────────────────────────────────────────────────────
 export function renderPhotos(root: HTMLElement): () => void {
-  const fromLink = takeKeyFromHash();
-  if (fromLink) { S.photos = null; S.error = null; }
 
   root.innerHTML = `
     <section class="album">
@@ -117,9 +115,9 @@ export function renderPhotos(root: HTMLElement): () => void {
     <form class="card album-pair">
       <h2>🔑 ${t('photos.pair.title')}</h2>
       <p>${t('photos.pair.body')}</p>
-      ${S.error === 'key' && getKey() ? `<p class="album-warn">${t('photos.pair.bad')}</p>` : ''}
+      ${(S.error === 'key' || S.error === 'locked') && getKey() ? `<p class="album-warn">${failText(S.error)}</p>` : ''}
       <div class="album-pair-row">
-        <input type="password" autocomplete="off" spellcheck="false" placeholder="${t('photos.pair.input')}" aria-label="${t('photos.pair.input')}" />
+        <input type="password" inputmode="numeric" autocomplete="current-password" spellcheck="false" placeholder="${t('photos.pair.input')}" aria-label="${t('photos.pair.input')}" />
         <button class="btn" type="submit">${t('photos.pair.save')}</button>
       </div>
     </form>`;
@@ -230,7 +228,7 @@ export function renderPhotos(root: HTMLElement): () => void {
     if (!alive) return;
     observer.disconnect();
     map?.remove(); map = null;
-    if (!getKey() || (S.error === 'key' && !S.photos)) {
+    if (!getKey() || ((S.error === 'key' || S.error === 'locked') && !S.photos)) {
       body.innerHTML = pairPanel();
       const form = body.querySelector<HTMLFormElement>('.album-pair')!;
       form.addEventListener('submit', (e) => {

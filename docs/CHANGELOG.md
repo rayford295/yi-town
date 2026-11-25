@@ -10,9 +10,10 @@ Versions are tags of feeling more than of code; the site deploys on every push.
   by month or on a travel map with one dotted line per trip. When and where come from the EXIF,
   read in the browser before the photo is shrunk.
 - The photos are kept by a second Worker at `photos.jingyifan.love` (D1 for the rows and, spread
-  over five free databases, the pictures; no card on the account). It is the first part of the site with real access control: a random album key,
-  given to each device once by a pairing link, since the gate's hash is in a public bundle.
-- 293 unit tests.
+  over five free databases, the pictures; no card on the account). Every request carries the site's password, checked
+  against the gate's hash; ten wrong tries lock an address out for fifteen minutes. A device
+  remembers the password from the gate, so the album opens without asking again.
+- 294 unit tests.
 
 ## 1.24.0 (2026-11-24)
 

@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/for-two%20players-d3a557?style=flat-square&labelColor=0b2036" alt="for two players" />
   <img src="https://img.shields.io/badge/products-6%20on%20the%20dashboard-d3a557?style=flat-square&labelColor=0b2036" alt="6 products on the dashboard" />
   <img src="https://img.shields.io/badge/levels-9%20%2B%20an%20epilogue-d3a557?style=flat-square&labelColor=0b2036" alt="9 levels and an epilogue" />
-  <img src="https://img.shields.io/badge/tests-293%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="293 tests passing" />
+  <img src="https://img.shields.io/badge/tests-294%20passing-d3a557?style=flat-square&labelColor=0b2036" alt="294 tests passing" />
   <img src="https://img.shields.io/badge/TypeScript-strict-d3a557?style=flat-square&labelColor=0b2036" alt="TypeScript strict" />
   <img src="https://img.shields.io/badge/art-drawn%20in%20code-d3a557?style=flat-square&labelColor=0b2036" alt="all art drawn in code" />
 </p>
@@ -53,7 +53,7 @@ stands in front of all of it.
 
 The site exists in both languages and installs as an app that works offline. The town, the
 infirmary and the trip run in the browser and keep everything on the device; the album keeps
-its photos on a Worker behind a key of its own.
+its photos on a Worker that checks the password itself.
 
 ## ▶ How the Town Plays
 
@@ -107,7 +107,7 @@ written down here; the town tells you when you get there.
 ## ✉ From Her Message to His Answer
 
 Ask Yifan is one of the two parts of the site with a back end (the other is the album, whose
-Worker keeps the photos behind a key of its own: `worker/README.md`), and the one part that keeps
+Worker keeps the photos and checks the password itself: `worker/README.md`), and the one part that keeps
 working while Yifan sleeps, thirteen hours behind her.
 
 ```
@@ -144,7 +144,7 @@ Inbox addresses, local paths and her documents are kept out of this repository.
 ```bash
 npm install
 npm run dev       # http://localhost:5173
-npm test          # 293 unit tests (Vitest)
+npm test          # 294 unit tests (Vitest)
 npm run build     # strict type-check + production build
 ```
 
