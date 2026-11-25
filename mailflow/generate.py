@@ -30,9 +30,16 @@ def locked(path):
 
 
 def unlock(directory):
-    for p in Path(directory).glob("*"):
-        if p.is_file() and not p.is_symlink():
-            os.chflags(p, 0)
+    """解锁 规则/ 里的副本。它必须是真目录；里面的符号链接不跟随。"""
+    d = Path(directory)
+    if not d.exists() and not d.is_symlink():
+        return
+    if d.is_symlink() or not d.is_dir():
+        raise RuntimeError(f"{d} 不是普通目录，不运行。")
+    with os.scandir(d) as entries:
+        for e in entries:
+            if e.is_file(follow_symlinks=False):
+                os.chflags(e.path, 0, follow_symlinks=False)
 
 
 def check_locked():
@@ -58,7 +65,8 @@ def main(folder):
         raise RuntimeError(f"文件夹名里有不允许的字符，不运行：{folder.name}")
     rules = folder / "规则"
     unlock(rules)
-    shutil.rmtree(rules, ignore_errors=True)             # 每次都从锁定的原件重新复制，并把副本也锁上
+    if rules.exists():
+        shutil.rmtree(rules)                             # 每次都从锁定的原件重新复制，并把副本也锁上
     rules.mkdir()
     for f in C.LOCKED_FILES:
         copy = rules / Path(f).name
